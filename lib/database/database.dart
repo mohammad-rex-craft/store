@@ -101,8 +101,10 @@ class DatabaseService {
     try {
       final response = await _supabase
           .from(table)
-          .select()
-          .ilike(column, '%$query%');
+          .select('*')
+          .ilike(column, '%$query%')
+          .order(column, ascending: true);
+          
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       throw Exception('Error searching records: $e');
