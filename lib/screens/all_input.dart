@@ -3,8 +3,8 @@ import '../widget/common/bar.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../database/database.dart';
 import '../widget/screens/all_input/card_inputs.dart';
-import '../widget/screens/all_input/pagination_btn.dart';
-import '../widget/screens/all_input/search_sort_bar.dart';
+import '../widget/common/pagination_btn.dart';
+import '../widget/common/search_sort_bar.dart';
 
 class AllInput extends StatefulWidget {
   const AllInput({super.key});
