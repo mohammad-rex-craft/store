@@ -5,6 +5,7 @@ import '../widget/screens/storage/table_storage.dart';
 import '../widget/screens/storage/form_create_items.dart';
 import '../widget/screens/storage/form_update_items.dart';
 import '../widget/common/bar.dart';
+
 var primeColor = hexToColor('#03A9F4');
 
 class Storage extends StatefulWidget {
@@ -18,7 +19,7 @@ class _StorageState extends State<Storage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController qtnController = TextEditingController();
   List<Map<String, dynamic>> data = [];
-    List<Map<String, dynamic>> indata = [];
+  List<Map<String, dynamic>> indata = [];
 
   bool sortAscending = true;
   int? sortColumnIndex;
@@ -43,44 +44,33 @@ class _StorageState extends State<Storage> {
       print(e);
     }
   }
+
   Future<void> getItems2() async {
-     final inputsResponse =await Supabase.instance.client.from('inputs').select();
-      indata = inputsResponse;
+    final inputsResponse = await Supabase.instance.client
+        .from('inputs')
+        .select();
+    indata = inputsResponse;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Bar(title: 'Storage'),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    FormCreateItems(getItems: getItems),
-                    FormUpdateItems(getItems: getItems, items: data),
-                  ],
-                ),
-              ),
-            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FormCreateItems(getItems: getItems),
+              const SizedBox(height: 16),
+              FormUpdateItems(getItems: getItems, items: data),
+              const SizedBox(height: 16),
+              TableStorage(data: data, getItems: getItems),
+            ],
           ),
-          TableStorage(data: data, getItems: getItems),
-        ],
+        ),
       ),
     );
   }
 }
-
-
-
-
-
-
-
-
-

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../hooks.dart';
+import '../../common/btn.dart';
+import '../../common/input.dart';
 
 
 class FormCreateItems extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController qtnController = TextEditingController();
+  final TextEditingController boxController = TextEditingController();
   final Function getItems;
   final primeColor = hexToColor('#03A9F4');
 
@@ -20,10 +22,10 @@ class FormCreateItems extends StatelessWidget {
       await Supabase.instance.client.from('store').insert({
         'item': nameController.text,
         'qtn': 0,
-        'box': int.parse(qtnController.text),
+        'box': int.parse(boxController.text),
       });
       nameController.clear();
-      qtnController.clear();
+      boxController.clear();
       await getItems();
     } catch (e) {
       print(e);
@@ -32,14 +34,9 @@ class FormCreateItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.all(10),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-            ),
+    return Card(
+            elevation: 8,
+            child: Padding(padding: EdgeInsets.all(15),
             child: Column(
               children: [
                 Text(
@@ -47,33 +44,13 @@ class FormCreateItems extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Item Name',
-                    border: OutlineInputBorder(),
-                  ),
-                  controller: nameController,
-                ),
+                Input(controller: nameController, labelText: 'Item Name'),
                 SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Item Quantity',
-                    border: OutlineInputBorder(),
-                  ),
-                  controller: qtnController,
-                  keyboardType: TextInputType.number,
-                ),
+                Input(controller: boxController, labelText: 'In Box'),
                 SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => store(),
-                  child: Text('Add'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primeColor,
-                    minimumSize: Size(double.infinity, 50),
-                  ),
-                ),
+                Btn(title: 'Add', onTap: () => store(), width: double.infinity),
               ],
-            ),
+            ),)
           );
   }
 }

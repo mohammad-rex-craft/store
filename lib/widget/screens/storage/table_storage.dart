@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:data_table_2/data_table_2.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TableStorage extends StatefulWidget {
@@ -46,30 +45,29 @@ class _TableStorageState extends State<TableStorage> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: DataTable2(
+    return Card(
+      
+      child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SingleChildScrollView(
+        child: DataTable(
           columns: [
-            DataColumn2(
+            DataColumn(
               label: Text('Item Name'),
-              size: ColumnSize.L,
               onSort: onSort,
             ),
-              DataColumn2(
-                label: Text('Quantity'),
-                size: ColumnSize.M,
-                onSort: onSort,
-              ),
-              DataColumn2(
-                label: Text('Box'),
-                size: ColumnSize.M,
-                onSort: onSort,
-              ),
-            DataColumn2(label: Text('Actions'), size: ColumnSize.S),
+            DataColumn(
+              label: Text('Quantity'),
+              onSort: onSort,
+            ),
+            DataColumn(
+              label: Text('Box'),
+              onSort: onSort,
+            ),
+            DataColumn(label: Text('Actions')),
           ],
           rows: widget.data.map((item) {
-            return DataRow2(
+            return DataRow(
               cells: [
                 DataCell(Text(item['item'] ?? '')),
                 DataCell(Text(item['qtn']?.toString() ?? '0')),
@@ -83,14 +81,13 @@ class _TableStorageState extends State<TableStorage> {
               ],
             );
           }).toList(),
+          columnSpacing: 20,
+          horizontalMargin: 10,
           sortColumnIndex: sortColumnIndex,
           sortAscending: sortAscending,
-          headingRowHeight: 60,
-          horizontalMargin: 20,
-          columnSpacing: 20,
-          showCheckboxColumn: false,
         ),
       ),
+    )
     );
   }
 }

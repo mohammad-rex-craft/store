@@ -15,7 +15,7 @@ class SearchSortBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10),
             child: Row(
               children: [
                 Expanded(
@@ -24,7 +24,9 @@ class SearchSortBar extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'Search by Date or NO',
                       prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     onChanged: filterData,
                     keyboardType: TextInputType.text,
