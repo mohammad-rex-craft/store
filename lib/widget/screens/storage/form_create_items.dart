@@ -38,16 +38,14 @@ class FormCreateItems extends StatelessWidget {
             elevation: 8,
             child: Padding(padding: EdgeInsets.all(15),
             child: Column(
+              spacing: 16,
               children: [
                 Text(
                   'Add Items',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 16),
                 Input(controller: nameController, labelText: 'Item Name'),
-                SizedBox(height: 16),
                 Input(controller: boxController, labelText: 'In Box'),
-                SizedBox(height: 16),
                 Btn(title: 'Add', onTap: () => store(), width: double.infinity),
               ],
             ),)

@@ -192,6 +192,12 @@ class _AddItemsState extends State<AddItems> {
     }
   }
 
+  void deleteItem(int index) {
+    setState(() {
+      items.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -222,7 +228,7 @@ class _AddItemsState extends State<AddItems> {
                   onAdd: addItem,
                 ),
                 SizedBox(height: 16),
-                TableAddItems(items: items, onSubmit: submitData),
+                TableAddItems(items: items, onSubmit: submitData, onDelete: deleteItem),
               ],
             ),
           ),

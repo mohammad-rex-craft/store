@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../common/btn.dart';
+import '../../common/input.dart';
 
 class FormAddItems extends StatelessWidget {
   final TextEditingController dateController;
@@ -28,20 +29,23 @@ class FormAddItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 8,
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
           children: [
             Text(
               "Add Items",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: 'Type',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               value: selectedType,
               items: ['Production', 'Return'].map((type) {
@@ -49,21 +53,15 @@ class FormAddItems extends StatelessWidget {
               }).toList(),
               onChanged: onTypeChanged,
             ),
-            SizedBox(height: 16),
             if (selectedType == 'Return') ...[
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Noa',
-                  border: OutlineInputBorder(),
-                ),
-                controller: invoiceController,
-              ),
-              SizedBox(height: 16),
+              Input(controller: invoiceController, labelText: 'Noa'),
             ],
             TextField(
               decoration: InputDecoration(
                 labelText: 'Date',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.calendar_today),
                   onPressed: () async {
@@ -83,12 +81,13 @@ class FormAddItems extends StatelessWidget {
               controller: dateController,
               readOnly: true,
             ),
-            SizedBox(height: 16),
 
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: 'Item',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               value: selectedItem,
               items: allItems.map((item) {
@@ -99,16 +98,7 @@ class FormAddItems extends StatelessWidget {
               }).toList(),
               onChanged: onItemChanged,
             ),
-            SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Qtn',
-                border: OutlineInputBorder(),
-              ),
-              controller: qtnController,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 16),
+            Input(controller: qtnController, labelText: 'Qtn'),
             Btn(title: 'Add', width: double.infinity, onTap: onAdd),
           ],
         ),

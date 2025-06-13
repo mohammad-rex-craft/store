@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../hooks.dart';
 import '../../common/btn.dart';
 import '../../common/input.dart';
-import '../../common/selector.dart';
+
 
 class FormUpdateItems extends StatefulWidget {
   final List<Map<String, dynamic>> items;
@@ -57,12 +57,12 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
       child: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
+          spacing: 16,
           children: [
             Text(
               'Update Item',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
             DropdownButtonFormField<Map<String, dynamic>>(
               decoration: InputDecoration(
                 labelText: 'Select Item',
@@ -87,17 +87,14 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
                 });
               },
             ),
-            SizedBox(height: 16),
             Input(
               controller: nameController,
               labelText: 'New Item Name',
             ),
-            SizedBox(height: 16),
             Input(
               controller: qtnController,
               labelText: 'New Quantity',
             ),
-            SizedBox(height: 16),
             Btn(title: 'Update', onTap: () => update(), width: double.infinity),
           ],
         ),

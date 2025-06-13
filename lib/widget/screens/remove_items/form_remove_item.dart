@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../common/btn.dart';
+import '../../common/input.dart';
 
 class FormRemoveItem extends StatelessWidget {
   final TextEditingController dateController;
@@ -37,40 +38,21 @@ class FormRemoveItem extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
           children: [
             Text(
               "Remove Items",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),            
-            SizedBox(height: 16),
-            TextField(
-                decoration: InputDecoration(
-                  labelText: 'Noa',
-                  border: OutlineInputBorder(),
-                ),
-                controller: invoiceController,
-              ),
-              SizedBox(height: 16),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Client',
-                  border: OutlineInputBorder(),
-                ),
-                controller: clientController,
-              ),
-              SizedBox(height: 16),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Sender',
-                  border: OutlineInputBorder(),
-                ),
-                controller: senderController,
-              ),
-              SizedBox(height: 16),
+            ),
+            Input(controller: invoiceController, labelText: 'Noa'),
+            Input(controller: clientController, labelText: 'Client'),
+            Input(controller: senderController, labelText: 'Sender'),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Date',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.calendar_today),
                   onPressed: () async {
@@ -90,12 +72,13 @@ class FormRemoveItem extends StatelessWidget {
               controller: dateController,
               readOnly: true,
             ),
-            SizedBox(height: 16),
 
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: 'Item',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               value: selectedItem,
               items: allItems.map((item) {
@@ -106,16 +89,7 @@ class FormRemoveItem extends StatelessWidget {
               }).toList(),
               onChanged: onItemChanged,
             ),
-            SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Qtn',
-                border: OutlineInputBorder(),
-              ),
-              controller: qtnController,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 16),
+            Input(controller: qtnController, labelText: 'Qtn'),
             Btn(title: 'Add', width: double.infinity, onTap: onAdd),
           ],
         ),
