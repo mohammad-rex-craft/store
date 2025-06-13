@@ -4,11 +4,13 @@ import '../../common/btn.dart';
 class TableRemoveItems extends StatelessWidget {
   final List<Map<String, dynamic>> items;
   final VoidCallback onSubmit;
+  final Function(int) onDelete;
 
   const TableRemoveItems({
     super.key,
     required this.items,
     required this.onSubmit,
+    required this.onDelete,
   });
 
   @override
@@ -21,39 +23,63 @@ class TableRemoveItems extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'العناصر المضافة',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
             const SizedBox(height: 16),
             Table(
-              border: TableBorder.all(),
+              border: TableBorder.all(color: Colors.grey,borderRadius: BorderRadius.circular(10)),
               children: [
                 const TableRow(
                   children: [
-                    TableCell(child: Padding(padding: EdgeInsets.all(8), child: Text('العنصر'))),
-                    TableCell(child: Padding(padding: EdgeInsets.all(8), child: Text('الكمية'))),
+                    TableCell(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text('Items'),
+                      ),
+                    ),
+                    TableCell(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text('Qty'),
+                      ),
+                    ),
+                    TableCell(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text('Delete'),
+                      ),
+                    ),
                   ],
                 ),
                 ...items.map((item) {
                   return TableRow(
                     children: [
-                      TableCell(child: Padding(padding: const EdgeInsets.all(8), child: Text(item['item']))),
-                      TableCell(child: Padding(padding: const EdgeInsets.all(8), child: Text(item['qtn'].toString()))),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(item['item']),
+                        ),
+                      ),
+                      TableCell(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text(item['qtn'].toString(),textAlign: TextAlign.center,),
+                        ),
+                      ),
+                      TableCell(
+                        child: IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => onDelete(items.indexOf(item)),
+                        ),
+                      ),
                     ],
                   );
                 }).toList(),
               ],
             ),
             const SizedBox(height: 16),
-            Btn(
-              title: 'إرسال',
-              width: double.infinity,
-              onTap: onSubmit,
-            ),
+            Btn(title: 'send', width: double.infinity, onTap: onSubmit),
           ],
         ),
       ),
     );
   }
-} 
+}

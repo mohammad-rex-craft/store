@@ -10,13 +10,15 @@ class RemoveItems extends StatefulWidget {
 
   @override
   State<RemoveItems> createState() => _RemoveItemsState();
-}
+} 
 
 class _RemoveItemsState extends State<RemoveItems> {
   final DatabaseService db = DatabaseService();
   final TextEditingController qtnController = TextEditingController();
   final TextEditingController invoiceController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
+  final TextEditingController clientController = TextEditingController();
+  final TextEditingController senderController = TextEditingController();
   DateTime selectedDate = DateTime.now();
   String? selectedType;
   String? selectedItem;
@@ -125,50 +127,53 @@ class _RemoveItemsState extends State<RemoveItems> {
       // Insert into inputs table
       final inputData = {
         'date': dateController.text,
-        'type': selectedType,
-        'noa': selectedType == 'Return' ? invoiceController.text : null,
+        'client': clientController.text,
+        'sender': senderController.text,
+        'noa': invoiceController.text,
         'items': items,
       };
-      await db.create(table: 'inputs', data: inputData).then((_) {
-        items.forEach((item) {
-          db
-              .update(
-                table: 'store',
-                id: item['id'].toString(),
-                data: {
-                  'qtn':
-                      allItems.firstWhere(
-                        (element) => element['id'] == item['id'],
-                      )['qtn'] +
-                      item['qtn'],
-                },
-              )
-              .then((_) {
-                setState(() {
-                  items = [];
-                  selectedType = null;
-                  invoiceController.clear();
-                  isLoading = false;
-                });
-                Alert(
-                  context: context,
-                  type: AlertType.success,
-                  title: "success",
-                  desc: "items added successfully",
-                  buttons: [
-                    DialogButton(
-                      onPressed: () => Navigator.pop(context),
-                      width: 120,
-                      child: Text(
-                        "ok",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    )
-                  ],
-                ).show();
-              });
+      await db.create(table: 'orders', data: inputData).then((_) async {
+        // Process all items first
+        for (var item in items) {
+          await db.update(
+            table: 'store',
+            id: item['id'].toString(),
+            data: {
+              'qtn': allItems.firstWhere(
+                (element) => element['id'] == item['id'],
+              )['qtn'] - item['qtn'],
+            },
+          );
+        }
+        
+        // Reset form and show success message only once
+        setState(() {
+          items = [];
+          clientController.clear();
+          senderController.clear();
+          invoiceController.clear();
+          dateController.clear();
+          isLoading = false;
         });
+        
+        Alert(
+          context: context,
+          type: AlertType.success,
+          title: "success",
+          desc: "items removed successfully",
+          buttons: [
+            DialogButton(
+              onPressed: () => Navigator.pop(context),
+              width: 120,
+              child: Text(
+                "ok",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            )
+          ],
+        ).show();
       });
+
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -192,6 +197,12 @@ class _RemoveItemsState extends State<RemoveItems> {
     }
   }
 
+  void deleteItem(int index) {
+    setState(() {
+      items.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -203,6 +214,8 @@ class _RemoveItemsState extends State<RemoveItems> {
             child: Column(
               children: [
                 FormRemoveItem(
+                  clientController: clientController,
+                  senderController: senderController,
                   dateController: dateController,
                   qtnController: qtnController,
                   invoiceController: invoiceController,
@@ -222,7 +235,7 @@ class _RemoveItemsState extends State<RemoveItems> {
                   onAdd: addItem,
                 ),
                 SizedBox(height: 16),
-                TableRemoveItems (items: items, onSubmit: submitData),
+                TableRemoveItems (items: items, onSubmit: submitData, onDelete: deleteItem),
               ],
             ),
           ),

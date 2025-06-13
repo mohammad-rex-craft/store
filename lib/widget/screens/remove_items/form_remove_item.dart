@@ -5,6 +5,8 @@ class FormRemoveItem extends StatelessWidget {
   final TextEditingController dateController;
   final TextEditingController qtnController;
   final TextEditingController invoiceController;
+  final TextEditingController clientController;
+  final TextEditingController senderController;
   final String? selectedType;
   final String? selectedItem;
   final List<Map<String, dynamic>> allItems;
@@ -17,6 +19,8 @@ class FormRemoveItem extends StatelessWidget {
     required this.dateController,
     required this.qtnController,
     required this.invoiceController,
+    required this.clientController,
+    required this.senderController,
     required this.selectedType,
     required this.selectedItem,
     required this.allItems,
@@ -28,30 +32,18 @@ class FormRemoveItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 8,
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Add Items",
+              "Remove Items",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            ),            
             SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Type',
-                border: OutlineInputBorder(),
-              ),
-              value: selectedType,
-              items: ['Production', 'Return'].map((type) {
-                return DropdownMenuItem(value: type, child: Text(type));
-              }).toList(),
-              onChanged: onTypeChanged,
-            ),
-            SizedBox(height: 16),
-            if (selectedType == 'Return') ...[
-              TextField(
+            TextField(
                 decoration: InputDecoration(
                   labelText: 'Noa',
                   border: OutlineInputBorder(),
@@ -59,7 +51,22 @@ class FormRemoveItem extends StatelessWidget {
                 controller: invoiceController,
               ),
               SizedBox(height: 16),
-            ],
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Client',
+                  border: OutlineInputBorder(),
+                ),
+                controller: clientController,
+              ),
+              SizedBox(height: 16),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Sender',
+                  border: OutlineInputBorder(),
+                ),
+                controller: senderController,
+              ),
+              SizedBox(height: 16),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Date',
