@@ -100,6 +100,7 @@ class _RemoveItemsState extends State<RemoveItems> {
         'sender': senderController.text,
         'noa': invoiceController.text,
         'items': items,
+        'items_ids': items.map((item) => item['id']).toList(),
       };
       
       await db.create(

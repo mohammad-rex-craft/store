@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
-import '../widget/common/bar.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import '../database/database.dart';
-import '../widget/screens/all_output/card_output.dart';
-import '../widget/common/pagination_btn.dart';
-import '../widget/common/search_sort_bar.dart';
+import '../../database/database.dart';
+import '../../widget/common/bar.dart';
+import '../../widget/common/search_sort_bar.dart';
+import '../../widget/screens/all_output/card_output.dart';
+import '../../widget/common/pagination_btn.dart';
 
-class AllOutput extends StatefulWidget {
-  const AllOutput({super.key});
+class AllOutputById extends StatefulWidget {
+  const AllOutputById({super.key});
 
   @override
-  AllOutputState createState() => AllOutputState();
+  AllOutputByIdState createState() => AllOutputByIdState();
 }
 
-class AllOutputState extends State<AllOutput> {
+class AllOutputByIdState extends State<AllOutputById> {
+  late Map<String, dynamic> routeArgs;
   List<Map<String, dynamic>> allOutputs = [];
   List<Map<String, dynamic>> filteredOutputs = [];
   final DatabaseService db = DatabaseService();
   final TextEditingController searchController = TextEditingController();
   bool isSortedAscending = true;
-
+  bool _isInitialized = false;
   // Pagination variables
   int currentPage = 0;
   final int pageSize = 10;
@@ -27,9 +27,14 @@ class AllOutputState extends State<AllOutput> {
   bool hasMoreData = true;
 
   @override
-  void initState() {
-    super.initState();
-    getOutputs();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      routeArgs =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      getOutputs();
+      _isInitialized = true;
+    }
   }
 
   Future<void> getOutputs() async {
@@ -40,10 +45,11 @@ class AllOutputState extends State<AllOutput> {
     });
 
     try {
-      final response = await db.getPaginated(
+      final response = await db.getAllByItemPaginated(
         table: 'orders',
         page: currentPage,
         pageSize: pageSize,
+        id: routeArgs['id'],
         orderBy: 'date',
         ascending: isSortedAscending,
         context: context,
@@ -133,7 +139,12 @@ class AllOutputState extends State<AllOutput> {
         errorMessage: "Error searching by sender",
       );
 
-      final combinedResults = [...results, ...noaResults, ...clientResults, ...senderResults];
+      final combinedResults = [
+        ...results,
+        ...noaResults,
+        ...clientResults,
+        ...senderResults,
+      ];
       final uniqueResults = combinedResults.toSet().toList();
 
       setState(() {
@@ -147,7 +158,7 @@ class AllOutputState extends State<AllOutput> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'All Output'),
+      appBar: Bar(title: 'Output ${routeArgs['item']}'),
       body: Column(
         children: [
           SearchSortBar(

@@ -5,7 +5,8 @@ import './screens/add_Items.dart';
 import './screens/remove_items.dart';
 import 'screens/all_inputs/all_input.dart';
 import 'screens/all_inputs/all_input_by_id.dart';
-import './screens/all_output.dart';
+import 'screens/all_output/all_output.dart';
+import 'screens/all_output/all_output_by_id.dart';
 import './screens/storage.dart';
 import './screens/log_in.dart';
 import 'database/auth/auth_wrapper.dart';
@@ -41,6 +42,7 @@ class TestApp extends StatelessWidget {
         '/all_output': (ctx) => AuthWrapper(child: AllOutput()),
         '/storage': (ctx) => AuthWrapper(child: Storage()),
         '/all_input_by_id': (ctx) => AuthWrapper(child: AllInputById()),
+        '/all_output_by_id': (ctx) => AuthWrapper(child: AllOutputById()),
       },
     );
   }

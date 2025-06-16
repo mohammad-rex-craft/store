@@ -35,6 +35,7 @@ class TableStorage extends StatelessWidget {
                 onSort: onSort,
               ),
               DataColumn(
+
                 label: Text('Box'),
                 onSort: onSort,
               ),
@@ -51,7 +52,15 @@ class TableStorage extends StatelessWidget {
                      onTap: ()=>dinamecRouter(context,'/all_input_by_id',{'id': item['id'],'item': item['item']})
                      ),
                   ),
-                  DataCell(Text(item['qtn']?.toString() ?? '0')),
+                  DataCell(
+                    Btn(title: item['qtn']?.toString() ?? '0',
+                    height: 40,
+                    color: const Color.fromARGB(255, 156, 96, 96)!,
+                    width: 70,
+                    borderRadius: BorderRadius.circular(2),
+                     onTap: ()=>dinamecRouter(context,'/all_output_by_id',{'id': item['id'],'item': item['item']})
+                     ),
+                  ),
                   DataCell(Text('${(item['qtn'] ~/ item['box'])}/${item['qtn'] % item['box']}')),
                   DataCell(
                     IconButton(
