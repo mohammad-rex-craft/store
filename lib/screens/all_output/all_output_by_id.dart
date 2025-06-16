@@ -169,13 +169,20 @@ class AllOutputByIdState extends State<AllOutputById> {
           Expanded(
             child: isLoading
                 ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: filteredOutputs.length,
-                    itemBuilder: (context, index) {
-                      final item = filteredOutputs[index];
-                      return CardOutput(item: item);
-                    },
-                  ),
+                : filteredOutputs.isEmpty
+                    ? Center(
+                        child: Text(
+                          'No data available',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: filteredOutputs.length,
+                        itemBuilder: (context, index) {
+                          final item = filteredOutputs[index];
+                          return CardOutput(item: item);
+                        },
+                      ),
           ),
           // Pagination buttons
           PaginationBtn(

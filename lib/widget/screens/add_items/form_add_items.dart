@@ -42,7 +42,7 @@ class FormAddItems extends StatelessWidget {
             ),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                labelText: 'Type',
+                labelText: 'Type *',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -52,13 +52,22 @@ class FormAddItems extends StatelessWidget {
                 return DropdownMenuItem(value: type, child: Text(type));
               }).toList(),
               onChanged: onTypeChanged,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select a type';
+                }
+                return null;
+              },
             ),
             if (selectedType == 'Return') ...[
-              Input(controller: invoiceController, labelText: 'Noa'),
+              Input(
+                controller: invoiceController,
+                labelText: 'Noa *',
+              ),
             ],
-            TextField(
+            TextFormField(
               decoration: InputDecoration(
-                labelText: 'Date',
+                labelText: 'Date *',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -80,11 +89,17 @@ class FormAddItems extends StatelessWidget {
               ),
               controller: dateController,
               readOnly: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select a date';
+                }
+                return null;
+              },
             ),
 
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                labelText: 'Item',
+                labelText: 'Item *',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -97,9 +112,19 @@ class FormAddItems extends StatelessWidget {
                 );
               }).toList(),
               onChanged: onItemChanged,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select an item';
+                }
+                return null;
+              },
             ),
-            Input(controller: qtnController, labelText: 'Qtn'),
-            Btn(title: 'Add', width: double.infinity, onTap: onAdd),
+            Input(
+              controller: qtnController,
+              labelText: 'Qtn *',
+              
+            ),
+            Btn(title: 'Add', width: double.infinity, onTap: onAdd,),
           ],
         ),
       ),

@@ -48,7 +48,15 @@ class _AddItemsState extends State<AddItems> {
   }
 
   void addItem() {
-    if (selectedItem == null || qtnController.text.isEmpty) return;
+    if (selectedItem == null || qtnController.text.isEmpty) {
+      db.showAlert(
+        context,
+        title: "Warning",
+        message: "Please fill in all fields",
+        type: AlertType.warning,
+      );
+      return;
+    }
 
     // Check if item already exists in the list
     if (items.any((item) => item['item'] == selectedItem)) {
@@ -69,73 +77,77 @@ class _AddItemsState extends State<AddItems> {
         'id': item['id'],
       });
     });
-    
+
     // Reset fields
     selectedItem = null;
     qtnController.clear();
   }
 
   Future<void> submitData() async {
-    if (items.isEmpty) {
+    if (selectedType == null ||
+        dateController.text == '' ||
+        (selectedType == 'Return' && invoiceController.text == '')) {
       db.showAlert(
         context,
         title: "Warning",
-        message: "Please add at least one item",
+        message: "Please fill in all fields",
         type: AlertType.warning,
       );
       return;
-    }
+    } else {
+      setState(() {
+        isLoading = true;
+      });
 
-    setState(() {
-      isLoading = true;
-    });
+      try {
+        // Insert into inputs table
+        final inputData = {
+          'date': dateController.text,
+          'type': selectedType,
+          'noa': selectedType == 'Return' ? invoiceController.text : null,
+          'items': items,
+          'items_ids': items.map((item) => item['id']).toList(),
+        };
 
-    try {
-      // Insert into inputs table
-      final inputData = {
-        'date': dateController.text,
-        'type': selectedType,
-        'noa': selectedType == 'Return' ? invoiceController.text : null,
-        'items': items,
-        'items_ids': items.map((item) => item['id']).toList(),
-      };
-      
-      await db.create(
-        table: 'inputs',
-        data: inputData,
-        context: context,
-        successMessage: "Items added successfully",
-        errorMessage: "Error while saving data",
-      );
-
-      // Process all items
-      for (var item in items) {
-        await db.update(
-          table: 'store',
-          id: item['id'].toString(),
-          data: {
-            'qtn': allItems.firstWhere(
-              (element) => element['id'] == item['id'],
-            )['qtn'] + item['qtn'],
-          },
+        await db.create(
+          table: 'inputs',
+          data: inputData,
           context: context,
-          successMessage: null,
-          errorMessage: "Error updating item quantity",
+          successMessage: "Items added successfully",
+          errorMessage: "Error while saving data",
         );
+
+        // Process all items
+        for (var item in items) {
+          await db.update(
+            table: 'store',
+            id: item['id'].toString(),
+            data: {
+              'qtn':
+                  allItems.firstWhere(
+                    (element) => element['id'] == item['id'],
+                  )['qtn'] +
+                  item['qtn'],
+            },
+            context: context,
+            successMessage: null,
+            errorMessage: "Error updating item quantity",
+          );
+        }
+
+        // Reset form
+        setState(() {
+          items = [];
+          selectedType = null;
+          invoiceController.clear();
+          isLoading = false;
+        });
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        // Error is already handled by DatabaseService
       }
-      
-      // Reset form
-      setState(() {
-        items = [];
-        selectedType = null;
-        invoiceController.clear();
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      // Error is already handled by DatabaseService
     }
   }
 
@@ -188,16 +200,10 @@ class _AddItemsState extends State<AddItems> {
           Container(
             color: Colors.black.withOpacity(0.5),
             child: Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
+              child: CircularProgressIndicator(color: Colors.white),
             ),
           ),
       ],
     );
   }
 }
-
-
-
-

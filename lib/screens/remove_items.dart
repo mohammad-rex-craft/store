@@ -50,7 +50,15 @@ class _RemoveItemsState extends State<RemoveItems> {
   }
 
   void addItem() {
-    if (selectedItem == null || qtnController.text.isEmpty) return;
+    if (selectedItem == null || qtnController.text.isEmpty) {
+      db.showAlert(
+        context,
+        title: "Warning",
+        message: "Please fill in all fields",
+        type: AlertType.warning,
+      );
+      return;
+    }
 
     // Check if item already exists in the list
     if (items.any((item) => item['item'] == selectedItem)) {
@@ -71,23 +79,27 @@ class _RemoveItemsState extends State<RemoveItems> {
         'id': item['id'],
       });
     });
-    
+
     // Reset fields
     selectedItem = null;
     qtnController.clear();
   }
 
   Future<void> submitData() async {
-    if (items.isEmpty) {
+    if (selectedType == null ||
+        dateController.text ==''||
+        clientController.text ==''||
+        senderController.text ==''||
+        invoiceController.text =='') {
       db.showAlert(
         context,
         title: "Warning",
-        message: "Please add at least one item",
+        message: "Please fill in all fields",
         type: AlertType.warning,
       );
       return;
     }
-
+  
     setState(() {
       isLoading = true;
     });
@@ -102,7 +114,7 @@ class _RemoveItemsState extends State<RemoveItems> {
         'items': items,
         'items_ids': items.map((item) => item['id']).toList(),
       };
-      
+
       await db.create(
         table: 'orders',
         data: inputData,
@@ -117,16 +129,18 @@ class _RemoveItemsState extends State<RemoveItems> {
           table: 'store',
           id: item['id'].toString(),
           data: {
-            'qtn': allItems.firstWhere(
-              (element) => element['id'] == item['id'],
-            )['qtn'] - item['qtn'],
+            'qtn':
+                allItems.firstWhere(
+                  (element) => element['id'] == item['id'],
+                )['qtn'] -
+                item['qtn'],
           },
           context: context,
           successMessage: null,
           errorMessage: "Error updating item quantity",
         );
       }
-      
+
       // Reset form
       setState(() {
         items = [];
@@ -195,16 +209,10 @@ class _RemoveItemsState extends State<RemoveItems> {
           Container(
             color: Colors.black.withOpacity(0.5),
             child: Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
+              child: CircularProgressIndicator(color: Colors.white),
             ),
           ),
       ],
     );
   }
 }
-
-
-
-

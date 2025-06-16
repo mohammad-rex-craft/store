@@ -44,12 +44,24 @@ class FormRemoveItem extends StatelessWidget {
               "Remove Items",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Input(controller: invoiceController, labelText: 'Noa'),
-            Input(controller: clientController, labelText: 'Client'),
-            Input(controller: senderController, labelText: 'Sender'),
-            TextField(
+            Input(
+              controller: invoiceController,
+              labelText: 'Noa *',
+              
+            ),
+            Input(
+              controller: clientController,
+              labelText: 'Client *',
+              
+            ),
+            Input(
+              controller: senderController,
+              labelText: 'Sender *',
+              
+            ),
+            TextFormField(
               decoration: InputDecoration(
-                labelText: 'Date',
+                labelText: 'Date *',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -71,11 +83,12 @@ class FormRemoveItem extends StatelessWidget {
               ),
               controller: dateController,
               readOnly: true,
+              
             ),
 
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                labelText: 'Item',
+                labelText: 'Item *',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -88,8 +101,13 @@ class FormRemoveItem extends StatelessWidget {
                 );
               }).toList(),
               onChanged: onItemChanged,
+              
             ),
-            Input(controller: qtnController, labelText: 'Qtn'),
+            Input(
+              controller: qtnController,
+              labelText: 'Qtn *',
+              
+            ),
             Btn(title: 'Add', width: double.infinity, onTap: onAdd),
           ],
         ),

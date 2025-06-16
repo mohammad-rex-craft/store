@@ -29,7 +29,7 @@ class CardInputs extends StatelessWidget {
                 ),
                 if (item['no'] != null)
                   Text(
-                    'NO: ${item['no']}',
+                    'noa: ${item['noa']}',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
               ],
