@@ -46,6 +46,8 @@ class AllInputState extends State<AllInput> {
         pageSize: pageSize,
         orderBy: 'date',
         ascending: isSortedAscending,
+        context: context,
+        errorMessage: "Network error occurred while fetching inputs",
       );
 
       if (response != null) {
@@ -60,22 +62,7 @@ class AllInputState extends State<AllInput> {
       setState(() {
         isLoading = false;
       });
-      Alert(
-        context: context,
-        type: AlertType.error,
-        title: "Error",
-        desc: "Network error: ${e.toString()}",
-        buttons: [
-          DialogButton(
-            onPressed: () => Navigator.pop(context),
-            width: 120,
-            child: const Text(
-              "OK",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-        ],
-      ).show();
+      // Error is already handled by DatabaseService
     }
   }
 
@@ -118,12 +105,16 @@ class AllInputState extends State<AllInput> {
         table: 'inputs',
         column: 'date',
         query: query,
+        context: context,
+        errorMessage: "Error searching by date",
       );
 
       final noaResults = await db.search(
         table: 'inputs',
         column: 'noa',
         query: query,
+        context: context,
+        errorMessage: "Error searching by invoice number",
       );
 
       // Combine and remove duplicates
@@ -134,22 +125,7 @@ class AllInputState extends State<AllInput> {
         filteredInputs = uniqueResults;
       });
     } catch (e) {
-      Alert(
-        context: context,
-        type: AlertType.error,
-        title: "Error",
-        desc: "Search error: ${e.toString()}",
-        buttons: [
-          DialogButton(
-            onPressed: () => Navigator.pop(context),
-            width: 120,
-            child: const Text(
-              "OK",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-        ],
-      ).show();
+      // Error is already handled by DatabaseService
     }
   }
 

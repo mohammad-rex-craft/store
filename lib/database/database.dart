@@ -1,21 +1,78 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class DatabaseService {
   final SupabaseClient _supabase = Supabase.instance.client;
+  final user = Supabase.instance.client.auth.currentUser;
+
+  // Show alert dialog
+  void showAlert(BuildContext context, {
+    required String title,
+    required String message,
+    AlertType type = AlertType.error,
+  }) {
+    Alert(
+      context: context,
+      type: type,
+      title: title,
+      desc: message,
+      buttons: [
+        DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
+          child: Text(
+            "OK",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        )
+      ],
+    ).show();
+  }
+
+  // Get the current user
+  Future<User?> getCurrentUser() async {
+    return await _supabase.auth.currentUser;
+  }
+
+  void checkAuth() {
+    if (user == null) throw Exception('no auth');
+  }
 
   // Create a new record
   Future<Map<String, dynamic>> create({
     required String table,
     required Map<String, dynamic> data,
+    required BuildContext context,
+    String? successMessage,
+    String? errorMessage,
   }) async {
+    print(user!.id);
     try {
       final response = await _supabase
           .from(table)
-          .insert(data)
+          .insert({...data, 'warehouse_id': user!.id})
           .select()
           .single();
+      
+      if (successMessage != null) {
+        showAlert(
+          context,
+          title: "Success",
+          message: successMessage,
+          type: AlertType.success,
+        );
+      }
+      
       return response;
     } catch (e) {
+      if (errorMessage != null) {
+        showAlert(
+          context,
+          title: "Error",
+          message: errorMessage,
+        );
+      }
       throw Exception('Error creating record: $e');
     }
   }
@@ -24,15 +81,25 @@ class DatabaseService {
   Future<Map<String, dynamic>> read({
     required String table,
     required String id,
+    required BuildContext context,
+    String? errorMessage,
   }) async {
     try {
       final response = await _supabase
           .from(table)
           .select()
           .eq('id', id)
+          .eq('warehouse_id', user!.id)
           .single();
       return response;
     } catch (e) {
+      if (errorMessage != null) {
+        showAlert(
+          context,
+          title: "Error",
+          message: errorMessage,
+        );
+      }
       throw Exception('Error reading record: $e');
     }
   }
@@ -41,9 +108,11 @@ class DatabaseService {
   Future<List<Map<String, dynamic>>> readAll({
     required String table,
     Map<String, dynamic>? filters,
+    required BuildContext context,
+    String? errorMessage,
   }) async {
     try {
-      var query = _supabase.from(table).select();
+      var query = _supabase.from(table).select().eq('warehouse_id', user!.id);
       
       if (filters != null) {
         filters.forEach((key, value) {
@@ -54,6 +123,13 @@ class DatabaseService {
       final response = await query;
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
+      if (errorMessage != null) {
+        showAlert(
+          context,
+          title: "Error",
+          message: errorMessage,
+        );
+      }
       throw Exception('Error reading records: $e');
     }
   }
@@ -63,16 +139,37 @@ class DatabaseService {
     required String table,
     required String id,
     required Map<String, dynamic> data,
+    required BuildContext context,
+    String? successMessage,
+    String? errorMessage,
   }) async {
     try {
       final response = await _supabase
           .from(table)
           .update(data)
           .eq('id', id)
+          .eq('warehouse_id', user!.id)
           .select()
           .single();
+      
+      if (successMessage != null) {
+        showAlert(
+          context,
+          title: "Success",
+          message: successMessage,
+          type: AlertType.success,
+        );
+      }
+      
       return response;
     } catch (e) {
+      if (errorMessage != null) {
+        showAlert(
+          context,
+          title: "Error",
+          message: errorMessage,
+        );
+      }
       throw Exception('Error updating record: $e');
     }
   }
@@ -81,13 +178,33 @@ class DatabaseService {
   Future<void> delete({
     required String table,
     required String id,
+    required BuildContext context,
+    String? successMessage,
+    String? errorMessage,
   }) async {
     try {
       await _supabase
           .from(table)
           .delete()
-          .eq('id', id);
+          .eq('id', id)
+          .eq('warehouse_id', user!.id);
+      
+      if (successMessage != null) {
+        showAlert(
+          context,
+          title: "Success",
+          message: successMessage,
+          type: AlertType.success,
+        );
+      }
     } catch (e) {
+      if (errorMessage != null) {
+        showAlert(
+          context,
+          title: "Error",
+          message: errorMessage,
+        );
+      }
       throw Exception('Error deleting record: $e');
     }
   }
@@ -97,16 +214,26 @@ class DatabaseService {
     required String table,
     required String column,
     required String query,
+    required BuildContext context,
+    String? errorMessage,
   }) async {
     try {
       final response = await _supabase
           .from(table)
           .select('*')
           .ilike(column, '%$query%')
+          .eq('warehouse_id', user!.id)
           .order(column, ascending: true);
           
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
+      if (errorMessage != null) {
+        showAlert(
+          context,
+          title: "Error",
+          message: errorMessage,
+        );
+      }
       throw Exception('Error searching records: $e');
     }
   }
@@ -118,11 +245,14 @@ class DatabaseService {
     required int pageSize,
     String? orderBy,
     bool ascending = true,
+    required BuildContext context,
+    String? errorMessage,
   }) async {
     try {
       var query = _supabase
           .from(table)
           .select()
+          .eq('warehouse_id', user!.id)
           .range(page * pageSize, (page + 1) * pageSize - 1);
 
       if (orderBy != null) {
@@ -132,7 +262,23 @@ class DatabaseService {
       final response = await query;
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
+      if (errorMessage != null) {
+        showAlert(
+          context,
+          title: "Error",
+          message: errorMessage,
+        );
+      }
       throw Exception('Error getting paginated records: $e');
+    }
+  }
+
+  // Sign out the current user
+  Future<void> signOut() async {
+    try {
+      await _supabase.auth.signOut();
+    } catch (e) {
+      throw Exception('Error signing out: $e');
     }
   }
 }

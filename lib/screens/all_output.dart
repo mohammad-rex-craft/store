@@ -46,6 +46,8 @@ class AllOutputState extends State<AllOutput> {
         pageSize: pageSize,
         orderBy: 'date',
         ascending: isSortedAscending,
+        context: context,
+        errorMessage: "Network error occurred while fetching outputs",
       );
 
       if (response != null) {
@@ -60,22 +62,7 @@ class AllOutputState extends State<AllOutput> {
       setState(() {
         isLoading = false;
       });
-      Alert(
-        context: context,
-        type: AlertType.error,
-        title: "Error",
-        desc: "Network error: ${e.toString()}",
-        buttons: [
-          DialogButton(
-            onPressed: () => Navigator.pop(context),
-            width: 120,
-            child: const Text(
-              "OK",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-        ],
-      ).show();
+      // Error is already handled by DatabaseService
     }
   }
 
@@ -118,22 +105,32 @@ class AllOutputState extends State<AllOutput> {
         table: 'orders',
         column: 'date',
         query: query,
+        context: context,
+        errorMessage: "Error searching by date",
       );
 
       final noaResults = await db.search(
         table: 'orders',
         column: 'noa',
         query: query,
+        context: context,
+        errorMessage: "Error searching by invoice number",
       );
+
       final clientResults = await db.search(
         table: 'orders',
         column: 'client',
         query: query,
+        context: context,
+        errorMessage: "Error searching by client",
       );
+
       final senderResults = await db.search(
         table: 'orders',
         column: 'sender',
         query: query,
+        context: context,
+        errorMessage: "Error searching by sender",
       );
 
       final combinedResults = [...results, ...noaResults, ...clientResults, ...senderResults];
@@ -143,22 +140,7 @@ class AllOutputState extends State<AllOutput> {
         filteredOutputs = uniqueResults;
       });
     } catch (e) {
-      Alert(
-        context: context,
-        type: AlertType.error,
-        title: "Error",
-        desc: "Search error: ${e.toString()}",
-        buttons: [
-          DialogButton(
-            onPressed: () => Navigator.pop(context),
-            width: 120,
-            child: const Text(
-              "OK",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-        ],
-      ).show();
+      // Error is already handled by DatabaseService
     }
   }
 
@@ -180,7 +162,7 @@ class AllOutputState extends State<AllOutput> {
                     itemCount: filteredOutputs.length,
                     itemBuilder: (context, index) {
                       final item = filteredOutputs[index];
-                      return CardInputs(item: item);
+                      return CardOutput(item: item);
                     },
                   ),
           ),

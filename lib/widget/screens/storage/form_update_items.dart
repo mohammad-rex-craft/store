@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../hooks.dart';
-import '../../common/btn.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import '../../../database/database.dart';
 import '../../common/input.dart';
-
+import '../../common/btn.dart';
 
 class FormUpdateItems extends StatefulWidget {
   final List<Map<String, dynamic>> items;
-  final Function getItems;
-  final primeColor = hexToColor('#03A9F4');
+  final VoidCallback onItemUpdated;
 
-  FormUpdateItems({required this.getItems, required this.items, super.key});
+  const FormUpdateItems({
+    Key? key,
+    required this.items,
+    required this.onItemUpdated,
+  }) : super(key: key);
 
   @override
   State<FormUpdateItems> createState() => _FormUpdateItemsState();
@@ -19,34 +21,51 @@ class FormUpdateItems extends StatefulWidget {
 class _FormUpdateItemsState extends State<FormUpdateItems> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController qtnController = TextEditingController();
+  final DatabaseService db = DatabaseService();
   Map<String, dynamic>? selectedItem;
 
-  update() async {
-    if (selectedItem == null) return;
+  Future<void> update() async {
+    if (selectedItem == null) {
+      db.showAlert(
+        context,
+        title: "Warning",
+        message: "Please select an item to update",
+        type: AlertType.warning,
+      );
+      return;
+    }
+
+    if (nameController.text.isEmpty || qtnController.text.isEmpty) {
+      db.showAlert(
+        context,
+        title: "Warning",
+        message: "Please fill in all fields",
+        type: AlertType.warning,
+      );
+      return;
+    }
 
     try {
-      final Map<String, dynamic> updateData = {};
-      if (nameController.text.isNotEmpty) {
-        updateData['item'] = nameController.text;
-      }
-      if (qtnController.text.isNotEmpty) {
-        updateData['qtn'] = int.parse(qtnController.text);
-      }
-
-      if (updateData.isNotEmpty) {
-        await Supabase.instance.client
-            .from('store')
-            .update(updateData)
-            .eq('id', selectedItem!['id']);
-        await widget.getItems();
-        nameController.clear();
-        qtnController.clear();
-        setState(() {
-          selectedItem = null;
-        });
-      }
+      await db.update(
+        table: 'store',
+        id: selectedItem!['id'].toString(),
+        data: {
+          'item': nameController.text,
+          'qtn': int.parse(qtnController.text),
+        },
+        context: context,
+        successMessage: "Item updated successfully",
+        errorMessage: "Error updating item",
+      );
+      
+      nameController.clear();
+      qtnController.clear();
+      setState(() {
+        selectedItem = null;
+      });
+      widget.onItemUpdated();
     } catch (e) {
-      print(e);
+      // Error is already handled by DatabaseService
     }
   }
 
@@ -95,7 +114,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
               controller: qtnController,
               labelText: 'New Quantity',
             ),
-            Btn(title: 'Update', onTap: () => update(), width: double.infinity),
+            Btn(title: 'Update', onTap: update, width: double.infinity),
           ],
         ),
       ),

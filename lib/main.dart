@@ -7,6 +7,7 @@ import './screens/all_input.dart';
 import './screens/all_output.dart';
 import './screens/storage.dart';
 import './screens/log_in.dart';
+import 'database/auth/auth_wrapper.dart';
 
 void main()async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -31,13 +32,14 @@ class TestApp extends StatelessWidget {
       title: 'Flutter SQLite Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
       routes: {
-        "/": (ctx) => LogIn(),
-        '/home': (ctx) => HomeScreen(),
-        '/add_items': (ctx) => AddItems(),
-        '/remove_items': (ctx) => RemoveItems(),
-        '/all_input': (ctx) => AllInput(),
-        '/all_output': (ctx) => AllOutput(),
-        '/storage': (ctx) => Storage(),
+        '/': (ctx) => AuthWrapper(child: HomeScreen()),
+        '/login':(ctx) => LogIn(),
+        '/add_items': (ctx) => AuthWrapper(child: AddItems()),
+        '/remove_items': (ctx) => AuthWrapper(child: RemoveItems()),
+        '/all_input': (ctx) => AuthWrapper(child: AllInput()),
+        '/all_output': (ctx) => AuthWrapper(child: AllOutput()),
+        '/storage': (ctx) => AuthWrapper(child: Storage()),
+        
       },
     );
   }

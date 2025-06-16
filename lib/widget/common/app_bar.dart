@@ -1,16 +1,20 @@
 import 'package:darttest/widget/common/btn.dart';
 import 'package:flutter/material.dart';
 import '../../hooks.dart';
+import '../../database/auth/log_in_out.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
+  final LogInOut _logInOut = LogInOut();
 
-  const CustomAppBar({
+  CustomAppBar({
     required this.title,
     this.actions,
     Key? key,
   }) : super(key: key);
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +36,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Btn(title: 'All Input',onTap: ()=>router(context,'/all_input')),
                   Btn(title: 'All Output',onTap: ()=>router(context,'/all_output')),
+                  Btn(title: 'Log Out',onTap: ()=>_logInOut.signOut(context)),
                 ],
               ),
               Row(

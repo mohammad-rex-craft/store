@@ -1,26 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../hooks.dart';
+import '../database/auth/log_in_out.dart';
 
 var primeColor = hexToColor('#03A9F4');
 
 class LogIn extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  
+  final LogInOut _logInOut = LogInOut();
   singUp(BuildContext context)async{
-    final supabase = await Supabase.instance.client.auth.signInWithPassword(
-      email: emailController.text,
-      password: passwordController.text,
-    );
-    if(supabase.user != null){
-      replaceRouter(context, '/home');
-    }else{
-      showDialog(context: context, builder: (context)=>AlertDialog(
-        title: Text('Error'),
-        content: Text('Invalid email or password'),
-      ));
-    }
+    _logInOut.signUp(context, emailController.text, passwordController.text);
   }
 
   LogIn({super.key});

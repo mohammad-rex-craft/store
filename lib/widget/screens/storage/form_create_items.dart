@@ -1,54 +1,92 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../hooks.dart';
-import '../../common/btn.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import '../../../database/database.dart';
 import '../../common/input.dart';
+import '../../common/btn.dart';
 
+class FormCreateItems extends StatefulWidget {
+  final VoidCallback onItemCreated;
 
-class FormCreateItems extends StatelessWidget {
+  const FormCreateItems({
+    Key? key,
+    required this.onItemCreated,
+  }) : super(key: key);
+
+  @override
+  State<FormCreateItems> createState() => _FormCreateItemsState();
+}
+
+class _FormCreateItemsState extends State<FormCreateItems> {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController boxController = TextEditingController();
-  final Function getItems;
-  final primeColor = hexToColor('#03A9F4');
+  final TextEditingController qtnController = TextEditingController();
+  final DatabaseService db = DatabaseService();
 
-   FormCreateItems({
-     required this.getItems,
-     super.key
-   });
+  Future<void> createItem() async {
+    if (nameController.text.isEmpty || qtnController.text.isEmpty) {
+      db.showAlert(
+        context,
+        title: "Warning",
+        message: "Please fill in all fields",
+        type: AlertType.warning,
+      );
+      return;
+    }
 
-
-   store() async {
     try {
-      await Supabase.instance.client.from('store').insert({
-        'item': nameController.text,
-        'qtn': 0,
-        'box': int.parse(boxController.text),
-      });
+      await db.create(
+        table: 'store',
+        data: {
+          'item': nameController.text,
+          'qtn': 0,
+          'box': int.parse(qtnController.text), 
+        },
+        context: context,
+        successMessage: "Item created successfully",
+        errorMessage: "Error creating item",
+      );
+      
       nameController.clear();
-      boxController.clear();
-      await getItems();
+      qtnController.clear();
+      widget.onItemCreated();
     } catch (e) {
-      print(e);
+      // Error is already handled by DatabaseService
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-            elevation: 8,
-            child: Padding(padding: EdgeInsets.all(15),
-            child: Column(
-              spacing: 16,
-              children: [
-                Text(
-                  'Add Items',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Input(controller: nameController, labelText: 'Item Name'),
-                Input(controller: boxController, labelText: 'In Box'),
-                Btn(title: 'Add', onTap: () => store(), width: double.infinity),
-              ],
-            ),)
-          );
+      elevation: 8,
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Create New Item",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Input(
+              controller: nameController,
+              labelText: 'Item Name',
+            ),
+            SizedBox(height: 16),
+            Input(
+              controller: qtnController,
+              labelText: 'Quantity',
+            ),
+            SizedBox(height: 16),
+            Btn(
+              title: 'Create',
+              onTap: createItem,
+              width: double.infinity,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
+
+
