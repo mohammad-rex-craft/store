@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import './screens/home.dart';
 import './screens/add_Items.dart';
 import './screens/remove_items.dart';
-import './screens/all_input.dart';
+import 'screens/all_inputs/all_input.dart';
+import 'screens/all_inputs/all_input_by_id.dart';
 import './screens/all_output.dart';
 import './screens/storage.dart';
 import './screens/log_in.dart';
@@ -39,7 +40,7 @@ class TestApp extends StatelessWidget {
         '/all_input': (ctx) => AuthWrapper(child: AllInput()),
         '/all_output': (ctx) => AuthWrapper(child: AllOutput()),
         '/storage': (ctx) => AuthWrapper(child: Storage()),
-        
+        '/all_input_by_id': (ctx) => AuthWrapper(child: AllInputById()),
       },
     );
   }

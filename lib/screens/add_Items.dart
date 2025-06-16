@@ -97,6 +97,7 @@ class _AddItemsState extends State<AddItems> {
         'type': selectedType,
         'noa': selectedType == 'Return' ? invoiceController.text : null,
         'items': items,
+        'items_ids': items.map((item) => item['id']).toList(),
       };
       
       await db.create(

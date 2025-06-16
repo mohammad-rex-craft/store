@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../hooks.dart';
+import '../../common/btn.dart';  
 
 class TableStorage extends StatelessWidget {
   final List<Map<String, dynamic>> data;
@@ -8,13 +10,13 @@ class TableStorage extends StatelessWidget {
   final Function(String) onDelete;
 
   const TableStorage({
-    Key? key,
+    super.key,
     required this.data,
     required this.sortAscending,
     required this.sortColumnIndex,
     required this.onSort,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,14 @@ class TableStorage extends StatelessWidget {
             rows: data.map((item) {
               return DataRow(
                 cells: [
-                  DataCell(Text(item['item'] ?? '')),
+                  DataCell(
+                    Btn(title: item['item'],
+                    height: 40,
+                    width: double.infinity,
+                    borderRadius: BorderRadius.circular(2),
+                     onTap: ()=>dinamecRouter(context,'/all_input_by_id',{'id': item['id'],'item': item['item']})
+                     ),
+                  ),
                   DataCell(Text(item['qtn']?.toString() ?? '0')),
                   DataCell(Text('${(item['qtn'] ~/ item['box'])}/${item['qtn'] % item['box']}')),
                   DataCell(

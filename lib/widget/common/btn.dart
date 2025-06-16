@@ -12,7 +12,7 @@ class Btn extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final BoxBorder? border;
   final List<BoxShadow>? shadow;
-
+  final Color textColor;
 
   const Btn({
     super.key, 
@@ -26,6 +26,7 @@ class Btn extends StatelessWidget {
     this.padding,
     this.border,
     this.shadow,
+    this.textColor = Colors.white,
   });
 
   @override
@@ -45,8 +46,8 @@ class Btn extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               title,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: textColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
