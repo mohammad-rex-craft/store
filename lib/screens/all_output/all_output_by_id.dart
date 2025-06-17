@@ -20,6 +20,7 @@ class AllOutputByIdState extends State<AllOutputById> {
   final TextEditingController searchController = TextEditingController();
   bool isSortedAscending = true;
   bool _isInitialized = false;
+  List<Map<String, dynamic>> store = [];
   // Pagination variables
   int currentPage = 0;
   final int pageSize = 10;
@@ -33,7 +34,24 @@ class AllOutputByIdState extends State<AllOutputById> {
       routeArgs =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       getOutputs();
+      getStore();
       _isInitialized = true;
+    }
+  }
+    Future<void> getStore() async {
+    try {
+      final response = await db.readAll(
+        table: 'store',
+        context: context,
+        errorMessage: "Network error occurred while fetching items",
+      );
+      if (response != null) {
+        setState(() {
+          store = List<Map<String, dynamic>>.from(response);
+        });
+      }
+    } catch (e) {
+      // Error is already handled by DatabaseService
     }
   }
 
@@ -180,7 +198,7 @@ class AllOutputByIdState extends State<AllOutputById> {
                         itemCount: filteredOutputs.length,
                         itemBuilder: (context, index) {
                           final item = filteredOutputs[index];
-                          return CardOutput(item: item);
+                          return CardOutput(item: item,store: store,onRefresh:getOutputs);
                         },
                       ),
           ),

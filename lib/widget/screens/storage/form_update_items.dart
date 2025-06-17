@@ -48,7 +48,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
     try {
       await db.update(
         table: 'store',
-        id: selectedItem!['id'].toString(),
+        id: selectedItem!['id'],
         data: {
           'item': nameController.text,
           'qtn': int.parse(qtnController.text),

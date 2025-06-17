@@ -21,9 +21,9 @@ void main()async {
   runApp(TestApp());
 }
 
-var colorText = Color.fromARGB(255, 1, 54, 103);
-var colorMain = Color.fromARGB(255, 31, 185, 185);
-var colorLowOpicety = Color.fromARGB(103, 1, 54, 103);
+const Color colorText = Color.fromARGB(255, 1, 54, 103);
+const Color colorMain = Color.fromARGB(255, 31, 185, 185);
+const Color colorLowOpacity = Color.fromARGB(103, 1, 54, 103);
 
 class TestApp extends StatelessWidget {
   const TestApp({super.key});
@@ -33,16 +33,16 @@ class TestApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter SQLite Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      routes: {
-        '/': (ctx) => AuthWrapper(child: HomeScreen()),
-        '/login':(ctx) => LogIn(),
-        '/add_items': (ctx) => AuthWrapper(child: AddItems()),
-        '/remove_items': (ctx) => AuthWrapper(child: RemoveItems()),
-        '/all_input': (ctx) => AuthWrapper(child: AllInput()),
-        '/all_output': (ctx) => AuthWrapper(child: AllOutput()),
-        '/storage': (ctx) => AuthWrapper(child: Storage()),
-        '/all_input_by_id': (ctx) => AuthWrapper(child: AllInputById()),
-        '/all_output_by_id': (ctx) => AuthWrapper(child: AllOutputById()),
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext ctx) => AuthWrapper(child: HomeScreen()),
+        '/login':(BuildContext ctx) => LogIn(),
+        '/add_items': (BuildContext ctx) => AuthWrapper(child: AddItems()),
+        '/remove_items': (BuildContext ctx) => AuthWrapper(child: RemoveItems()),
+        '/all_input': (BuildContext ctx) => AuthWrapper(child: AllInput()),
+        '/all_output': (BuildContext ctx) => AuthWrapper(child: AllOutput()),
+        '/storage': (BuildContext ctx) => AuthWrapper(child: Storage()),
+        '/all_input_by_id': (BuildContext ctx) => AuthWrapper(child: AllInputById()),
+        '/all_output_by_id': (BuildContext ctx) => AuthWrapper(child: AllOutputById()),
       },
     );
   }

@@ -121,7 +121,7 @@ class _AddItemsState extends State<AddItems> {
         for (var item in items) {
           await db.update(
             table: 'store',
-            id: item['id'].toString(),
+            id: item['id'],
             data: {
               'qtn':
                   allItems.firstWhere(

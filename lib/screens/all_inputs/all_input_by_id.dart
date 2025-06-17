@@ -20,8 +20,8 @@ class AllInputByIdState extends State<AllInputById> {
   final TextEditingController searchController = TextEditingController();
   bool isSortedAscending = true;
   bool _isInitialized = false;
+  List<Map<String, dynamic>> store = [];
 
-  // Pagination variables
   int currentPage = 0;
   final int pageSize = 10;
   bool isLoading = false;
@@ -36,9 +36,28 @@ class AllInputByIdState extends State<AllInputById> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
-      routeArgs = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      routeArgs =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       getInputs();
+      getStore();
       _isInitialized = true;
+    }
+  }
+
+  Future<void> getStore() async {
+    try {
+      final response = await db.readAll(
+        table: 'store',
+        context: context,
+        errorMessage: "Network error occurred while fetching items",
+      );
+      if (response != null) {
+        setState(() {
+          store = List<Map<String, dynamic>>.from(response);
+        });
+      }
+    } catch (e) {
+      // Error is already handled by DatabaseService
     }
   }
 
@@ -155,19 +174,19 @@ class AllInputByIdState extends State<AllInputById> {
             child: isLoading
                 ? Center(child: CircularProgressIndicator())
                 : filteredInputs.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No data available',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: filteredInputs.length,
-                        itemBuilder: (context, index) {
-                          final item = filteredInputs[index];
-                          return CardInputs(item: item);
-                        },
-                      ),
+                ? Center(
+                    child: Text(
+                      'No data available',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredInputs.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredInputs[index];
+                      return CardInputs(item: item, store: store,onRefresh:getInputs);
+                    },
+                  ),
           ),
           // Pagination buttons
           PaginationBtn(

@@ -14,12 +14,12 @@ class AllInput extends StatefulWidget {
 
 class AllInputState extends State<AllInput> {
   List<Map<String, dynamic>> allInputs = [];
+  List<Map<String, dynamic>> store = [];
   List<Map<String, dynamic>> filteredInputs = [];
   final DatabaseService db = DatabaseService();
   final TextEditingController searchController = TextEditingController();
   bool isSortedAscending = true;
 
-  // Pagination variables
   int currentPage = 0;
   final int pageSize = 10;
   bool isLoading = false;
@@ -28,7 +28,24 @@ class AllInputState extends State<AllInput> {
   @override
   void initState() {
     super.initState();
+    getStore();
     getInputs();
+  }
+  Future<void> getStore() async {
+    try {
+      final response = await db.readAll(
+        table: 'store',
+        context: context,
+        errorMessage: "Network error occurred while fetching items",
+      );
+      if (response != null) {
+        setState(() {
+          store = List<Map<String, dynamic>>.from(response);
+        });
+      }
+    } catch (e) {
+      // Error is already handled by DatabaseService
+    }
   }
 
   Future<void> getInputs() async {
@@ -60,8 +77,8 @@ class AllInputState extends State<AllInput> {
     } catch (e) {
       setState(() {
         isLoading = false;
-      });
-      // Error is already handled by DatabaseService
+        });
+
     }
   }
 
@@ -115,8 +132,6 @@ class AllInputState extends State<AllInput> {
         context: context,
         errorMessage: "Error searching by invoice number",
       );
-
-      // Combine and remove duplicates
       final combinedResults = [...results, ...noaResults];
       final uniqueResults = combinedResults.toSet().toList();
 
@@ -124,7 +139,7 @@ class AllInputState extends State<AllInput> {
         filteredInputs = uniqueResults;
       });
     } catch (e) {
-      // Error is already handled by DatabaseService
+      print(e);
     }
   }
 
@@ -153,11 +168,10 @@ class AllInputState extends State<AllInput> {
                         itemCount: filteredInputs.length,
                         itemBuilder: (context, index) {
                           final item = filteredInputs[index];
-                          return CardInputs(item: item);
+                          return CardInputs(item: item, store: store,onRefresh:getInputs);
                         },
                       ),
           ),
-          // Pagination buttons
           PaginationBtn(
             currentPage: currentPage,
             hasMoreData: hasMoreData,

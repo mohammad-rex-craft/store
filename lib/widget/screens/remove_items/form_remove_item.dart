@@ -8,10 +8,8 @@ class FormRemoveItem extends StatelessWidget {
   final TextEditingController invoiceController;
   final TextEditingController clientController;
   final TextEditingController senderController;
-  final String? selectedType;
   final String? selectedItem;
   final List<Map<String, dynamic>> allItems;
-  final Function(String?) onTypeChanged;
   final Function(String?) onItemChanged;
   final VoidCallback onAdd;
 
@@ -22,10 +20,8 @@ class FormRemoveItem extends StatelessWidget {
     required this.invoiceController,
     required this.clientController,
     required this.senderController,
-    required this.selectedType,
     required this.selectedItem,
     required this.allItems,
-    required this.onTypeChanged,
     required this.onItemChanged,
     required this.onAdd,
   });

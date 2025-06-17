@@ -148,7 +148,7 @@ class DatabaseService {
   // Update a record
   Future<Map<String, dynamic>> update({
     required String table,
-    required String id,
+    required int id,
     required Map<String, dynamic> data,
     required BuildContext context,
     String? successMessage,
@@ -184,7 +184,7 @@ class DatabaseService {
   // Delete a record
   Future<void> delete({
     required String table,
-    required String id,
+    required int id,
     required BuildContext context,
     String? successMessage,
     String? errorMessage,

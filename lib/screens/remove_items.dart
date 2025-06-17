@@ -86,8 +86,7 @@ class _RemoveItemsState extends State<RemoveItems> {
   }
 
   Future<void> submitData() async {
-    if (selectedType == null ||
-        dateController.text ==''||
+    if (dateController.text ==''||
         clientController.text ==''||
         senderController.text ==''||
         invoiceController.text =='') {
@@ -127,7 +126,7 @@ class _RemoveItemsState extends State<RemoveItems> {
       for (var item in items) {
         await db.update(
           table: 'store',
-          id: item['id'].toString(),
+          id: item['id'],
           data: {
             'qtn':
                 allItems.firstWhere(
@@ -180,14 +179,9 @@ class _RemoveItemsState extends State<RemoveItems> {
                   dateController: dateController,
                   qtnController: qtnController,
                   invoiceController: invoiceController,
-                  selectedType: selectedType,
                   selectedItem: selectedItem,
                   allItems: allItems,
-                  onTypeChanged: (value) {
-                    setState(() {
-                      selectedType = value;
-                    });
-                  },
+
                   onItemChanged: (value) {
                     setState(() {
                       selectedItem = value;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../hooks.dart';
 import '../widget/screens/storage/table_storage.dart';
 import '../widget/screens/storage/form_create_items.dart';
@@ -71,23 +70,34 @@ class _StorageState extends State<Storage> {
     setState(() {
       sortColumnIndex = columnIndex;
       sortAscending = ascending;
+
+      data.sort((a, b) {
+        var aValue = a.values.elementAt(columnIndex);
+        var bValue = b.values.elementAt(columnIndex);
+
+        // Handle numeric values
+        if (aValue is num && bValue is num) {
+          return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
+        }
+
+        // Handle string values
+        if (aValue is String && bValue is String) {
+          return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
+        }
+
+        // Handle null values
+        if (aValue == null && bValue == null) return 0;
+        if (aValue == null) return ascending ? -1 : 1;
+        if (bValue == null) return ascending ? 1 : -1;
+
+        // Default comparison
+        return ascending ? aValue.toString().compareTo(bValue.toString()) 
+                        : bValue.toString().compareTo(aValue.toString());
+      });
     });
   }
 
-  Future<void> deleteItem(String id) async {
-    try {
-      await db.delete(
-        table: 'store',
-        id: id,
-        context: context,
-        successMessage: "Item deleted successfully",
-        errorMessage: "Error deleting item",
-      );
-      getItems();
-    } catch (e) {
-      // Error is already handled by DatabaseService
-    }
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +125,7 @@ class _StorageState extends State<Storage> {
               sortAscending: sortAscending,
               sortColumnIndex: sortColumnIndex,
               onSort: onSort,
-              onDelete: deleteItem,
+              onRefresh:getItems
             ),
           ],
         ),
