@@ -6,11 +6,19 @@ import 'package:flutter/material.dart';
 class Input extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
-  const Input({
+  final String? defaultValue;
+  final TextInputType? keyboardType;
+  Input({
     super.key,
     required this.controller,
     required this.labelText,
-  });
+    this.defaultValue,
+    this.keyboardType,
+  }) {
+    if (defaultValue != null) {
+      controller.text = defaultValue!;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -21,6 +29,7 @@ class Input extends StatelessWidget {
               ),
             ),
             controller: controller,
+            keyboardType: keyboardType,
           );
   }
 }

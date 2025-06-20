@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../hooks.dart';
 
-var primeColor = hexToColor('#03A9F4');
+const primeColor = Color(0xFF03A9F4);
 
 class Bar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final Color color;  
   
   const Bar({
     required this.title,
+    this.color = primeColor,
     super.key,
   });
 
@@ -15,7 +16,7 @@ class Bar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
         title: Text(title,style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
-        backgroundColor: primeColor,
+        backgroundColor: color,
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
       );

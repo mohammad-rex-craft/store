@@ -176,7 +176,7 @@ class AllOutputByIdState extends State<AllOutputById> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'Output ${routeArgs['item']}'),
+      appBar: Bar(title: 'Output ${routeArgs['item']}',color: Colors.red),
       body: Column(
         children: [
           SearchSortBar(

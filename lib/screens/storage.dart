@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../hooks.dart';
+import '../widget/common/btn.dart';
+import '../utility/hooks.dart';
 import '../widget/screens/storage/table_storage.dart';
 import '../widget/screens/storage/form_create_items.dart';
 import '../widget/screens/storage/form_update_items.dart';
@@ -97,7 +98,20 @@ class _StorageState extends State<Storage> {
     });
   }
 
-  
+  void sendToInventory(context) async {
+    await db.create(
+      table: 'inventory',
+      data: {
+        'data': data,
+        'date': DateTime.now().toString(),
+      },
+      context: context,
+      successMessage: "Inventory created successfully",
+      errorMessage: "Error creating inventory",
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -125,8 +139,11 @@ class _StorageState extends State<Storage> {
               sortAscending: sortAscending,
               sortColumnIndex: sortColumnIndex,
               onSort: onSort,
-              onRefresh:getItems
+              onRefresh:getItems,
+              type: 'store'
             ),
+            SizedBox(height: 16),
+            Btn(title: 'Inventory',onTap: ()=>sendToInventory(context)),
           ],
         ),
       ),

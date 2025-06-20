@@ -1,6 +1,8 @@
+import 'package:darttest/widget/common/date_picker.dart';
 import 'package:flutter/material.dart';
 import '../../common/btn.dart';
 import '../../common/input.dart';
+import '../../common/date_picker.dart';
 
 class FormAddItems extends StatelessWidget {
   final TextEditingController dateController;
@@ -65,38 +67,7 @@ class FormAddItems extends StatelessWidget {
                 labelText: 'Noa *',
               ),
             ],
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Date *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: () async {
-                    final DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2100),
-                    );
-                    if (picked != null) {
-                      dateController.text =
-                          "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-                    }
-                  },
-                ),
-              ),
-              controller: dateController,
-              readOnly: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select a date';
-                }
-                return null;
-              },
-            ),
-
+            DatePicker(controller:dateController),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: 'Item *',

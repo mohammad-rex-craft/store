@@ -1,3 +1,4 @@
+import 'package:darttest/widget/common/date_picker.dart';
 import 'package:flutter/material.dart';
 import '../../common/btn.dart';
 import '../../common/input.dart';
@@ -55,33 +56,7 @@ class FormRemoveItem extends StatelessWidget {
               labelText: 'Sender *',
               
             ),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Date *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: () async {
-                    final DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2100),
-                    );
-                    if (picked != null) {
-                      dateController.text =
-                          "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-                    }
-                  },
-                ),
-              ),
-              controller: dateController,
-              readOnly: true,
-              
-            ),
-
+            DatePicker(controller: dateController),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: 'Item *',

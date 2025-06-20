@@ -168,7 +168,7 @@ class _RemoveItemsState extends State<RemoveItems> {
     return Stack(
       children: [
         Scaffold(
-          appBar: Bar(title: 'Remove Items'),
+          appBar: Bar(title: 'Remove Items',color: Colors.red),
           body: SingleChildScrollView(
             padding: EdgeInsets.all(16),
             child: Column(

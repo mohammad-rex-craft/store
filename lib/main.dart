@@ -1,3 +1,6 @@
+import 'package:darttest/screens/edit.dart';
+import 'package:darttest/screens/inventory/inventory.dart';
+import 'package:darttest/screens/inventory/inventory_by_id.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import './screens/home.dart';
@@ -43,6 +46,9 @@ class TestApp extends StatelessWidget {
         '/storage': (BuildContext ctx) => AuthWrapper(child: Storage()),
         '/all_input_by_id': (BuildContext ctx) => AuthWrapper(child: AllInputById()),
         '/all_output_by_id': (BuildContext ctx) => AuthWrapper(child: AllOutputById()),
+        '/edit':(BuildContext ctx) => AuthWrapper(child: Edit()),
+        '/inventory':(BuildContext ctx) => AuthWrapper(child: Inventory()),
+        '/inventory_by_id':(BuildContext ctx) => AuthWrapper(child: InventoryById()),
       },
     );
   }

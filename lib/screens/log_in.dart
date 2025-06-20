@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../hooks.dart';
+import '../utility/hooks.dart';
 import '../database/auth/log_in_out.dart';
 
 var primeColor = hexToColor('#03A9F4');

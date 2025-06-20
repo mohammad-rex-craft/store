@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -84,7 +85,7 @@ class DatabaseService {
     try {
       final response = await _supabase
           .from(table)
-          .select()
+          .select('*')
           .eq('id', id)
           .eq('warehouse_id', user!.id)
           .single();
@@ -234,6 +235,51 @@ class DatabaseService {
         showAlert(context, title: "Error", message: errorMessage);
       }
       throw Exception('Error searching records: $e');
+    }
+  }
+
+Future<Map<String, dynamic>> rpc(
+    String functionName, {
+    required Map<String, dynamic> params,
+    required BuildContext context,
+  }) async {
+    try {
+      // أضف معرف المستودع تلقائيًا إلى المعلمات
+      // للمحافظة على التناسق مع باقي الدوال في هذه الخدمة
+      final fullParams = {
+        ...params,
+        'p_warehouse_id': user!.id,
+      };
+
+      // تحويل المعلمات بشكل صحيح
+      final convertedParams = fullParams.map((key, value) {
+        if (value is List || value is Map) {
+          return MapEntry(key, jsonEncode(value));
+        }
+        return MapEntry(key, value);
+      });
+
+      print('Calling RPC $functionName with params: $convertedParams');
+
+      // استدعاء الدالة بدون .eq، حيث أن الفلترة تتم داخل الدالة نفسها
+      final response = await _supabase.rpc(
+        functionName,
+        params: convertedParams,
+      );
+
+      // تحويل الاستجابة إلى Map
+      final responseData = response is Map
+          ? Map<String, dynamic>.from(response)
+          : <String, dynamic>{};
+
+      print('RPC Response: $responseData');
+      return responseData;
+    } catch (e) {
+      print('RPC Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+      return {'error': e.toString()};
     }
   }
 

@@ -33,7 +33,7 @@ class AllOutputState extends State<AllOutput> {
     getStore();
   }
 
-     Future<void> getStore() async {
+  Future<void> getStore() async {
     try {
       final response = await db.readAll(
         table: 'store',
@@ -151,7 +151,12 @@ class AllOutputState extends State<AllOutput> {
         errorMessage: "Error searching by sender",
       );
 
-      final combinedResults = [...results, ...noaResults, ...clientResults, ...senderResults];
+      final combinedResults = [
+        ...results,
+        ...noaResults,
+        ...clientResults,
+        ...senderResults,
+      ];
       final uniqueResults = combinedResults.toSet().toList();
 
       setState(() {
@@ -165,7 +170,7 @@ class AllOutputState extends State<AllOutput> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'All Output'),
+      appBar: Bar(title: 'All Output',color: Colors.red),
       body: Column(
         children: [
           SearchSortBar(
@@ -177,19 +182,23 @@ class AllOutputState extends State<AllOutput> {
             child: isLoading
                 ? Center(child: CircularProgressIndicator())
                 : filteredOutputs.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No data available',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: filteredOutputs.length,
-                        itemBuilder: (context, index) {
-                          final item = filteredOutputs[index];
-                          return CardOutput(item: item,store: store,onRefresh:getOutputs);
-                        },
-                      ),
+                ? Center(
+                    child: Text(
+                      'No data available',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredOutputs.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredOutputs[index];
+                      return CardOutput(
+                        item: item,
+                        store: store,
+                        onRefresh: getOutputs,
+                      );
+                    },
+                  ),
           ),
           // Pagination buttons
           PaginationBtn(

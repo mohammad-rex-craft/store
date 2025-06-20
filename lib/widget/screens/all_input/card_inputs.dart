@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import "../../../database/database.dart";
+import '../../../utility/hooks.dart';
 
 class CardInputs extends StatelessWidget {
   final Map<String, dynamic> item;
   final DatabaseService db = DatabaseService();
   final List<Map<String, dynamic>> store;
-  final onRefresh;
+  final Function onRefresh;
 
   CardInputs({
     required this.item,
@@ -14,56 +15,67 @@ class CardInputs extends StatelessWidget {
   });
 
   Future<void> onDelete(int id, BuildContext context) async {
-    bool? confirm = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete'),
-          content: Text('Are You Sure ?'),
-          actions: [
-            TextButton(
-              child: Text('no'),
-              onPressed: () => Navigator.of(context).pop(false),
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    try {
+      bool? confirm = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Delete Production'),
+            content: const Text(
+              'This will delete the production record.',
             ),
-            TextButton(
-              child: Text('yas', style: TextStyle(color: Colors.red)),
-              onPressed: () => Navigator.of(context).pop(true),
-            ),
-          ],
-        );
-      },
-    );
-    if (confirm == true) {
-      final items = item['items'] as List;
-      print(store);
-      items.forEach((t) {
-        store.forEach((e) {
-          if (e['id'] == t['id']) {
-            db.update(
-              table: 'store',
-              id: e['id'],
-              data: {'qtn': e['qtn'] - t['qtn']},
-              context: context,
-              successMessage: "oreder deleted successfully",
-              errorMessage: "Error deleting item",
-            );
-          }
-        });
-      });
-      await db.delete(table: 'inputs', id: id, context: context);
+            actions: [
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () => navigator.pop(false),
+              ),
+              TextButton(
+                child: const Text(
+                  'Continue',
+                  style: TextStyle(color: Colors.red),
+                ),
+                onPressed: () => navigator.pop(true),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (confirm != true) return;
+
+      final result = await db.rpc(
+        'delete_input',
+        params: {'p_id': id},
+        context: context,
+      );
+
+      if (result.containsKey('error')) {
+        throw result['error'] ?? 'Failed to delete production';
+      }
+
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(content: Text('Production deleted and Remove deducted from the store')),
+      );
+
       onRefresh();
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       elevation: 8,
-
       color: item['noa'] != null ? Colors.red[200] : null,
       child: Padding(
-        padding: EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -72,36 +84,44 @@ class CardInputs extends StatelessWidget {
               children: [
                 Text(
                   '${item['date'] ?? ''}',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 IconButton(
                   padding: EdgeInsets.zero,
-                  icon: Icon(Icons.edit, color: Colors.blue, size: 25),
-                  onPressed: () => {},
+                  icon: const Icon(Icons.edit, color: Colors.blue, size: 25),
+                  onPressed: () =>
+                      dinamecRouter(context, '/edit', {'items': item, 'type': 'inputs'}),
                 ),
-
                 Text(
                   '${item['noa'] ?? ''}',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 IconButton(
                   padding: EdgeInsets.zero,
-                  icon: Icon(Icons.delete, color: Colors.red, size: 25),
+                  icon: const Icon(Icons.delete, color: Colors.red, size: 25),
                   onPressed: () => onDelete(item['id'], context),
                 ),
               ],
             ),
-            Divider(),
-
+            const Divider(),
             Table(
-              columnWidths: {0: FlexColumnWidth(3), 1: FlexColumnWidth(1)},
+              columnWidths: const {
+                0: FlexColumnWidth(3),
+                1: FlexColumnWidth(1),
+              },
               children: [
                 TableRow(
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  children: [
+                  children: const [
                     Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
@@ -122,11 +142,11 @@ class CardInputs extends StatelessWidget {
                   return TableRow(
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(subItem['item']?.toString() ?? ''),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(subItem['qtn']?.toString() ?? ''),
                       ),
                     ],

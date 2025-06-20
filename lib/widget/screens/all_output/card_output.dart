@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../database/database.dart';
+import '../../../utility/hooks.dart';
 
 class CardOutput extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -14,43 +15,58 @@ class CardOutput extends StatelessWidget {
   });
 
   Future<void> onDelete(int id, BuildContext context) async {
-    bool? confirm = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete'),
-          content: Text('Are You Sure ?'),
-          actions: [
-            TextButton(
-              child: Text('no'),
-              onPressed: () => Navigator.of(context).pop(false),
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    try {
+      // عرض تأكيد الحذف
+      bool? confirm = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Delete Order ?'),
+            content: const Text(
+              'This will delete the order record.',
             ),
-            TextButton(
-              child: Text('yas', style: TextStyle(color: Colors.red)),
-              onPressed: () => Navigator.of(context).pop(true),
-            ),
-          ],
-        );
-      },
-    );
-    if (confirm == true) {
-      final items = item['items'] as List;
-      items.forEach((t) {
-        store.forEach((e) {
-          if (e['id'] == t['id']) {
-            db.update(
-              table: 'store',
-              id: e['id'],
-              data: {'qtn': e['qtn'] + t['qtn']},
-              context: context,
-              successMessage: "oreder deleted successfully",
-              errorMessage: "Error deleting item",
-            );
-          }
-        });
-      });
-      await db.delete(table: 'orders', id: id, context: context);
+            actions: [
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () => navigator.pop(false),
+              ),
+              TextButton(
+                child: const Text('Continue', style: TextStyle(color: Colors.red)),
+                onPressed: () => navigator.pop(true),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (confirm != true) return;
+
+      final result = await db.rpc(
+        'delete_order',
+        params: {'p_id': id},
+        context: context,
+      );
+
+      if (result.containsKey('error')) {
+        throw result['error'] ?? 'Failed to delete order';
+      }
+
+      // عرض رسالة نجاح
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text('Order deleted and quantities deducted from the store'),
+        ),
+      );
+
+      // تحديث الواجهة
       onRefresh();
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error : ${e.toString()}')),
+      );
     }
   }
 
@@ -89,7 +105,8 @@ class CardOutput extends StatelessWidget {
                 IconButton(
                   padding: EdgeInsets.zero,
                   icon: Icon(Icons.edit, color: Colors.blue, size: 25),
-                  onPressed: () => {},
+                  onPressed: () =>
+                      dinamecRouter(context, '/edit', {'items': item, 'type': 'orders'}),
                 ),
 
                 Text(

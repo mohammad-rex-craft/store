@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widget/common/btn.dart';
-import '../hooks.dart';
+import '../utility/hooks.dart';
 import '../widget/common/app_bar.dart';
 
 var primeColor = hexToColor('#03A9F4');
