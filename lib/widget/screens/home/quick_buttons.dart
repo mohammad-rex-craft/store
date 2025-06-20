@@ -87,9 +87,32 @@ class QuickButtons extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                LogInOut().signOut(context);
+                
+                // عرض رسالة تحميل
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Text('جاري تسجيل الخروج...'),
+                      ],
+                    ),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+                
+                // تسجيل الخروج
+                await LogInOut().signOut(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
