@@ -113,7 +113,7 @@ class _StorageState extends State<Storage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'Store'),
+      appBar: Bar(title: 'Store',color: Colors.purple),
       backgroundColor: Color(0xFFF5F5F5),
       body: Container(
         decoration: BoxDecoration(

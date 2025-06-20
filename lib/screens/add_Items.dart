@@ -162,7 +162,7 @@ class _AddItemsState extends State<AddItems> {
     return Stack(
       children: [
         Scaffold(
-          appBar: Bar(title: 'Add Items'),
+          appBar: Bar(title: 'Add Items',color: Colors.green),
           body: SingleChildScrollView(
             padding: EdgeInsets.all(16),
             child: Column(
