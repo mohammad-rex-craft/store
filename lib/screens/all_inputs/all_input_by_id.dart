@@ -162,7 +162,7 @@ class AllInputByIdState extends State<AllInputById> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'Input ${routeArgs['item']}'),
+      appBar: Bar(title: 'Input ${routeArgs['item']}',color: Colors.teal),
       body: Column(
         children: [
           SearchSortBar(

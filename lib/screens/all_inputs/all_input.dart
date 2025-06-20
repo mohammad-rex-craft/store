@@ -146,7 +146,7 @@ class AllInputState extends State<AllInput> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'All Input'),
+      appBar: Bar(title: 'All Input',color: Colors.teal),
       body: Column(
         children: [
           SearchSortBar(

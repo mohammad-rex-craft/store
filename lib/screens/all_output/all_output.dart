@@ -170,7 +170,7 @@ class AllOutputState extends State<AllOutput> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'All Output',color: Colors.red),
+      appBar: Bar(title: 'All Output',color: Colors.orange),
       body: Column(
         children: [
           SearchSortBar(
