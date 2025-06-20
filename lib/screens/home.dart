@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widget/common/btn.dart';
 import '../utility/hooks.dart';
-import '../widget/common/app_bar.dart';
+import '../widget/common/bar.dart';
+import '../widget/screens/home/index.dart';
 
 var primeColor = hexToColor('#03A9F4');
 
@@ -10,35 +10,35 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Home'),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-       
-          Padding(
+      appBar: Bar(title: 'Home', color: hexToColor("#303F9F")),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.blue.shade50,
+              Colors.white,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
-              spacing: 20,
               children: [
-                Btn(
-                  title: 'Add Items',
-                  color: hexToColor('#303F9F'),
-                  height: 50,
-                  width: double.infinity
-                  ,onTap: ()=>router(context,'/add_items')
-                ),
-                Btn(
-                  title: 'Remove Items',
-                  color: hexToColor('#303F9F'),
-                  height: 50,
-                  width: double.infinity,
-                  onTap: ()=>router(context,'/remove_items')
-                ),
+                WelcomeCard(),         
+                SizedBox(height: 30),  
+                Expanded(
+                  child: ActionCards(),
+                ), 
+                SizedBox(height: 20), 
+                QuickButtons(),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
-}
+} 

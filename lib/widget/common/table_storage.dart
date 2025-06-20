@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../utility/hooks.dart';
-import '../../common/btn.dart';
-import '../../../database/database.dart';
+import '../../utility/hooks.dart';
+import 'btn.dart';
+import '../../database/database.dart';
 
 class TableStorage extends StatelessWidget {
   final List<Map<String, dynamic>> data;

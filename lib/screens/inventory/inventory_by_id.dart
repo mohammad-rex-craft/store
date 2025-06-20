@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../database/database.dart';
 import '../../widget/common/bar.dart';
-import '../../widget/screens/storage/table_storage.dart';
+import '../../widget/common/table_storage.dart';
 import 'dart:convert';
 
 class InventoryById extends StatefulWidget {

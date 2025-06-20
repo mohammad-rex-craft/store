@@ -355,4 +355,201 @@ Future<Map<String, dynamic>> rpc(
       throw Exception('Error signing out: $e');
     }
   }
+
+  // Test method to check database data
+  Future<void> testDatabaseData(BuildContext context) async {
+    try {
+      print('=== Testing Database Data ===');
+      print('Current user ID: ${user!.id}');
+      
+      // Check orders
+      final ordersResponse = await readAll(
+        table: 'orders',
+        context: context,
+        errorMessage: "Error loading orders",
+      );
+      print('Orders count: ${ordersResponse?.length ?? 0}');
+      
+      if (ordersResponse != null && ordersResponse.isNotEmpty) {
+        print('First order: ${ordersResponse.first}');
+        
+        // Test direct SQL query
+        print('=== Testing Direct SQL ===');
+        final testQuery = await _supabase
+            .from('orders')
+            .select('items')
+            .eq('warehouse_id', user!.id)
+            .limit(1);
+        print('Direct query result: $testQuery');
+        
+        if (testQuery.isNotEmpty) {
+          final items = testQuery.first['items'];
+          print('Items from first order: $items');
+          if (items is List && items.isNotEmpty) {
+            print('First item: ${items.first}');
+            print('Item name: ${items.first['item']}');
+          }
+        }
+      }
+      
+      // Check store items
+      final storeResponse = await readAll(
+        table: 'store',
+        context: context,
+        errorMessage: "Error loading store",
+      );
+      print('Store items count: ${storeResponse?.length ?? 0}');
+      
+      if (storeResponse != null && storeResponse.isNotEmpty) {
+        print('First store item: ${storeResponse.first}');
+      }
+      
+      print('=== End Test ===');
+    } catch (e) {
+      print('Test error: $e');
+    }
+  }
+
+  // Get top ordered items with optimized SQL
+  Future<List<Map<String, dynamic>>> getTopOrderedItems({
+    required BuildContext context,
+    int limit = 6,
+    String? errorMessage,
+  }) async {
+    try {
+      print('Calling get_top_ordered_items with warehouse_id: ${user!.id}, limit: $limit');
+      
+      // Call RPC function directly to avoid parameter conflicts
+      final response = await _supabase.rpc(
+        'get_top_ordered_items',
+        params: {
+          'p_warehouse_id': user!.id,
+          'p_limit': limit,
+        },
+      );
+
+      print('RPC Response: $response');
+
+      if (response == null) {
+        throw Exception('No response from RPC function');
+      }
+
+      // Parse the response
+      List<Map<String, dynamic>> items = [];
+      if (response is Map<String, dynamic>) {
+        if (response.containsKey('error')) {
+          throw Exception(response['error']);
+        }
+        
+        if (response.containsKey('data')) {
+          final data = response['data'];
+          if (data is List) {
+            items = data.map((item) => Map<String, dynamic>.from(item)).toList();
+          }
+        }
+      }
+
+      print('Parsed items: $items');
+      return items;
+    } catch (e) {
+      print('RPC failed, falling back to frontend processing: $e');
+      
+      // Fallback to frontend processing if RPC fails
+      try {
+        return await _getTopOrderedItemsFallback(context, limit);
+      } catch (fallbackError) {
+        print('Fallback also failed: $fallbackError');
+        if (errorMessage != null) {
+          showAlert(context, title: "Error", message: errorMessage);
+        }
+        throw Exception('Error getting top ordered items: $fallbackError');
+      }
+    }
+  }
+
+  // Fallback method using frontend processing
+  Future<List<Map<String, dynamic>>> _getTopOrderedItemsFallback(
+    BuildContext context,
+    int limit,
+  ) async {
+    print('Starting fallback method with warehouse_id: ${user!.id}');
+    
+    // Get all orders
+    final ordersResponse = await readAll(
+      table: 'orders',
+      context: context,
+      errorMessage: "Error loading orders",
+    );
+
+    print('Orders response: $ordersResponse');
+
+    if (ordersResponse == null || ordersResponse.isEmpty) {
+      print('No orders found in database');
+      return [];
+    }
+
+    final orders = List<Map<String, dynamic>>.from(ordersResponse);
+    print('Found ${orders.length} orders');
+    
+    // Get store items for current quantities
+    final storeResponse = await readAll(
+      table: 'store',
+      context: context,
+      errorMessage: "Error loading store",
+    );
+
+    Map<String, int> currentQuantities = {};
+    if (storeResponse != null) {
+      for (var item in storeResponse) {
+        currentQuantities[item['item']] = item['qtn'] ?? 0;
+      }
+    }
+    
+    // Count item frequencies
+    Map<String, int> itemFrequency = {};
+    
+    for (var order in orders) {
+      print('Processing order: ${order['id']}');
+      print('Order items: ${order['items']}');
+      
+      List<dynamic> items = order['items'] ?? [];
+      print('Items array length: ${items.length}');
+      
+      for (var item in items) {
+        print('Processing item: $item');
+        String itemName = item['item'] ?? '';
+        print('Item name: $itemName');
+        
+        if (itemName.isNotEmpty) {
+          itemFrequency[itemName] = (itemFrequency[itemName] ?? 0) + 1;
+        }
+      }
+    }
+
+    print('Item frequency map: $itemFrequency');
+
+    // Sort by frequency and get top items
+    List<MapEntry<String, int>> sortedItems = itemFrequency.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    print('Sorted items: $sortedItems');
+
+    // Create top items list
+    List<Map<String, dynamic>> topItemsList = [];
+    for (int i = 0; i < limit && i < sortedItems.length; i++) {
+      String itemName = sortedItems[i].key;
+      int frequency = sortedItems[i].value;
+      int currentQty = currentQuantities[itemName] ?? 0;
+      
+      topItemsList.add({
+        'name': itemName,
+        'frequency': frequency,
+        'totalOrdered': frequency,
+        'currentQty': currentQty,
+      });
+    }
+
+    print('Final top items list: $topItemsList');
+    return topItemsList;
+  }
 }

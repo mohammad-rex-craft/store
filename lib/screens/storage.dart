@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widget/common/btn.dart';
 import '../utility/hooks.dart';
-import '../widget/screens/storage/table_storage.dart';
+import '../widget/common/table_storage.dart';
 import '../widget/screens/storage/form_create_items.dart';
 import '../widget/screens/storage/form_update_items.dart';
 import '../widget/common/bar.dart';
