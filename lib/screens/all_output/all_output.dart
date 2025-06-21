@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../widget/common/bar.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../database/database.dart';
 import '../../widget/screens/all_output/card_output.dart';
 import '../../widget/common/pagination_btn.dart';
 import '../../widget/common/search_sort_bar.dart';
+import '../../utility/theme.dart';
 
 class AllOutput extends StatefulWidget {
   const AllOutput({super.key});
@@ -170,45 +170,171 @@ class AllOutputState extends State<AllOutput> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'All Output',color: Colors.orange),
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: Bar(title: 'All Output', color: AppTheme.colorWarning),
       body: Column(
         children: [
-          SearchSortBar(
-            searchController: searchController,
-            filterData: filterData,
-            sortDataByDate: sortDataByDate,
-          ),
-          Expanded(
-            child: isLoading
-                ? Center(child: CircularProgressIndicator())
-                : filteredOutputs.isEmpty
-                ? Center(
-                    child: Text(
-                      'No data available',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: filteredOutputs.length,
-                    itemBuilder: (context, index) {
-                      final item = filteredOutputs[index];
-                      return CardOutput(
-                        item: item,
-                        store: store,
-                        onRefresh: getOutputs,
-                      );
-                    },
+          // Header Section - Compact
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.colorWarning.withOpacity(0.1),
+                  AppTheme.colorWarning.withOpacity(0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.colorWarning,
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  child: Icon(
+                    Icons.output,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'All Outputs',
+                        style: AppTheme.titleStyle.copyWith(
+                          color: AppTheme.colorWarning,
+                        ),
+                      ),
+                      Text(
+                        '${filteredOutputs.length} records • Page ${currentPage + 1}',
+                        style: AppTheme.captionStyle,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          // Pagination buttons
-          PaginationBtn(
-            currentPage: currentPage,
-            hasMoreData: hasMoreData,
-            previousPage: previousPage,
-            nextPage: nextPage,
+          
+          // Search and Sort Section - Compact
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: AppTheme.cardDecoration,
+            child: SearchSortBar(
+              searchController: searchController,
+              filterData: filterData,
+              sortDataByDate: sortDataByDate,
+            ),
+          ),
+          
+          // Content Section - Maximized
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: isLoading
+                  ? _buildLoadingState()
+                  : filteredOutputs.isEmpty
+                      ? _buildEmptyState()
+                      : _buildContentList(),
+            ),
+          ),
+          
+          // Pagination Section - Compact
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: AppTheme.cardDecoration,
+            child: PaginationBtn(
+              currentPage: currentPage,
+              hasMoreData: hasMoreData,
+              previousPage: previousPage,
+              nextPage: nextPage,
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorWarning),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Loading outputs...',
+            style: AppTheme.bodyStyle.copyWith(
+              color: AppTheme.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppTheme.colorWarning.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.inbox_outlined,
+              size: 64,
+              color: AppTheme.colorWarning,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No outputs found',
+            style: AppTheme.titleStyle.copyWith(
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Try adjusting your search criteria',
+            style: AppTheme.captionStyle,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContentList() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: filteredOutputs.length,
+      itemBuilder: (context, index) {
+        final item = filteredOutputs[index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: CardOutput(
+            item: item,
+            store: store,
+            onRefresh: getOutputs,
+          ),
+        );
+      },
     );
   }
 }
