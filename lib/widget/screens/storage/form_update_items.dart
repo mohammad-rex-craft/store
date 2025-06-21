@@ -65,7 +65,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
       });
       widget.onItemUpdated();
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -76,7 +76,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
+          
           Container(
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
@@ -108,7 +108,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
           ),
           SizedBox(height: 20),
           
-          // Form Fields
+          
           Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -118,7 +118,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
             ),
             child: Column(
               children: [
-                // Dropdown
+                
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,

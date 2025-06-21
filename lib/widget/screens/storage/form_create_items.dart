@@ -48,7 +48,7 @@ class _FormCreateItemsState extends State<FormCreateItems> {
       qtnController.clear();
       widget.onItemCreated();
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -59,7 +59,7 @@ class _FormCreateItemsState extends State<FormCreateItems> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
+          
           Container(
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
@@ -91,7 +91,7 @@ class _FormCreateItemsState extends State<FormCreateItems> {
           ),
           SizedBox(height: 20),
           
-          // Form Fields
+          
           Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(

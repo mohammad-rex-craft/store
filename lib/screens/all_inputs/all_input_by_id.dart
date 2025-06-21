@@ -57,7 +57,7 @@ class AllInputByIdState extends State<AllInputById> {
         });
       }
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -92,7 +92,7 @@ class AllInputByIdState extends State<AllInputById> {
       setState(() {
         isLoading = false;
       });
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -147,7 +147,7 @@ class AllInputByIdState extends State<AllInputById> {
         errorMessage: "Error searching by invoice number",
       );
 
-      // Combine and remove duplicates
+      
       final combinedResults = [...results, ...noaResults];
       final uniqueResults = combinedResults.toSet().toList();
 
@@ -155,7 +155,7 @@ class AllInputByIdState extends State<AllInputById> {
         filteredInputs = uniqueResults;
       });
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -188,7 +188,7 @@ class AllInputByIdState extends State<AllInputById> {
                     },
                   ),
           ),
-          // Pagination buttons
+          
           PaginationBtn(
             currentPage: currentPage,
             hasMoreData: hasMoreData,

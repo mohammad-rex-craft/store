@@ -16,20 +16,19 @@ import 'database/auth/auth_wrapper.dart';
 
 void main()async {
     WidgetsFlutterBinding.ensureInitialized();
-
   await Supabase.initialize(
     url: 'https://ylaqczgirzddwrtvfcur.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYXFjemdpcnpkZHdydHZmY3VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NzYxMTAsImV4cCI6MjA2NTE1MjExMH0.4JOfZle_j76TxX18JIvMeACDeqCZtsdwLWnb8eXKLGQ',
   );
-  runApp(TestApp());
+  runApp(MyApp());
 }
 
 const Color colorText = Color.fromARGB(255, 1, 54, 103);
 const Color colorMain = Color.fromARGB(255, 31, 185, 185);
 const Color colorLowOpacity = Color.fromARGB(103, 1, 54, 103);
 
-class TestApp extends StatelessWidget {
-  const TestApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

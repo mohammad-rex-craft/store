@@ -20,7 +20,7 @@ class AllOutputState extends State<AllOutput> {
   final TextEditingController searchController = TextEditingController();
   bool isSortedAscending = true;
   List<Map<String, dynamic>> store = [];
-  // Pagination variables
+  
   int currentPage = 0;
   final int pageSize = 10;
   bool isLoading = false;
@@ -46,7 +46,7 @@ class AllOutputState extends State<AllOutput> {
         });
       }
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -80,7 +80,7 @@ class AllOutputState extends State<AllOutput> {
       setState(() {
         isLoading = false;
       });
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -163,7 +163,7 @@ class AllOutputState extends State<AllOutput> {
         filteredOutputs = uniqueResults;
       });
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -174,7 +174,7 @@ class AllOutputState extends State<AllOutput> {
       appBar: Bar(title: 'All Output', color: AppTheme.colorWarning),
       body: Column(
         children: [
-          // Header Section - Compact
+          
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -224,7 +224,7 @@ class AllOutputState extends State<AllOutput> {
             ),
           ),
           
-          // Search and Sort Section - Compact
+          
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             padding: const EdgeInsets.all(12),
@@ -236,7 +236,7 @@ class AllOutputState extends State<AllOutput> {
             ),
           ),
           
-          // Content Section - Maximized
+          
           Expanded(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -248,7 +248,7 @@ class AllOutputState extends State<AllOutput> {
             ),
           ),
           
-          // Pagination Section - Compact
+          
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

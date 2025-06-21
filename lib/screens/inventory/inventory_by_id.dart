@@ -25,8 +25,6 @@ class InventoryByIdState extends State<InventoryById> {
     if (!_isInitialized) {
       routeArgs =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      print('Route args: $routeArgs');
-      print('ID to fetch: ${routeArgs['id']}');
       getInvById();
       _isInitialized = true;
     }
@@ -106,8 +104,6 @@ class InventoryByIdState extends State<InventoryById> {
 
   @override
   Widget build(BuildContext context) {
-    print(data);
-
     return Scaffold(
       appBar: Bar(title: 'Inventory ${routeArgs['id']}'),
       body: _isLoading 

@@ -8,16 +8,12 @@ class LogInOut {
 
   Future<void> signOut(BuildContext context) async {
     try {
-      // تسجيل الخروج من Supabase
       await _db.signOut();
       
-      // التأكد من أن السياق لا يزال صالحاً
       if (context.mounted) {
-        // توجيه المستخدم إلى صفحة تسجيل الدخول
         replaceRouter(context, '/login');
       }
     } catch (e) {
-      // في حالة حدوث خطأ، توجيه المستخدم إلى صفحة تسجيل الدخول على أي حال
       if (context.mounted) {
         replaceRouter(context, '/login');
       }
@@ -43,10 +39,11 @@ class LogInOut {
         }
       }
     } catch (e) {
+      print('Login error: $e');
       if (context.mounted) {
         showDialog(context: context, builder: (context)=>AlertDialog(
           title: const Text('Error'),
-          content: Text('Login failed: ${e.toString()}'),
+          content: Text('Login failed: [31m${e.toString()}[0m'),
         ));
       }
     }

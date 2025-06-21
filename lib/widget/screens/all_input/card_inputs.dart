@@ -127,7 +127,7 @@ class CardInputs extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header Section - Compact
+          
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -139,7 +139,7 @@ class CardInputs extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Date and Type
+                
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +174,7 @@ class CardInputs extends StatelessWidget {
                   ),
                 ),
                 
-                // Invoice Number (if exists)
+                
                 if (isReturn) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -195,7 +195,7 @@ class CardInputs extends StatelessWidget {
                   const SizedBox(width: 8),
                 ],
                 
-                // Action Buttons
+                
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -223,13 +223,13 @@ class CardInputs extends StatelessWidget {
             ),
           ),
           
-          // Items Section - Compact
+          
           Container(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Section Header
+                
                 Row(
                   children: [
                     Icon(
@@ -249,7 +249,7 @@ class CardInputs extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 
-                // Items List - Compact
+                
                 ...(item['items'] as List).map((subItem) {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 4),

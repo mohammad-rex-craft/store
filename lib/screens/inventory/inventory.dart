@@ -51,7 +51,7 @@ class _InventoryState extends State<Inventory> {
       setState(() {
         isLoading = false;
       });
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -64,22 +64,22 @@ class _InventoryState extends State<Inventory> {
         var aValue = a.values.elementAt(columnIndex);
         var bValue = b.values.elementAt(columnIndex);
 
-        // Handle numeric values
+        
         if (aValue is num && bValue is num) {
           return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
         }
 
-        // Handle string values
+        
         if (aValue is String && bValue is String) {
           return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
         }
 
-        // Handle null values
+        
         if (aValue == null && bValue == null) return 0;
         if (aValue == null) return ascending ? -1 : 1;
         if (bValue == null) return ascending ? 1 : -1;
 
-        // Default comparison
+        
         return ascending ? aValue.toString().compareTo(bValue.toString()) 
                         : bValue.toString().compareTo(aValue.toString());
       });

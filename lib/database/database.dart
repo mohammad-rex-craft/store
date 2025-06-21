@@ -7,7 +7,7 @@ class DatabaseService {
   final SupabaseClient _supabase = Supabase.instance.client;
   final user = Supabase.instance.client.auth.currentUser;
 
-  // Show alert dialog
+  
   void showAlert(
     BuildContext context, {
     required String title,
@@ -32,7 +32,7 @@ class DatabaseService {
     ).show();
   }
 
-  // Get the current user
+  
   Future<User?> getCurrentUser() async {
     return await _supabase.auth.currentUser;
   }
@@ -41,7 +41,7 @@ class DatabaseService {
     if (user == null) throw Exception('no auth');
   }
 
-  // Create a new record
+  
   Future<Map<String, dynamic>> create({
     required String table,
     required Map<String, dynamic> data,
@@ -49,7 +49,6 @@ class DatabaseService {
     String? successMessage,
     String? errorMessage,
   }) async {
-    print(user!.id);
     try {
       final response = await _supabase
           .from(table)
@@ -75,7 +74,7 @@ class DatabaseService {
     }
   }
 
-  // Read a single record by ID
+  
   Future<Map<String, dynamic>> read({
     required String table,
     required String id,
@@ -120,7 +119,7 @@ class DatabaseService {
     }
   }
 
-  // Read all records with optional filters
+  
   Future<List<Map<String, dynamic>>> readAll({
     required String table,
     Map<String, dynamic>? filters,
@@ -146,7 +145,7 @@ class DatabaseService {
     }
   }
 
-  // Update a record
+  
   Future<Map<String, dynamic>> update({
     required String table,
     required int id,
@@ -182,7 +181,7 @@ class DatabaseService {
     }
   }
 
-  // Delete a record
+  
   Future<void> delete({
     required String table,
     required int id,
@@ -213,7 +212,7 @@ class DatabaseService {
     }
   }
 
-  // Search records
+  
   Future<List<Map<String, dynamic>>> search({
     required String table,
     required String column,
@@ -244,14 +243,11 @@ Future<Map<String, dynamic>> rpc(
     required BuildContext context,
   }) async {
     try {
-      // أضف معرف المستودع تلقائيًا إلى المعلمات
-      // للمحافظة على التناسق مع باقي الدوال في هذه الخدمة
       final fullParams = {
         ...params,
         'p_warehouse_id': user!.id,
       };
 
-      // تحويل المعلمات بشكل صحيح
       final convertedParams = fullParams.map((key, value) {
         if (value is List || value is Map) {
           return MapEntry(key, jsonEncode(value));
@@ -259,23 +255,17 @@ Future<Map<String, dynamic>> rpc(
         return MapEntry(key, value);
       });
 
-      print('Calling RPC $functionName with params: $convertedParams');
-
-      // استدعاء الدالة بدون .eq، حيث أن الفلترة تتم داخل الدالة نفسها
       final response = await _supabase.rpc(
         functionName,
         params: convertedParams,
       );
 
-      // تحويل الاستجابة إلى Map
       final responseData = response is Map
           ? Map<String, dynamic>.from(response)
           : <String, dynamic>{};
 
-      print('RPC Response: $responseData');
       return responseData;
     } catch (e) {
-      print('RPC Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
       );
@@ -283,7 +273,7 @@ Future<Map<String, dynamic>> rpc(
     }
   }
 
-  // Get records with pagination
+  
   Future<List<Map<String, dynamic>>> getPaginated({
     required String table,
     required int page,
@@ -340,14 +330,13 @@ Future<Map<String, dynamic>> rpc(
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       if (errorMessage != null) {
-        print(e.toString());
         showAlert(context, title: "Error", message: errorMessage);
       }
       throw Exception('Error getting paginated records: $e');
     }
   }
 
-  // Sign out the current user
+  
   Future<void> signOut() async {
     try {
       await _supabase.auth.signOut();
@@ -356,13 +345,13 @@ Future<Map<String, dynamic>> rpc(
     }
   }
 
-  // Test method to check database data
+  
   Future<void> testDatabaseData(BuildContext context) async {
     try {
       print('=== Testing Database Data ===');
       print('Current user ID: ${user!.id}');
       
-      // Check orders
+      
       final ordersResponse = await readAll(
         table: 'orders',
         context: context,
@@ -373,7 +362,7 @@ Future<Map<String, dynamic>> rpc(
       if (ordersResponse != null && ordersResponse.isNotEmpty) {
         print('First order: ${ordersResponse.first}');
         
-        // Test direct SQL query
+        
         print('=== Testing Direct SQL ===');
         final testQuery = await _supabase
             .from('orders')
@@ -392,7 +381,7 @@ Future<Map<String, dynamic>> rpc(
         }
       }
       
-      // Check store items
+      
       final storeResponse = await readAll(
         table: 'store',
         context: context,
@@ -410,16 +399,13 @@ Future<Map<String, dynamic>> rpc(
     }
   }
 
-  // Get top ordered items with optimized SQL
+  
   Future<List<Map<String, dynamic>>> getTopOrderedItems({
     required BuildContext context,
     int limit = 6,
     String? errorMessage,
   }) async {
     try {
-      print('Calling get_top_ordered_items with warehouse_id: ${user!.id}, limit: $limit');
-      
-      // Call RPC function directly to avoid parameter conflicts
       final response = await _supabase.rpc(
         'get_top_ordered_items',
         params: {
@@ -428,13 +414,10 @@ Future<Map<String, dynamic>> rpc(
         },
       );
 
-      print('RPC Response: $response');
-
       if (response == null) {
         throw Exception('No response from RPC function');
       }
 
-      // Parse the response
       List<Map<String, dynamic>> items = [];
       if (response is Map<String, dynamic>) {
         if (response.containsKey('error')) {
@@ -449,16 +432,11 @@ Future<Map<String, dynamic>> rpc(
         }
       }
 
-      print('Parsed items: $items');
       return items;
     } catch (e) {
-      print('RPC failed, falling back to frontend processing: $e');
-      
-      // Fallback to frontend processing if RPC fails
       try {
         return await _getTopOrderedItemsFallback(context, limit);
       } catch (fallbackError) {
-        print('Fallback also failed: $fallbackError');
         if (errorMessage != null) {
           showAlert(context, title: "Error", message: errorMessage);
         }
@@ -467,31 +445,23 @@ Future<Map<String, dynamic>> rpc(
     }
   }
 
-  // Fallback method using frontend processing
+  
   Future<List<Map<String, dynamic>>> _getTopOrderedItemsFallback(
     BuildContext context,
     int limit,
   ) async {
-    print('Starting fallback method with warehouse_id: ${user!.id}');
-    
-    // Get all orders
     final ordersResponse = await readAll(
       table: 'orders',
       context: context,
       errorMessage: "Error loading orders",
     );
 
-    print('Orders response: $ordersResponse');
-
     if (ordersResponse == null || ordersResponse.isEmpty) {
-      print('No orders found in database');
       return [];
     }
 
     final orders = List<Map<String, dynamic>>.from(ordersResponse);
-    print('Found ${orders.length} orders');
     
-    // Get store items for current quantities
     final storeResponse = await readAll(
       table: 'store',
       context: context,
@@ -505,20 +475,13 @@ Future<Map<String, dynamic>> rpc(
       }
     }
     
-    // Count item frequencies
     Map<String, int> itemFrequency = {};
     
     for (var order in orders) {
-      print('Processing order: ${order['id']}');
-      print('Order items: ${order['items']}');
-      
       List<dynamic> items = order['items'] ?? [];
-      print('Items array length: ${items.length}');
       
       for (var item in items) {
-        print('Processing item: $item');
         String itemName = item['item'] ?? '';
-        print('Item name: $itemName');
         
         if (itemName.isNotEmpty) {
           itemFrequency[itemName] = (itemFrequency[itemName] ?? 0) + 1;
@@ -526,15 +489,9 @@ Future<Map<String, dynamic>> rpc(
       }
     }
 
-    print('Item frequency map: $itemFrequency');
-
-    // Sort by frequency and get top items
     List<MapEntry<String, int>> sortedItems = itemFrequency.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    print('Sorted items: $sortedItems');
-
-    // Create top items list
     List<Map<String, dynamic>> topItemsList = [];
     for (int i = 0; i < limit && i < sortedItems.length; i++) {
       String itemName = sortedItems[i].key;
@@ -549,7 +506,6 @@ Future<Map<String, dynamic>> rpc(
       });
     }
 
-    print('Final top items list: $topItemsList');
     return topItemsList;
   }
 }

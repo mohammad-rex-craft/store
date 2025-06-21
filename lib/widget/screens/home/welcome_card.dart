@@ -22,12 +22,10 @@ class _WelcomeCardState extends State<WelcomeCard> {
 
   Future<void> loadTopOrderedItems() async {
     try {
-      // Set loading state
       setState(() {
         isLoading = true;
       });
 
-      // Use optimized SQL function instead of frontend processing
       final topItemsList = await db.getTopOrderedItems(
         context: context,
         limit: 6,
@@ -42,7 +40,6 @@ class _WelcomeCardState extends State<WelcomeCard> {
       setState(() {
         isLoading = false;
       });
-      print('Error loading top ordered items: $e');
     }
   }
 

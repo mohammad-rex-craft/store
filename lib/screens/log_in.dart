@@ -79,7 +79,6 @@ class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
     return Scaffold(
       body: Stack(
         children: [
-          // خلفية بتدرج لوني
           Container(
             width: double.infinity,
             height: double.infinity,
@@ -91,14 +90,12 @@ class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
               ),
             ),
           ),
-          // طبقة زجاجية شفافة تغطي الخلفية
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
               child: Container(color: Colors.white.withOpacity(0.08)),
             ),
           ),
-          // محتوى صفحة تسجيل الدخول
           Center(
             child: SingleChildScrollView(
               child: FadeTransition(
@@ -106,7 +103,6 @@ class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // شعار التطبيق
                     Container(
                       margin: const EdgeInsets.only(bottom: 24),
                       child: CircleAvatar(
@@ -243,7 +239,6 @@ class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
   }
 }
 
-// ويدجت البطاقة الزجاجية
 class GlassCard extends StatelessWidget {
   final Widget child;
   const GlassCard({super.key, required this.child});

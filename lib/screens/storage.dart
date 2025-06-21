@@ -45,7 +45,7 @@ class _StorageState extends State<Storage> {
         });
       }
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -62,7 +62,7 @@ class _StorageState extends State<Storage> {
         });
       }
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -75,22 +75,22 @@ class _StorageState extends State<Storage> {
         var aValue = a.values.elementAt(columnIndex);
         var bValue = b.values.elementAt(columnIndex);
 
-        // Handle numeric values
+        
         if (aValue is num && bValue is num) {
           return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
         }
 
-        // Handle string values
+        
         if (aValue is String && bValue is String) {
           return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
         }
 
-        // Handle null values
+        
         if (aValue == null && bValue == null) return 0;
         if (aValue == null) return ascending ? -1 : 1;
         if (bValue == null) return ascending ? 1 : -1;
 
-        // Default comparison
+        
         return ascending ? aValue.toString().compareTo(bValue.toString()) 
                         : bValue.toString().compareTo(aValue.toString());
       });
@@ -156,7 +156,7 @@ class _StorageState extends State<Storage> {
                     ),
                   ),
                   
-                  // Create Form
+                  
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -177,7 +177,7 @@ class _StorageState extends State<Storage> {
                   ),
                   SizedBox(height: 20),
                   
-                  // Update Form
+                  
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -202,7 +202,7 @@ class _StorageState extends State<Storage> {
               
               SizedBox(height: 30),
               
-              // Table Section
+              
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -275,7 +275,7 @@ class _StorageState extends State<Storage> {
               
               SizedBox(height: 30),
               
-              // Inventory Button Section
+              
               Center(
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,

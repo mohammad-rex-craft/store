@@ -46,7 +46,7 @@ class AllInputState extends State<AllInput> {
         });
       }
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -140,7 +140,6 @@ class AllInputState extends State<AllInput> {
         filteredInputs = uniqueResults;
       });
     } catch (e) {
-      print(e);
     }
   }
 
@@ -151,7 +150,7 @@ class AllInputState extends State<AllInput> {
       appBar: Bar(title: 'All Input', color: AppTheme.colorMain),
       body: Column(
         children: [
-          // Header Section - Compact
+          
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -201,7 +200,7 @@ class AllInputState extends State<AllInput> {
             ),
           ),
           
-          // Search and Sort Section - Compact
+          
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             padding: const EdgeInsets.all(12),
@@ -213,7 +212,7 @@ class AllInputState extends State<AllInput> {
             ),
           ),
           
-          // Content Section - Maximized
+          
           Expanded(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -225,7 +224,7 @@ class AllInputState extends State<AllInput> {
             ),
           ),
           
-          // Pagination Section - Compact
+          
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

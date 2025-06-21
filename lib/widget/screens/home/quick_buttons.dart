@@ -93,7 +93,6 @@ class QuickButtons extends StatelessWidget {
               onTap: () async {
                 Navigator.of(context).pop();
                 
-                // عرض رسالة تحميل
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Row(
@@ -114,7 +113,6 @@ class QuickButtons extends StatelessWidget {
                   ),
                 );
                 
-                // تسجيل الخروج
                 await LogInOut().signOut(context);
               },
             ),

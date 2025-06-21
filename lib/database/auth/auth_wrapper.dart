@@ -11,7 +11,6 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     try {
       _db.checkAuth();
-      print('auth ok');
       return child;
     } catch (e) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

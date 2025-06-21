@@ -21,7 +21,7 @@ class AllOutputByIdState extends State<AllOutputById> {
   bool isSortedAscending = true;
   bool _isInitialized = false;
   List<Map<String, dynamic>> store = [];
-  // Pagination variables
+  
   int currentPage = 0;
   final int pageSize = 10;
   bool isLoading = false;
@@ -51,7 +51,7 @@ class AllOutputByIdState extends State<AllOutputById> {
         });
       }
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -86,7 +86,7 @@ class AllOutputByIdState extends State<AllOutputById> {
       setState(() {
         isLoading = false;
       });
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -169,7 +169,7 @@ class AllOutputByIdState extends State<AllOutputById> {
         filteredOutputs = uniqueResults;
       });
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -202,7 +202,7 @@ class AllOutputByIdState extends State<AllOutputById> {
                         },
                       ),
           ),
-          // Pagination buttons
+          
           PaginationBtn(
             currentPage: currentPage,
             hasMoreData: hasMoreData,

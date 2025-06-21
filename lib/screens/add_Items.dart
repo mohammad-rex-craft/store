@@ -43,7 +43,7 @@ class _AddItemsState extends State<AddItems> {
         });
       }
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -58,7 +58,6 @@ class _AddItemsState extends State<AddItems> {
       return;
     }
 
-    // Check if item already exists in the list
     if (items.any((item) => item['item'] == selectedItem)) {
       db.showAlert(
         context,
@@ -78,7 +77,6 @@ class _AddItemsState extends State<AddItems> {
       });
     });
 
-    // Reset fields
     selectedItem = null;
     qtnController.clear();
   }
@@ -100,7 +98,6 @@ class _AddItemsState extends State<AddItems> {
       });
 
       try {
-        // Insert into inputs table
         final inputData = {
           'date': dateController.text,
           'type': selectedType,
@@ -117,7 +114,6 @@ class _AddItemsState extends State<AddItems> {
           errorMessage: "Error while saving data",
         );
 
-        // Process all items
         for (var item in items) {
           await db.update(
             table: 'store',
@@ -135,7 +131,6 @@ class _AddItemsState extends State<AddItems> {
           );
         }
 
-        // Reset form
         setState(() {
           items = [];
           selectedType = null;
@@ -146,7 +141,6 @@ class _AddItemsState extends State<AddItems> {
         setState(() {
           isLoading = false;
         });
-        // Error is already handled by DatabaseService
       }
     }
   }

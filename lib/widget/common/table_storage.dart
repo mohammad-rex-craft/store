@@ -67,7 +67,7 @@ class TableStorage extends StatelessWidget {
         );
         onRefresh();
       } catch (e) {
-        // Error is already handled by DatabaseService
+        
       }
     }
   }

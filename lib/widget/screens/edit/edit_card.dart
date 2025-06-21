@@ -46,7 +46,7 @@ class _EditCardState extends State<EditCard> {
         });
       }
     } catch (e) {
-      // Error is already handled by DatabaseService
+      
     }
   }
 
@@ -77,7 +77,6 @@ class _EditCardState extends State<EditCard> {
       context: context,
     );
 
-    // تحديث الواجهة بعد التعديل
     setState(() {
       widget.item[type] = type == 'date'
           ? dateController.text
@@ -92,7 +91,6 @@ class _EditCardState extends State<EditCard> {
     noaController.clear();
     senderController.clear();
     clientController.clear();
-    // إغلاق الـ Dialog بعد اكتمال التحديث
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -251,7 +249,7 @@ class _EditCardState extends State<EditCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -281,14 +279,14 @@ class _EditCardState extends State<EditCard> {
             
             const SizedBox(height: 20),
             
-            // Basic Information Section
+            
             Text(
               'Basic Information',
               style: AppTheme.headingStyle.copyWith(fontSize: 18),
             ),
             const SizedBox(height: 12),
             
-            // Date and NOA Row
+            
             Row(
               children: [
                 Expanded(
@@ -326,7 +324,7 @@ class _EditCardState extends State<EditCard> {
               ],
             ),
             
-            // Sender and Client Section (for orders only)
+            
             if (widget.table == 'orders') ...[
               const SizedBox(height: 16),
               Text(
@@ -374,14 +372,14 @@ class _EditCardState extends State<EditCard> {
             
             const SizedBox(height: 20),
             
-            // Items Section
+            
             Text(
               'Items',
               style: AppTheme.headingStyle.copyWith(fontSize: 18),
             ),
             const SizedBox(height: 12),
             
-            // Items Table
+            
             Container(
               decoration: BoxDecoration(
                 color: AppTheme.backgroundColor,
@@ -390,7 +388,7 @@ class _EditCardState extends State<EditCard> {
               ),
               child: Column(
                 children: [
-                  // Table Header
+                  
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
@@ -425,7 +423,7 @@ class _EditCardState extends State<EditCard> {
                     ),
                   ),
                   
-                  // Table Rows
+                  
                   ...List.generate(widget.item['items'].length, (index) {
                     final subItem = widget.item['items'][index];
                     return Container(

@@ -85,7 +85,7 @@ class TableInv extends StatelessWidget {
         );
         onRefresh();
       } catch (e) {
-        // Error is already handled by DatabaseService
+        
       }
     }
   }
@@ -97,7 +97,7 @@ class TableInv extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
+          
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -140,7 +140,7 @@ class TableInv extends StatelessWidget {
             ),
           ),
           
-          // Table
+          
           Expanded(
             child: LayoutBuilder(builder: (context, constraints) {
               return SingleChildScrollView(
