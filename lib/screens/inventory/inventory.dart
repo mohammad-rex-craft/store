@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../widget/common/bar.dart';
 import '../../database/database.dart';
 import '../../widget/screens/inventory/table_inv.dart';
+import '../../utility/theme.dart';
 
 class Inventory extends StatefulWidget {
   const Inventory({super.key});
@@ -85,41 +86,60 @@ class _InventoryState extends State<Inventory> {
     });
   }
  
-  
- 
- 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          appBar: Bar(title: 'Inventory'),
-          body: Center(
-            child: isLoading 
-              ? const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text(
-                      'Loading...',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: Bar(
+        title: 'Inventory',
+        color: AppTheme.colorMain,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+        child: isLoading 
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardBackground,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                )
-              : TableInv(
-                  data: data,
-                  sortAscending: sortAscending,
-                  sortColumnIndex: sortColumnIndex,
-                  onSort: onSort,
-                  onRefresh: getInv,
-                ),
-          ),
-        ),
-      ],
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(
+                          color: AppTheme.colorMain,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Loading Inventory...',
+                          style: AppTheme.bodyStyle.copyWith(
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : TableInv(
+              data: data,
+              sortAscending: sortAscending,
+              sortColumnIndex: sortColumnIndex,
+              onSort: onSort,
+              onRefresh: getInv,
+            ),
+      ),
     );
   }
 }
