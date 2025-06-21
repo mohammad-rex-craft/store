@@ -2,6 +2,7 @@ import 'package:darttest/widget/common/date_picker.dart';
 import 'package:flutter/material.dart';
 import '../../common/btn.dart';
 import '../../common/input.dart';
+import '../../common/selector.dart';
 
 class FormRemoveItem extends StatelessWidget {
   final TextEditingController dateController;
@@ -44,42 +45,33 @@ class FormRemoveItem extends StatelessWidget {
             Input(
               controller: invoiceController,
               labelText: 'Noa *',
-              
             ),
             Input(
               controller: clientController,
               labelText: 'Client *',
-              
             ),
             Input(
               controller: senderController,
               labelText: 'Sender *',
-              
             ),
             DatePicker(controller: dateController),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Item *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              value: selectedItem,
-              items: allItems.map((item) {
-                return DropdownMenuItem<String>(
-                  value: item['item'] as String,
-                  child: Text(item['item'] as String),
-                );
-              }).toList(),
-              onChanged: onItemChanged,
-              
+            Selector(
+              controller: TextEditingController(text: selectedItem ?? ''),
+              allItems: allItems,
+              labelText: 'Item *',
+              onItemChanged: (newValue, oldValue) => onItemChanged(newValue),
             ),
             Input(
               controller: qtnController,
               labelText: 'Qtn *',
-              
             ),
-            Btn(title: 'Add', width: double.infinity, onTap: onAdd),
+            Btn(
+              title: 'Add', 
+              width: double.infinity, 
+              onTap: onAdd,
+              btnType: BtnType.warning,
+              icon: Icons.remove,
+            ),
           ],
         ),
       ),

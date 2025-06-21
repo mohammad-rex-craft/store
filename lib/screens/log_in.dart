@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../utility/hooks.dart';
 import '../database/auth/log_in_out.dart';
+import '../widget/common/input.dart';
+import '../widget/common/btn.dart';
 
 class LogIn extends StatefulWidget {
   LogIn({super.key});
@@ -181,153 +183,46 @@ class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
                                 ],
                               ),
                             ),
-                          TextField(
+                          Input(
                             controller: emailController,
+                            labelText: 'Email',
+                            prefixIcon: Icons.email_rounded,
                             keyboardType: TextInputType.emailAddress,
-                            style: TextStyle(
-                              color: glassTextColor,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.email_rounded,
-                                color: glassIconColor,
-                              ),
-                              labelText: 'Email',
-                              labelStyle: TextStyle(color: glassHintColor),
-                              hintStyle: TextStyle(color: glassHintColor),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: glassBorderColor,
-                                  width: 1.5,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: const Color(0xFF1976D2),
-                                  width: 2,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: glassBorderColor,
-                                  width: 1.5,
-                                ),
-                              ),
-                            ),
+                            backgroundColor: Colors.white.withOpacity(0.1),
+                            borderRadius: 16,
                           ),
                           const SizedBox(height: 20),
-                          TextField(
+                          Input(
                             controller: passwordController,
+                            labelText: 'Password',
+                            prefixIcon: Icons.lock_rounded,
                             obscureText: !showPassword,
-                            style: TextStyle(
-                              color: glassTextColor,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.lock_rounded,
-                                color: glassIconColor,
-                              ),
-                              labelText: 'Password',
-                              labelStyle: TextStyle(color: glassHintColor),
-                              hintStyle: TextStyle(color: glassHintColor),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: glassBorderColor,
-                                  width: 1.5,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: const Color(0xFF1976D2),
-                                  width: 2,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: glassBorderColor,
-                                  width: 1.5,
-                                ),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  showPassword
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: glassIconColor,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    showPassword = !showPassword;
-                                  });
-                                },
-                              ),
-                            ),
+                            suffixIcon: showPassword ? Icons.visibility : Icons.visibility_off,
+                            onSuffixPressed: () {
+                              setState(() {
+                                showPassword = !showPassword;
+                              });
+                            },
+                            backgroundColor: Colors.white.withOpacity(0.1),
+                            borderRadius: 16,
                           ),
                           const SizedBox(height: 10),
-                          SizedBox(
+                          Btn(
+                            title: 'Log In',
+                            btnType: BtnType.primary,
                             width: double.infinity,
                             height: 48,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF1976D2),
-                                    Color(0xFF64B5F6),
-                                  ],
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blue.withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: ElevatedButton(
-                                onPressed: isLoading
-                                    ? null
-                                    : () => signIn(context),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                ),
-                                child: isLoading
-                                    ? const SizedBox(
-                                        width: 28,
-                                        height: 28,
-                                        child: CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                Colors.white,
-                                              ),
-                                          strokeWidth: 3,
-                                        ),
-                                      )
-                                    : const Text(
-                                        'Log In',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                              ),
+                            isLoading: isLoading,
+                            borderRadius: BorderRadius.circular(16),
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF1976D2),
+                                Color(0xFF64B5F6),
+                              ],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
                             ),
+                            onTap: isLoading ? null : () => signIn(context),
                           ),
                         ],
                       ),

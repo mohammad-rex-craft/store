@@ -4,6 +4,7 @@ import "../../../database/database.dart";
 import "../../../widget/common/btn.dart";
 import "../../../widget/common/dialog.dart";
 import "../../../widget/common/date_picker.dart";
+import "../../../widget/common/selector.dart";
 import 'dart:convert';
 
 class EditCard extends StatefulWidget {
@@ -355,29 +356,11 @@ class _EditCardState extends State<EditCard> {
                             showCustomDialog(
                               context,
                               'Update ${subItem['item'] ?? ''}',
-                              DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                  labelText: 'Item *',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                items: filterItem(data, subItem['item']).map((
-                                  item,
-                                ) {
-                                  return DropdownMenuItem<String>(
-                                    value: item['item'] as String,
-                                    child: Text(item['item'] as String),
-                                  );
-                                }).toList(),
-                                onChanged: (newValue) =>
-                                    select = newValue ?? '',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please select an item';
-                                  }
-                                  return null;
-                                },
+                              Selector(
+                                controller: TextEditingController(),
+                                allItems: filterItem(data, subItem['item']),
+                                labelText: 'Item *',
+                                onItemChanged: (newValue, oldValue) => select = newValue,
                               ),
                               (value) => updateItem(
                                 context,

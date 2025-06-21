@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-
+import '../../utility/theme.dart';
+import 'input.dart';
 
 class SearchSortBar extends StatelessWidget {
   final TextEditingController searchController;
@@ -14,32 +14,26 @@ class SearchSortBar extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return  Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      labelText: 'Search by Date or NO',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onChanged: filterData,
-                    keyboardType: TextInputType.text,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.sort),
-                  onPressed: sortDataByDate,
-                  tooltip: 'Sort by Date',
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Input(
+              controller: searchController,
+              labelText: 'Search by Date or NO',
+              prefixIcon: Icons.search,
+              onChanged: filterData,
+              keyboardType: TextInputType.text,
             ),
-          );
-
+          ),
+          IconButton(
+            icon: Icon(Icons.sort, color: AppTheme.colorMain),
+            onPressed: sortDataByDate,
+            tooltip: 'Sort by Date',
+          ),
+        ],
+      ),
+    );
   }
 }

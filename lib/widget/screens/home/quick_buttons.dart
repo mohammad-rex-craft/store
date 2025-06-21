@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../utility/hooks.dart';
 import '../../../database/auth/log_in_out.dart';
+import '../../common/btn.dart';
 
 class QuickButtons extends StatelessWidget {
   const QuickButtons({super.key});
@@ -86,8 +87,10 @@ class QuickButtons extends StatelessWidget {
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () async {
+            Btn(
+              title: 'Confirm',
+              btnType: BtnType.error,
+              onTap: () async {
                 Navigator.of(context).pop();
                 
                 // عرض رسالة تحميل
@@ -114,20 +117,6 @@ class QuickButtons extends StatelessWidget {
                 // تسجيل الخروج
                 await LogInOut().signOut(context);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                'Confirm',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ),
           ],
         );

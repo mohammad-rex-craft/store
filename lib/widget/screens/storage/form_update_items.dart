@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../database/database.dart';
 import '../../common/input.dart';
+import '../../common/selector.dart';
 
 class FormUpdateItems extends StatefulWidget {
   final List<Map<String, dynamic>> items;
@@ -124,35 +125,24 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.grey.shade300),
                   ),
-                  child: DropdownButtonFormField<Map<String, dynamic>>(
-                    decoration: InputDecoration(
-                      labelText: 'Select item',
-                      labelStyle: TextStyle(color: Colors.grey.shade700),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                      prefixIcon: Icon(Icons.inventory, color: Colors.orange.shade600),
-                    ),
-                    value: selectedItem,
-                    items: widget.items.map((item) {
-                      return DropdownMenuItem(
-                        value: item,
-                        child: Text(
-                          item['item'] ?? '',
-                          style: TextStyle(fontSize: 16),
-                        ),
+                  child: Selector(
+                    controller: TextEditingController(text: selectedItem?['item'] ?? ''),
+                    allItems: widget.items,
+                    labelText: 'Select item',
+                    prefixIcon: Icons.inventory,
+                    onItemChanged: (newValue, oldValue) {
+                      final selectedItemData = widget.items.firstWhere(
+                        (item) => item['item'] == newValue,
+                        orElse: () => {},
                       );
-                    }).toList(),
-                    onChanged: (value) {
                       setState(() {
-                        selectedItem = value;
-                        if (value != null) {
-                          nameController.text = value['item'] ?? '';
-                          qtnController.text = value['qtn']?.toString() ?? '0';
+                        selectedItem = selectedItemData;
+                        if (selectedItemData.isNotEmpty) {
+                          nameController.text = selectedItemData['item'] ?? '';
+                          qtnController.text = selectedItemData['qtn']?.toString() ?? '0';
                         }
                       });
                     },
-                    dropdownColor: Colors.white,
-                    icon: Icon(Icons.arrow_drop_down, color: Colors.orange.shade600),
                   ),
                 ),
                 SizedBox(height: 20),

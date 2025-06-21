@@ -10,7 +10,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'Home', color: hexToColor("#303F9F")),
+      appBar: Bar(title: 'StoreFlow', color: hexToColor("#303F9F")),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

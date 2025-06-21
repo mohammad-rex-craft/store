@@ -2,6 +2,7 @@ import 'package:darttest/widget/common/date_picker.dart';
 import 'package:flutter/material.dart';
 import '../../common/btn.dart';
 import '../../common/input.dart';
+import '../../common/selector.dart';
 import '../../common/date_picker.dart';
 
 class FormAddItems extends StatelessWidget {
@@ -42,24 +43,13 @@ class FormAddItems extends StatelessWidget {
               "Add Items",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Type *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              value: selectedType,
-              items: ['Production', 'Return'].map((type) {
-                return DropdownMenuItem(value: type, child: Text(type));
-              }).toList(),
-              onChanged: onTypeChanged,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select a type';
-                }
-                return null;
-              },
+            Selector(
+              controller: TextEditingController(text: selectedType ?? ''),
+              allItems: ['Production', 'Return'].map((type) => {'type': type}).toList(),
+              labelText: 'Type *',
+              valueKey: 'type',
+              displayKey: 'type',
+              onItemChanged: (newValue, oldValue) => onTypeChanged(newValue),
             ),
             if (selectedType == 'Return') ...[
               Input(
@@ -67,35 +57,24 @@ class FormAddItems extends StatelessWidget {
                 labelText: 'Noa *',
               ),
             ],
-            DatePicker(controller:dateController),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Item *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              value: selectedItem,
-              items: allItems.map((item) {
-                return DropdownMenuItem<String>(
-                  value: item['item'] as String,
-                  child: Text(item['item'] as String),
-                );
-              }).toList(),
-              onChanged: onItemChanged,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select an item';
-                }
-                return null;
-              },
+            DatePicker(controller: dateController),
+            Selector(
+              controller: TextEditingController(text: selectedItem ?? ''),
+              allItems: allItems,
+              labelText: 'Item *',
+              onItemChanged: (newValue, oldValue) => onItemChanged(newValue),
             ),
             Input(
               controller: qtnController,
               labelText: 'Qtn *',
-              
             ),
-            Btn(title: 'Add', width: double.infinity, onTap: onAdd,),
+            Btn(
+              title: 'Add', 
+              width: double.infinity, 
+              onTap: onAdd,
+              btnType: BtnType.success,
+              icon: Icons.add,
+            ),
           ],
         ),
       ),
