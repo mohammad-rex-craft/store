@@ -105,15 +105,15 @@ class TableStorage extends StatelessWidget {
           ),
         )
       : Container(
-          margin: EdgeInsets.all(20),
+          margin: EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),
-                blurRadius: 10,
-                offset: Offset(0, 5),
+                blurRadius: 8,
+                offset: Offset(0, 3),
               ),
             ],
           ),
@@ -124,12 +124,13 @@ class TableStorage extends StatelessWidget {
                 columns: [
                   DataColumn(
                     label: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
+                      padding: EdgeInsets.symmetric(vertical: 5),
                       child: Text(
                         'Item Name',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade800,
+                          fontSize: 13,
                         ),
                       ),
                     ),
@@ -137,12 +138,13 @@ class TableStorage extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
+                      padding: EdgeInsets.symmetric(vertical: 5),
                       child: Text(
                         'Quantity',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade800,
+                          fontSize: 13,
                         ),
                       ),
                     ),
@@ -150,12 +152,13 @@ class TableStorage extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
+                      padding: EdgeInsets.symmetric(vertical: 5),
                       child: Text(
                         'Boxes',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade800,
+                          fontSize: 13,
                         ),
                       ),
                     ),
@@ -164,12 +167,13 @@ class TableStorage extends StatelessWidget {
                   if (type == 'store')
                     DataColumn(
                       label: Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.symmetric(vertical: 5),
                         child: Text(
                           'Actions',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.grey.shade800,
+                            fontSize: 13,
                           ),
                         ),
                       ),
@@ -181,24 +185,27 @@ class TableStorage extends StatelessWidget {
                       if (type == 'inventory')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               item['item'],
-                              style: TextStyle(fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ),
                       if (type == 'store')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: InkWell(
                               onTap: () => dinamecRouter(context, '/all_input_by_id', {
@@ -210,6 +217,7 @@ class TableStorage extends StatelessWidget {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.blue.shade700,
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
@@ -218,16 +226,17 @@ class TableStorage extends StatelessWidget {
                       if (type == 'inventory')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.green.shade50,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               item['qtn'].toString(),
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Colors.green.shade700,
+                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -235,10 +244,10 @@ class TableStorage extends StatelessWidget {
                       if (type == 'store')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.orange.shade50,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: InkWell(
                               onTap: () => dinamecRouter(context, '/all_output_by_id', {
@@ -250,6 +259,7 @@ class TableStorage extends StatelessWidget {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.orange.shade700,
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
@@ -257,46 +267,50 @@ class TableStorage extends StatelessWidget {
                         ),
                       DataCell(
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                           decoration: BoxDecoration(
                             color: Colors.purple.shade50,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             '${(item['qtn'] ~/ item['box'])}/${item['qtn'] % item['box']}',
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Colors.purple.shade700,
+                              fontSize: 12,
                             ),
                           ),
                         ),
                       ),
                       if (type == 'store')
                         DataCell(
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade50,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                          CircleAvatar(
+                            radius: 15, // Small radius for compact design
+                            backgroundColor: Colors.red.shade50,
                             child: IconButton(
                               icon: Icon(
                                 Icons.delete_outline,
                                 color: Colors.red.shade600,
-                                size: 20,
+                                size: 16,
                               ),
                               onPressed: () => deleteItem(item['id'], context),
+                              padding: EdgeInsets.zero,
+                              constraints: BoxConstraints(
+                                minWidth: 30,
+                                minHeight: 30,
+                              ),
                             ),
                           ),
                         ),
                     ],
                   );
                 }).toList(),
-                columnSpacing: 30,
-                horizontalMargin: 20,
+                columnSpacing: 4,
+                horizontalMargin: 8,
                 sortColumnIndex: sortColumnIndex,
                 sortAscending: sortAscending,
-                dataRowHeight: 70,
-                headingRowHeight: 60,
+                dataRowHeight: 50,
+                headingRowHeight: 45,
               ),
             ),
           ),

@@ -13,13 +13,24 @@ import 'screens/all_output/all_output_by_id.dart';
 import './screens/storage.dart';
 import './screens/log_in.dart';
 import 'database/auth/auth_wrapper.dart';
+import 'services/secure_storage_service.dart';
 
-void main()async {
-    WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await SecureStorageService.initializeDefaultConfig();
+  
+  final config = await SecureStorageService.getSupabaseConfig();
+  
+  if (config['url'] == null || config['anonKey'] == null) {
+    throw Exception('Supabase configuration not found in secure storage');
+  }
+  
   await Supabase.initialize(
-    url: 'https://ylaqczgirzddwrtvfcur.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYXFjemdpcnpkZHdydHZmY3VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NzYxMTAsImV4cCI6MjA2NTE1MjExMH0.4JOfZle_j76TxX18JIvMeACDeqCZtsdwLWnb8eXKLGQ',
+    url: config['url']!,
+    anonKey: config['anonKey']!,
   );
+  
   runApp(MyApp());
 }
 
@@ -34,6 +45,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter SQLite Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
       routes: <String, WidgetBuilder>{
         '/': (BuildContext ctx) => AuthWrapper(child: HomeScreen()),

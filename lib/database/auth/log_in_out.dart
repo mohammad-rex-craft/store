@@ -39,11 +39,10 @@ class LogInOut {
         }
       }
     } catch (e) {
-      print('Login error: $e');
       if (context.mounted) {
         showDialog(context: context, builder: (context)=>AlertDialog(
           title: const Text('Error'),
-          content: Text('Login failed: [31m${e.toString()}[0m'),
+          content: Text('Login failed: ${e.toString()}'),
         ));
       }
     }
