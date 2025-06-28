@@ -17,46 +17,57 @@ class _AddItemsState extends State<AddItems> {
   final TextEditingController qtnController = TextEditingController();
   final TextEditingController invoiceController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
+  final TextEditingController clientController = TextEditingController();
+  String? selectedClient;
+  int? selectedClientId;
   DateTime selectedDate = DateTime.now();
   String? selectedType;
   List<String>? selectedItems;
   List<Map<String, dynamic>> items = [];
   List<Map<String, dynamic>> allItems = [];
   bool isLoading = false;
+  List<Map<String, dynamic>> allClients = [];
 
   @override
   void initState() {
     super.initState();
-    getStore();
+    getStoreAndClients();
   }
 
-  Future<void> getStore() async {
+  Future<void> getStoreAndClients() async {
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        // Sort data by ID in ascending order
-        List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(response);
-        sortedData.sort((a, b) {
-          int idA = a['id'] ?? 0;
-          int idB = b['id'] ?? 0;
-          return idA.compareTo(idB);
-        });
-        
-        setState(() {
-          allItems = sortedData;
-        });
-      }
-    } catch (e) {
-      
+      // Sort data by ID in ascending order
+      List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
+        response,
+      );
+      sortedData.sort((a, b) {
+        int idA = a['id'] ?? 0;
+        int idB = b['id'] ?? 0;
+        return idA.compareTo(idB);
+      });
+      final responseClients = await db.readAll(
+        table: 'client',
+        context: context,
+        errorMessage: "Network error occurred while fetching items",
+      );
+      setState(() {
+        allItems = sortedData;
+        allClients = responseClients ?? [];
+      });
+        } catch (e) {
+      print(e);
     }
   }
 
   void addItem() {
-    if (selectedItems == null || selectedItems!.isEmpty || qtnController.text.isEmpty) {
+    if (selectedItems == null ||
+        selectedItems!.isEmpty ||
+        qtnController.text.isEmpty) {
       db.showAlert(
         context,
         title: "Warning",
@@ -104,7 +115,7 @@ class _AddItemsState extends State<AddItems> {
   Future<void> submitData() async {
     if (selectedType == null ||
         dateController.text == '' ||
-        (selectedType == 'Return' && invoiceController.text == '')) {
+        (selectedType == 'Return' && invoiceController.text == '' && clientController.text == '')) {
       db.showAlert(
         context,
         title: "Warning",
@@ -124,6 +135,10 @@ class _AddItemsState extends State<AddItems> {
           'noa': selectedType == 'Return' ? invoiceController.text : null,
           'items': items,
           'items_ids': items.map((item) => item['id']).toList(),
+          'client_id': selectedType == 'Return' ? selectedClientId : null,
+          'client': selectedType == 'Return'
+              ? clientController.text
+              : null,
         };
 
         await db.create(
@@ -156,6 +171,8 @@ class _AddItemsState extends State<AddItems> {
           selectedType = null;
           invoiceController.clear();
           isLoading = false;
+          selectedClientId = null;
+          dateController.clear();
         });
       } catch (e) {
         setState(() {
@@ -176,9 +193,9 @@ class _AddItemsState extends State<AddItems> {
     return Stack(
       children: [
         Scaffold(
-          appBar: Bar(title: 'Add Items',color: Colors.green),
+          appBar: const Bar(title: 'Add Items', color: Colors.green),
           body: SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 FormAddItems(
@@ -193,6 +210,16 @@ class _AddItemsState extends State<AddItems> {
                       selectedType = value;
                     });
                   },
+                  allClients: allClients,
+                  onClientChanged: (value) {
+                     setState(() {
+                      selectedClientId = int.parse(value);
+                      selectedClient = allClients
+                          .firstWhere((c) => c['id'] == selectedClientId)['name'];
+                      clientController.text = selectedClient!;
+                    });
+                  },
+                  selectedClientId: selectedClientId,
                   onItemChanged: (value) {
                     setState(() {
                       selectedItems = value;
@@ -200,7 +227,7 @@ class _AddItemsState extends State<AddItems> {
                   },
                   onAdd: addItem,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TableAddItems(
                   items: items,
                   onSubmit: submitData,
@@ -213,7 +240,7 @@ class _AddItemsState extends State<AddItems> {
         if (isLoading)
           Container(
             color: Colors.black.withOpacity(0.5),
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(color: Colors.white),
             ),
           ),

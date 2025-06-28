@@ -30,7 +30,7 @@ class TableInv extends StatelessWidget {
           ),
           title: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.warning,
                 color: AppTheme.colorWarning,
                 size: 24,
@@ -44,7 +44,7 @@ class TableInv extends StatelessWidget {
               ),
             ],
           ),
-          content: Text(
+          content: const Text(
             'Are you sure you want to delete this inventory record?',
             style: AppTheme.bodyStyle,
           ),
@@ -108,7 +108,7 @@ class TableInv extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.inventory,
                   color: AppTheme.colorMain,
                   size: 24,
@@ -231,12 +231,12 @@ class TableInv extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: IconButton(
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.visibility,
                                       color: AppTheme.colorInfo,
                                       size: 20,
                                     ),
-                                    onPressed: () => dinamecRouter(
+                                    onPressed: () => dynamicRouter(
                                       context,
                                       '/inventory_by_id',
                                       {'id': item['id']},
@@ -256,7 +256,7 @@ class TableInv extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: IconButton(
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.delete,
                                       color: AppTheme.colorError,
                                       size: 20,
@@ -279,12 +279,12 @@ class TableInv extends StatelessWidget {
                     }).toList(),
                     sortColumnIndex: sortColumnIndex,
                     sortAscending: sortAscending,
-                    headingRowColor: MaterialStateProperty.all(
+                    headingRowColor: WidgetStateProperty.all(
                       AppTheme.backgroundColor,
                     ),
-                    dataRowColor: MaterialStateProperty.resolveWith<Color?>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.selected)) {
+                    dataRowColor: WidgetStateProperty.resolveWith<Color?>(
+                      (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.selected)) {
                           return AppTheme.colorMain.withOpacity(0.1);
                         }
                         return null;

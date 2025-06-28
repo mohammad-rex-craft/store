@@ -28,7 +28,7 @@ class SearchSortBar extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.sort, color: AppTheme.colorMain),
+            icon: const Icon(Icons.sort, color: AppTheme.colorMain),
             onPressed: sortDataByDate,
             tooltip: 'Sort by Date',
           ),

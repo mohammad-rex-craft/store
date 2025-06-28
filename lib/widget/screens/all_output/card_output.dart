@@ -31,7 +31,7 @@ class CardOutput extends StatelessWidget {
             ),
             title: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.delete_forever,
                   color: AppTheme.colorError,
                   size: 24,
@@ -45,7 +45,7 @@ class CardOutput extends StatelessWidget {
                 ),
               ],
             ),
-            content: Text(
+            content: const Text(
               'Are you sure you want to delete this order record? This action cannot be undone.',
               style: AppTheme.bodyStyle,
             ),
@@ -79,11 +79,11 @@ class CardOutput extends StatelessWidget {
 
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Row(
+          content: const Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              const Text('Order deleted successfully'),
+              SizedBox(width: 8),
+              Text('Order deleted successfully'),
             ],
           ),
           backgroundColor: AppTheme.colorSuccess,
@@ -98,7 +98,7 @@ class CardOutput extends StatelessWidget {
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.error, color: Colors.white, size: 20),
+              const Icon(Icons.error, color: Colors.white, size: 20),
               const SizedBox(width: 8),
               Text('Error: ${e.toString()}'),
             ],
@@ -148,7 +148,7 @@ class CardOutput extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.output,
                             color: AppTheme.colorWarning,
                             size: 16,
@@ -206,12 +206,12 @@ class CardOutput extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.edit,
                         color: AppTheme.colorInfo,
                         size: 18,
                       ),
-                      onPressed: () => dinamecRouter(context, '/edit', {
+                      onPressed: () => dynamicRouter(context, '/edit', {
                         'items': item,
                         'type': 'orders',
                       }),
@@ -223,7 +223,7 @@ class CardOutput extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: AppTheme.colorError,
                         size: 18,
@@ -277,7 +277,7 @@ class CardOutput extends StatelessWidget {
                 
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.inventory,
                       color: AppTheme.textSecondary,
                       size: 14,
@@ -341,7 +341,7 @@ class CardOutput extends StatelessWidget {
                       ],
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),

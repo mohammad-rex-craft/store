@@ -5,7 +5,7 @@ import '../widget/common/input.dart';
 import '../widget/common/btn.dart';
 
 class LogIn extends StatefulWidget {
-  LogIn({super.key});
+  const LogIn({super.key});
 
   @override
   State<LogIn> createState() => _LogInState();
@@ -67,10 +67,10 @@ class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final Color glassTextColor = Colors.black87;
-    final Color glassHintColor = Colors.white;
-    final Color glassIconColor = Colors.white;
-    final Color glassBorderColor = const Color.fromARGB(66, 97, 72, 72);
+    const Color glassTextColor = Colors.black87;
+    const Color glassHintColor = Colors.white;
+    const Color glassIconColor = Colors.white;
+    const Color glassBorderColor = Color.fromARGB(66, 97, 72, 72);
     final Color glassErrorBg =
         Colors.red[50]?.withOpacity(0.35) ?? Colors.red.withOpacity(0.15);
     final Color glassErrorBorder =
@@ -115,7 +115,7 @@ class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
                             fit: BoxFit.contain,
                             height: 200,
                             width: 200,
-                            errorBuilder: (context, error, stackTrace) => Icon(
+                            errorBuilder: (context, error, stackTrace) => const Icon(
                               Icons.lock,
                               size: 100,
                               color: Colors.white,

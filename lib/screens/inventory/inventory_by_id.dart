@@ -70,32 +70,26 @@ class InventoryByIdState extends State<InventoryById> {
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        setState(() {
-          var rawData = response['data'];
-          if (rawData is String) {
-            try {
-              data = List<Map<String, dynamic>>.from(
-                jsonDecode(
-                  rawData,
-                ).map((item) => Map<String, dynamic>.from(item)),
-              );
-            } catch (e) {
-              data = [];
-            }
-          } else if (rawData is List) {
-            data = List<Map<String, dynamic>>.from(rawData);
-          } else {
+      setState(() {
+        var rawData = response['data'];
+        if (rawData is String) {
+          try {
+            data = List<Map<String, dynamic>>.from(
+              jsonDecode(
+                rawData,
+              ).map((item) => Map<String, dynamic>.from(item)),
+            );
+          } catch (e) {
             data = [];
           }
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
+        } else if (rawData is List) {
+          data = List<Map<String, dynamic>>.from(rawData);
+        } else {
+          data = [];
+        }
+        _isLoading = false;
+      });
+        } catch (e) {
       setState(() {
         _isLoading = false;
       });

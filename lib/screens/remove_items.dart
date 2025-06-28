@@ -19,8 +19,9 @@ class _RemoveItemsState extends State<RemoveItems> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController clientController = TextEditingController();
   final TextEditingController senderController = TextEditingController();
-  DateTime selectedDate = DateTime.now();
-  String? selectedType;
+  String? selectedClient;
+  int? selectedClientId;
+  List<Map<String, dynamic>> allClients = [];
   List<String> selectedItems = [];
   List<Map<String, dynamic>> items = [];
   List<Map<String, dynamic>> allItems = [];
@@ -30,8 +31,23 @@ class _RemoveItemsState extends State<RemoveItems> {
   void initState() {
     super.initState();
     getStore();
+    getClients();
   }
 
+  Future<void> getClients() async {
+    try {
+      final response = await db.readAll(
+        table: 'client',
+        context: context,
+        errorMessage: "Network error occurred while fetching clients",
+      );
+      setState(() {
+        allClients = List<Map<String, dynamic>>.from(response);
+      });
+        } catch (e) {
+      // Error is handled by showAlert in DatabaseService
+    }
+  }
 
   Future<void> getStore() async {
     try {
@@ -40,20 +56,18 @@ class _RemoveItemsState extends State<RemoveItems> {
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        // Sort data by ID in ascending order
-        List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(response);
-        sortedData.sort((a, b) {
-          int idA = a['id'] ?? 0;
-          int idB = b['id'] ?? 0;
-          return idA.compareTo(idB);
-        });
-        
-        setState(() {
-          allItems = sortedData;
-        });
-      }
-    } catch (e) {
+      // Sort data by ID in ascending order
+      List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(response);
+      sortedData.sort((a, b) {
+        int idA = a['id'] ?? 0;
+        int idB = b['id'] ?? 0;
+        return idA.compareTo(idB);
+      });
+      
+      setState(() {
+        allItems = sortedData;
+      });
+        } catch (e) {
       
     }
   }
@@ -122,6 +136,7 @@ class _RemoveItemsState extends State<RemoveItems> {
         'noa': invoiceController.text,
         'items': items,
         'items_ids': items.map((item) => item['id']).toList(),
+        'client_id': selectedClientId,
       };
 
       await db.create(
@@ -175,19 +190,28 @@ class _RemoveItemsState extends State<RemoveItems> {
     return Stack(
       children: [
         Scaffold(
-          appBar: Bar(title: 'Remove Items',color: Colors.red),
+          appBar: const Bar(title: 'Remove Items',color: Colors.red),
           body: SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 FormRemoveItem(
-                  clientController: clientController,
-                  senderController: senderController,
                   dateController: dateController,
                   qtnController: qtnController,
                   invoiceController: invoiceController,
+                  senderController: senderController,
                   selectedItems: selectedItems,
                   allItems: allItems,
+                  selectedClientId: selectedClientId,
+                  allClients: allClients,
+                  onClientChanged: (value) {
+                    setState(() {
+                      selectedClientId = int.parse(value);
+                      selectedClient = allClients
+                          .firstWhere((c) => c['id'] == selectedClientId)['name'];
+                      clientController.text = selectedClient!;
+                    });
+                  },
                   onItemChanged: (value) {
                     setState(() {
                       selectedItems = List<String>.from(value);
@@ -195,7 +219,7 @@ class _RemoveItemsState extends State<RemoveItems> {
                   },
                   onAdd: addItem,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TableRemoveItems(
                   items: items,
                   onSubmit: submitData,
@@ -208,7 +232,7 @@ class _RemoveItemsState extends State<RemoveItems> {
         if (isLoading)
           Container(
             color: Colors.black.withOpacity(0.5),
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(color: Colors.white),
             ),
           ),

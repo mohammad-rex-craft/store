@@ -39,22 +39,20 @@ class _StorageState extends State<Storage> {
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        // Sort data by ID in ascending order
-        List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
-          response,
-        );
-        sortedData.sort((a, b) {
-          int idA = a['id'] ?? 0;
-          int idB = b['id'] ?? 0;
-          return idA.compareTo(idB);
-        });
+      // Sort data by ID in ascending order
+      List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
+        response,
+      );
+      sortedData.sort((a, b) {
+        int idA = a['id'] ?? 0;
+        int idB = b['id'] ?? 0;
+        return idA.compareTo(idB);
+      });
 
-        setState(() {
-          data = sortedData;
-        });
-      }
-    } catch (e) {}
+      setState(() {
+        data = sortedData;
+      });
+        } catch (e) {}
   }
 
   Future<void> getItems2() async {
@@ -64,22 +62,20 @@ class _StorageState extends State<Storage> {
         context: context,
         errorMessage: "Network error occurred while fetching inputs",
       );
-      if (response != null) {
-        // Sort data by ID in ascending order
-        List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
-          response,
-        );
-        sortedData.sort((a, b) {
-          int idA = a['id'] ?? 0;
-          int idB = b['id'] ?? 0;
-          return idA.compareTo(idB);
-        });
+      // Sort data by ID in ascending order
+      List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
+        response,
+      );
+      sortedData.sort((a, b) {
+        int idA = a['id'] ?? 0;
+        int idB = b['id'] ?? 0;
+        return idA.compareTo(idB);
+      });
 
-        setState(() {
-          indata = sortedData;
-        });
-      }
-    } catch (e) {}
+      setState(() {
+        indata = sortedData;
+      });
+        } catch (e) {}
   }
 
   void onSort(int columnIndex, bool ascending) {
@@ -127,8 +123,8 @@ class _StorageState extends State<Storage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'Store', color: Colors.purple),
-      backgroundColor: Color(0xFFF5F5F5),
+      appBar: const Bar(title: 'Store', color: Colors.purple),
+      backgroundColor: const Color(0xFFF5F5F5),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -138,7 +134,7 @@ class _StorageState extends State<Storage> {
           ),
         ),
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -150,7 +146,7 @@ class _StorageState extends State<Storage> {
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1),
                       blurRadius: 10,
-                      offset: Offset(0, 5),
+                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
@@ -158,10 +154,10 @@ class _StorageState extends State<Storage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: primeColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(15),
                           topRight: Radius.circular(15),
                         ),
@@ -169,7 +165,7 @@ class _StorageState extends State<Storage> {
                       child: Row(
                         children: [
                           Icon(Icons.table_chart, color: primeColor, size: 24),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Text(
                             'Store',
                             style: TextStyle(
@@ -178,9 +174,9 @@ class _StorageState extends State<Storage> {
                               color: primeColor,
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: 6,
                             ),
@@ -190,7 +186,7 @@ class _StorageState extends State<Storage> {
                             ),
                             child: Text(
                               '${data.length} item',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -213,12 +209,12 @@ class _StorageState extends State<Storage> {
                 ),
               ),
 
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(bottom: 20),
+                    margin: const EdgeInsets.only(bottom: 20),
                     child: Row(
                       children: [
                         Icon(
@@ -226,7 +222,7 @@ class _StorageState extends State<Storage> {
                           color: Colors.grey.shade700,
                           size: 24,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
                           'Edit Items',
                           style: TextStyle(
@@ -247,7 +243,7 @@ class _StorageState extends State<Storage> {
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.1),
                           blurRadius: 10,
-                          offset: Offset(0, 5),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -257,7 +253,7 @@ class _StorageState extends State<Storage> {
                       },
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   Container(
                     decoration: BoxDecoration(
@@ -267,7 +263,7 @@ class _StorageState extends State<Storage> {
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.1),
                           blurRadius: 10,
-                          offset: Offset(0, 5),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -281,7 +277,7 @@ class _StorageState extends State<Storage> {
                 ],
               ),
 
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               Center(
                 child: Container(
@@ -298,7 +294,7 @@ class _StorageState extends State<Storage> {
                       BoxShadow(
                         color: Colors.green.withOpacity(0.3),
                         blurRadius: 10,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
@@ -308,8 +304,8 @@ class _StorageState extends State<Storage> {
                       borderRadius: BorderRadius.circular(30),
                       onTap: () => sendToInventory(context),
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(

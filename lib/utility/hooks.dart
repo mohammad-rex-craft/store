@@ -10,7 +10,7 @@ void router(BuildContext ctx,String name) {
   );
 }
 
-void dinamecRouter(BuildContext ctx,String name,Object arguments) {
+void dynamicRouter(BuildContext ctx,String name,Object arguments) {
   Navigator.of(ctx).pushNamed(
     name,
     arguments: arguments

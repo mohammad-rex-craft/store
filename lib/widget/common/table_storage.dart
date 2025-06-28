@@ -29,17 +29,17 @@ class TableStorage extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: Row(
+          title: const Row(
             children: [
               Icon(Icons.warning, color: Colors.orange),
               SizedBox(width: 10),
               Text('Confirm Delete'),
             ],
           ),
-          content: Text('Are you sure you want to delete this item?'),
+          content: const Text('Are you sure you want to delete this item?'),
           actions: [
             TextButton(
-              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             Container(
@@ -48,7 +48,7 @@ class TableStorage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: TextButton(
-                child: Text('Delete', style: TextStyle(color: Colors.white)),
+                child: const Text('Delete', style: TextStyle(color: Colors.white)),
                 onPressed: () => Navigator.of(context).pop(true),
               ),
             ),
@@ -76,7 +76,7 @@ class TableStorage extends StatelessWidget {
   Widget build(BuildContext context) {
     return data.isEmpty 
       ? Container(
-          padding: EdgeInsets.all(40),
+          padding: const EdgeInsets.all(40),
           child: Column(
             children: [
               Icon(
@@ -84,7 +84,7 @@ class TableStorage extends StatelessWidget {
                 size: 80,
                 color: Colors.grey.shade400,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 'No items in the store',
                 style: TextStyle(
@@ -93,7 +93,7 @@ class TableStorage extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Add new items to start',
                 style: TextStyle(
@@ -105,7 +105,7 @@ class TableStorage extends StatelessWidget {
           ),
         )
       : Container(
-          margin: EdgeInsets.all(10),
+          margin: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -113,7 +113,7 @@ class TableStorage extends StatelessWidget {
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),
                 blurRadius: 8,
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -124,7 +124,7 @@ class TableStorage extends StatelessWidget {
                 columns: [
                   DataColumn(
                     label: Container(
-                      padding: EdgeInsets.symmetric(vertical: 5),
+                      padding: const EdgeInsets.symmetric(vertical: 5),
                       child: Row(
                         children: [
                           Text(
@@ -146,7 +146,7 @@ class TableStorage extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Container(
-                      padding: EdgeInsets.symmetric(vertical: 5),
+                      padding: const EdgeInsets.symmetric(vertical: 5),
                       child: Row(
                         children: [
                           Text(
@@ -168,7 +168,7 @@ class TableStorage extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Container(
-                      padding: EdgeInsets.symmetric(vertical: 5),
+                      padding: const EdgeInsets.symmetric(vertical: 5),
                       child: Row(
                         children: [
                           Text(
@@ -191,7 +191,7 @@ class TableStorage extends StatelessWidget {
                   if (type == 'store')
                     DataColumn(
                       label: Container(
-                        padding: EdgeInsets.symmetric(vertical: 5),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Text(
                           'Delete',
                           style: TextStyle(
@@ -209,14 +209,14 @@ class TableStorage extends StatelessWidget {
                       if (type == 'inventory')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.blue.shade50,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               item['item'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 12,
                               ),
@@ -226,13 +226,13 @@ class TableStorage extends StatelessWidget {
                       if (type == 'store')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.blue.shade50,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: InkWell(
-                              onTap: () => dinamecRouter(context, '/all_input_by_id', {
+                              onTap: () => dynamicRouter(context, '/all_input_by_id', {
                                 'id': item['id'],
                                 'item': item['item'],
                               }),
@@ -250,7 +250,7 @@ class TableStorage extends StatelessWidget {
                       if (type == 'inventory')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.green.shade50,
                               borderRadius: BorderRadius.circular(6),
@@ -268,13 +268,13 @@ class TableStorage extends StatelessWidget {
                       if (type == 'store')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.orange.shade50,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: InkWell(
-                              onTap: () => dinamecRouter(context, '/all_output_by_id', {
+                              onTap: () => dynamicRouter(context, '/all_output_by_id', {
                                 'id': item['id'],
                                 'item': item['item'],
                               }),
@@ -292,7 +292,7 @@ class TableStorage extends StatelessWidget {
                       if (type == 'inventory')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.purple.shade50,
                               borderRadius: BorderRadius.circular(6),
@@ -310,13 +310,13 @@ class TableStorage extends StatelessWidget {
                       if (type == 'store')
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.purple.shade50,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: InkWell(
-                              onTap: () => dinamecRouter(context, '/all_settlement_by_id', {
+                              onTap: () => dynamicRouter(context, '/all_settlement_by_id', {
                                 'id': item['id'],
                                 'item': item['item'],
                               }),
@@ -344,7 +344,7 @@ class TableStorage extends StatelessWidget {
                               ),
                               onPressed: () => deleteItem(item['id'], context),
                               padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(
+                              constraints: const BoxConstraints(
                                 minWidth: 30,
                                 minHeight: 30,
                               ),

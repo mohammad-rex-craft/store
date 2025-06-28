@@ -23,9 +23,9 @@ class LogInOut {
         }
       }else{
         if (context.mounted) {
-          showDialog(context: context, builder: (context)=>AlertDialog(
-            title: const Text('Error'),
-            content: const Text('Invalid email or password'),
+          showDialog(context: context, builder: (context)=>const AlertDialog(
+            title: Text('Error'),
+            content: Text('Invalid email or password'),
           ));
         }
       }

@@ -9,10 +9,10 @@ class FormUpdateItems extends StatefulWidget {
   final VoidCallback onItemUpdated;
 
   const FormUpdateItems({
-    Key? key,
+    super.key,
     required this.items,
     required this.onItemUpdated,
-  }) : super(key: key);
+  });
 
   @override
   State<FormUpdateItems> createState() => _FormUpdateItemsState();
@@ -72,13 +72,13 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           
           Container(
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.orange.shade400, Colors.orange.shade600],
@@ -87,7 +87,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
               ),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
+            child: const Row(
               children: [
                 Icon(
                   Icons.edit,
@@ -106,11 +106,11 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           
           
           Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.grey.shade50,
               borderRadius: BorderRadius.circular(10),
@@ -145,14 +145,14 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
                     },
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 Input(
                   controller: nameController,
                   labelText: 'New name',
                   prefixIcon: Icons.edit,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 Input(
                   controller: qtnController,
@@ -160,7 +160,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
                   prefixIcon: Icons.numbers,
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 
                 Container(
                   width: double.infinity,
@@ -176,7 +176,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
                       BoxShadow(
                         color: Colors.orange.withOpacity(0.3),
                         blurRadius: 8,
-                        offset: Offset(0, 4),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
@@ -185,7 +185,7 @@ class _FormUpdateItemsState extends State<FormUpdateItems> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(25),
                       onTap: update,
-                      child: Center(
+                      child: const Center(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,

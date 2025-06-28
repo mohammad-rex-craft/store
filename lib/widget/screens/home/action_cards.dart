@@ -8,11 +8,11 @@ class ActionCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.count(
       crossAxisCount: 2,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
-      childAspectRatio: 1.2,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+      childAspectRatio: 1.4,
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildActionCard(
           context: context,
@@ -40,11 +40,11 @@ class ActionCards extends StatelessWidget {
         ),
         _buildActionCard(
           context: context,
-          title: 'Storage',
-          subtitle: 'Manage the storage',
-          icon: Icons.warehouse_outlined,
-          color: Colors.purple,
-          onTap: () => router(context, '/storage'),
+          title: 'Create Client',
+          subtitle: 'Manage the client',
+          icon: Icons.person_add,
+          color: Colors.pinkAccent,
+          onTap: () => router(context, '/create_client'),
         ),
       ],
     );
@@ -68,7 +68,7 @@ class ActionCards extends StatelessWidget {
             color.withOpacity(0.05),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: color.withOpacity(0.2),
           width: 1,
@@ -76,23 +76,23 @@ class ActionCards extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, 5),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(15),
           onTap: onTap,
           child: Padding(
-            padding: EdgeInsets.all(5),
+            padding: const EdgeInsets.all(4),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     shape: BoxShape.circle,
@@ -100,25 +100,25 @@ class ActionCards extends StatelessWidget {
                   child: Icon(
                     icon,
                     color: color,
-                    size: 24,
+                    size: 20,
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   title,
                   style: TextStyle(
                     color: color,
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: TextStyle(
                     color: Colors.grey.shade600,
-                    fontSize: 11,
+                    fontSize: 10,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 2,

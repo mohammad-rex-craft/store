@@ -7,9 +7,9 @@ class FormCreateItems extends StatefulWidget {
   final VoidCallback onItemCreated;
 
   const FormCreateItems({
-    Key? key,
+    super.key,
     required this.onItemCreated,
-  }) : super(key: key);
+  });
 
   @override
   State<FormCreateItems> createState() => _FormCreateItemsState();
@@ -55,13 +55,13 @@ class _FormCreateItemsState extends State<FormCreateItems> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           
           Container(
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.blue.shade400, Colors.blue.shade600],
@@ -70,7 +70,7 @@ class _FormCreateItemsState extends State<FormCreateItems> {
               ),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
+            child: const Row(
               children: [
                 Icon(
                   Icons.add_circle_outline,
@@ -89,11 +89,11 @@ class _FormCreateItemsState extends State<FormCreateItems> {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           
           
           Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.grey.shade50,
               borderRadius: BorderRadius.circular(10),
@@ -106,14 +106,14 @@ class _FormCreateItemsState extends State<FormCreateItems> {
                   labelText: 'Item Name',
                   prefixIcon: Icons.inventory_2,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Input(
                   controller: qtnController,
                   labelText: 'Quantity in the box',
                   prefixIcon: Icons.shopping_cart,
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 Container(
                   width: double.infinity,
                   height: 50,
@@ -128,7 +128,7 @@ class _FormCreateItemsState extends State<FormCreateItems> {
                       BoxShadow(
                         color: Colors.blue.withOpacity(0.3),
                         blurRadius: 8,
-                        offset: Offset(0, 4),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
@@ -137,7 +137,7 @@ class _FormCreateItemsState extends State<FormCreateItems> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(25),
                       onTap: createItem,
-                      child: Center(
+                      child: const Center(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,

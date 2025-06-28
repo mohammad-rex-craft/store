@@ -40,12 +40,10 @@ class AllOutputState extends State<AllOutput> {
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        setState(() {
-          store = List<Map<String, dynamic>>.from(response);
-        });
-      }
-    } catch (e) {
+      setState(() {
+        store = List<Map<String, dynamic>>.from(response);
+      });
+        } catch (e) {
       
     }
   }
@@ -68,15 +66,13 @@ class AllOutputState extends State<AllOutput> {
         errorMessage: "Network error occurred while fetching outputs",
       );
 
-      if (response != null) {
-        setState(() {
-          allOutputs = List<Map<String, dynamic>>.from(response);
-          filteredOutputs = List.from(allOutputs);
-          hasMoreData = response.length == pageSize;
-          isLoading = false;
-        });
-      }
-    } catch (e) {
+      setState(() {
+        allOutputs = List<Map<String, dynamic>>.from(response);
+        filteredOutputs = List.from(allOutputs);
+        hasMoreData = response.length == pageSize;
+        isLoading = false;
+      });
+        } catch (e) {
       setState(() {
         isLoading = false;
       });
@@ -171,7 +167,7 @@ class AllOutputState extends State<AllOutput> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: Bar(title: 'All Output', color: AppTheme.colorWarning),
+      appBar: const Bar(title: 'All Output', color: AppTheme.colorWarning),
       body: Column(
         children: [
           
@@ -196,7 +192,7 @@ class AllOutputState extends State<AllOutput> {
                     color: AppTheme.colorWarning,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.output,
                     color: Colors.white,
                     size: 20,
@@ -270,7 +266,7 @@ class AllOutputState extends State<AllOutput> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
+          const CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorWarning),
           ),
           const SizedBox(height: 16),
@@ -296,7 +292,7 @@ class AllOutputState extends State<AllOutput> {
               color: AppTheme.colorWarning.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.inbox_outlined,
               size: 64,
               color: AppTheme.colorWarning,
@@ -310,7 +306,7 @@ class AllOutputState extends State<AllOutput> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Try adjusting your search criteria',
             style: AppTheme.captionStyle,
             textAlign: TextAlign.center,

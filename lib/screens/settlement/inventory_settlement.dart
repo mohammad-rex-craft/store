@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import '../database/database.dart';
-import '../widget/common/bar.dart';
-import '../widget/common/btn.dart';
-import '../widget/common/input.dart';
-import '../widget/common/selector.dart';
+import '../../database/database.dart';
+import '../../widget/common/bar.dart';
+import '../../widget/common/btn.dart';
+import '../../widget/common/input.dart';
+import '../../widget/common/selector.dart';
 
 class InventorySettlement extends StatefulWidget {
   const InventorySettlement({super.key});
@@ -87,7 +87,7 @@ class _InventorySettlementState extends State<InventorySettlement> {
       db.showAlert(context,
           title: "Warning",
           message:
-              "The adjustment quantity (${adjustmentQuantity}) exceeds the available stock (${selectedItemData['qtn']}).",
+              "The adjustment quantity ($adjustmentQuantity) exceeds the available stock (${selectedItemData['qtn']}).",
           type: AlertType.warning);
       return;
     }
@@ -191,7 +191,7 @@ class _InventorySettlementState extends State<InventorySettlement> {
     return Stack(
       children: [
         Scaffold(
-          appBar: Bar(title: 'Inventory Settlement', color: Colors.indigo),
+          appBar: const Bar(title: 'Inventory Settlement', color: Colors.indigo),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(

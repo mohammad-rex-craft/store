@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import '../utility/theme.dart';
 
 class DatabaseService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -14,27 +15,25 @@ class DatabaseService {
     required String message,
     AlertType type = AlertType.error,
   }) {
-    Alert(
-      context: context,
-      type: type,
-      title: title,
-      desc: message,
-      buttons: [
-        DialogButton(
-          onPressed: () => Navigator.pop(context),
-          width: 120,
-          child: Text(
-            "OK",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(type == AlertType.success ? Icons.check_circle : Icons.error, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Text(message),
+          ],
         ),
-      ],
-    ).show();
+        backgroundColor: type == AlertType.success ? AppTheme.colorSuccess : AppTheme.colorError,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
   }
 
   
   Future<User?> getCurrentUser() async {
-    return await _supabase.auth.currentUser;
+    return _supabase.auth.currentUser;
   }
 
   void checkAuth() {
@@ -79,13 +78,20 @@ class DatabaseService {
     required String table,
     required String id,
     required BuildContext context,
+    String? lableSearch,
     String? errorMessage,
   }) async {
     try {
-      final response = await _supabase
+      final response = lableSearch == null? await _supabase
           .from(table)
           .select('*')
           .eq('id', id)
+          .eq('warehouse_id', user!.id)
+          .single():
+          await _supabase
+          .from(table)
+          .select('*')
+          .eq(lableSearch, id)
           .eq('warehouse_id', user!.id)
           .single();
       return response;
@@ -295,7 +301,18 @@ Future<Map<String, dynamic>> rpc(
       return responseData;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text('Error: ${e.toString()}'),
+            ],
+          ),
+          backgroundColor: AppTheme.colorError,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
       );
       return {'error': e.toString()};
     }
@@ -337,16 +354,23 @@ Future<Map<String, dynamic>> rpc(
     required int page,
     required int pageSize,
     required int id,
+    String? lableSearch,
     String? orderBy,
     bool ascending = true,
     required BuildContext context,
     String? errorMessage,
   }) async {
     try {
-      var query = _supabase
+      var query =lableSearch == null? _supabase
           .from(table)
           .select()
           .contains('items_ids', id)
+          .eq('warehouse_id', user!.id)
+          .range(page * pageSize, (page + 1) * pageSize - 1):
+          _supabase
+          .from(table)
+          .select()
+          .eq(lableSearch??"client_id", id)
           .eq('warehouse_id', user!.id)
           .range(page * pageSize, (page + 1) * pageSize - 1);
 
@@ -356,7 +380,10 @@ Future<Map<String, dynamic>> rpc(
 
       final response = await query;
       return List<Map<String, dynamic>>.from(response);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('Supabase Error in getAllByItemPaginated: ${e.toString()}');
+      print('Error details: table=$table, id=$id, lableSearch=$lableSearch');
+      print('Stack trace: $stackTrace');
       if (errorMessage != null) {
         showAlert(context, title: "Error", message: errorMessage);
       }
@@ -411,9 +438,9 @@ Future<Map<String, dynamic>> rpc(
         context: context,
         errorMessage: "Error loading orders",
       );
-      print('Orders count: ${ordersResponse?.length ?? 0}');
+      print('Orders count: ${ordersResponse.length ?? 0}');
       
-      if (ordersResponse != null && ordersResponse.isNotEmpty) {
+      if (ordersResponse.isNotEmpty) {
         print('First order: ${ordersResponse.first}');
         
         
@@ -441,9 +468,9 @@ Future<Map<String, dynamic>> rpc(
         context: context,
         errorMessage: "Error loading store",
       );
-      print('Store items count: ${storeResponse?.length ?? 0}');
+      print('Store items count: ${storeResponse.length ?? 0}');
       
-      if (storeResponse != null && storeResponse.isNotEmpty) {
+      if (storeResponse.isNotEmpty) {
         print('First store item: ${storeResponse.first}');
       }
       
@@ -510,7 +537,7 @@ Future<Map<String, dynamic>> rpc(
       errorMessage: "Error loading orders",
     );
 
-    if (ordersResponse == null || ordersResponse.isEmpty) {
+    if (ordersResponse.isEmpty) {
       return [];
     }
 
@@ -523,12 +550,10 @@ Future<Map<String, dynamic>> rpc(
     );
 
     Map<String, int> currentQuantities = {};
-    if (storeResponse != null) {
-      for (var item in storeResponse) {
-        currentQuantities[item['item']] = item['qtn'] ?? 0;
-      }
+    for (var item in storeResponse) {
+      currentQuantities[item['item']] = item['qtn'] ?? 0;
     }
-    
+      
     Map<String, int> itemFrequency = {};
     
     for (var order in orders) {

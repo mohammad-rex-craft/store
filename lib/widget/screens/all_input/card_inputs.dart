@@ -10,7 +10,7 @@ class CardInputs extends StatelessWidget {
   final List<Map<String, dynamic>> store;
   final Function onRefresh;
 
-  CardInputs({
+  CardInputs({super.key, 
     required this.item,
     required this.store,
     required this.onRefresh,
@@ -30,7 +30,7 @@ class CardInputs extends StatelessWidget {
             ),
             title: Row(
               children: [
-                Icon(Icons.delete_forever, color: AppTheme.colorError, size: 24),
+                const Icon(Icons.delete_forever, color: AppTheme.colorError, size: 24),
                 const SizedBox(width: 8),
                 Text(
                   'Delete Input',
@@ -38,7 +38,7 @@ class CardInputs extends StatelessWidget {
                 ),
               ],
             ),
-            content: Text(
+            content: const Text(
               'Are you sure you want to delete this input record? This action cannot be undone.',
               style: AppTheme.bodyStyle,
             ),
@@ -72,11 +72,11 @@ class CardInputs extends StatelessWidget {
 
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Row(
+          content: const Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              const Text('Input deleted successfully'),
+              SizedBox(width: 8),
+              Text('Input deleted successfully'),
             ],
           ),
           backgroundColor: AppTheme.colorSuccess,
@@ -91,7 +91,7 @@ class CardInputs extends StatelessWidget {
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.error, color: Colors.white, size: 20),
+              const Icon(Icons.error, color: Colors.white, size: 20),
               const SizedBox(width: 8),
               Text('Error: ${e.toString()}'),
             ],
@@ -176,7 +176,9 @@ class CardInputs extends StatelessWidget {
                 
                 
                 if (isReturn) ...[
-                  Container(
+                  Column(
+                    children: [
+                      Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppTheme.colorError.withOpacity(0.1),
@@ -192,7 +194,25 @@ class CardInputs extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(height: 4),
+                   Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.colorMain.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppTheme.colorMain.withOpacity(0.3)),
+                    ),
+                    child: Text(
+                      'Client: ${item['client'] ?? ''}',
+                      style: AppTheme.captionStyle.copyWith(
+                        color: AppTheme.colorText,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                    ],
+                  )
                 ],
                 
                 
@@ -200,8 +220,8 @@ class CardInputs extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.edit, color: AppTheme.colorInfo, size: 18),
-                      onPressed: () => dinamecRouter(
+                      icon: const Icon(Icons.edit, color: AppTheme.colorInfo, size: 18),
+                      onPressed: () => dynamicRouter(
                         context, 
                         '/edit', 
                         {'items': item, 'type': 'inputs'}
@@ -211,7 +231,7 @@ class CardInputs extends StatelessWidget {
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete, color: AppTheme.colorError, size: 18),
+                      icon: const Icon(Icons.delete, color: AppTheme.colorError, size: 18),
                       onPressed: () => onDelete(item['id'], context),
                       tooltip: 'Delete',
                       padding: EdgeInsets.zero,
@@ -232,7 +252,7 @@ class CardInputs extends StatelessWidget {
                 
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.inventory,
                       color: AppTheme.textSecondary,
                       size: 14,
@@ -288,7 +308,7 @@ class CardInputs extends StatelessWidget {
                       ],
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),

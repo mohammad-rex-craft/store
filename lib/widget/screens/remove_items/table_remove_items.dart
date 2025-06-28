@@ -60,19 +60,19 @@ class TableRemoveItems extends StatelessWidget {
                       ),
                       TableCell(
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           child: Text(item['qtn'].toString(),textAlign: TextAlign.center,),
                         ),
                       ),
                       TableCell(
                         child: IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
+                          icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () => onDelete(items.indexOf(item)),
                         ),
                       ),
                     ],
                   );
-                }).toList(),
+                }),
               ],
             ),
             const SizedBox(height: 16),

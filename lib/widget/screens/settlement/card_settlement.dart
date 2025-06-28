@@ -59,8 +59,8 @@ class _CardSettlementState extends State<CardSettlement> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: Row(
-            children: const [
+          title: const Row(
+            children: [
               Icon(Icons.warning_amber_rounded, color: Colors.orange),
               SizedBox(width: 10),
               Text('Confirm Deletion'),
@@ -157,7 +157,7 @@ class _CardSettlementState extends State<CardSettlement> {
             ),
             child: Row(
               children: [
-                Icon(Icons.compare_arrows_rounded, color: AppTheme.colorInfo, size: 18),
+                const Icon(Icons.compare_arrows_rounded, color: AppTheme.colorInfo, size: 18),
                 const SizedBox(width: 8),
                 Text(
                   'Settlement',
@@ -210,7 +210,7 @@ class _CardSettlementState extends State<CardSettlement> {
                 // Items Header
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.inventory_2_outlined,
                       color: AppTheme.textSecondary,
                       size: 14,

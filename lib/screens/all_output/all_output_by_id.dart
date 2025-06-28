@@ -46,12 +46,10 @@ class AllOutputByIdState extends State<AllOutputById> {
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        setState(() {
-          store = List<Map<String, dynamic>>.from(response);
-        });
-      }
-    } catch (e) {
+      setState(() {
+        store = List<Map<String, dynamic>>.from(response);
+      });
+        } catch (e) {
       
     }
   }
@@ -175,9 +173,9 @@ class AllOutputByIdState extends State<AllOutputById> {
           ),
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : filteredOutputs.isEmpty
-                    ? Center(
+                    ? const Center(
                         child: Text(
                           'No data available',
                           style: TextStyle(fontSize: 18),

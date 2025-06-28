@@ -64,6 +64,9 @@ class _SelectorState extends State<Selector> {
         _currentValues = widget.initialValue ?? [];
       });
     }
+    if (widget.defaultValue != oldWidget.defaultValue) {
+      widget.controller.text = widget.defaultValue ?? '';
+    }
   }
 
   @override
@@ -85,8 +88,8 @@ class _SelectorState extends State<Selector> {
           items: widget.allItems
               .map(
                 (item) => MultiSelectItem<String>(
-                  item[widget.valueKey] as String,
-                  item[widget.displayKey] as String,
+                  item[widget.valueKey].toString(),
+                  item[widget.displayKey].toString(),
                 ),
               )
               .toList(),
@@ -97,7 +100,7 @@ class _SelectorState extends State<Selector> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppTheme.borderColor, width: 1),
           ),
-          buttonIcon: Icon(
+          buttonIcon: const Icon(
             Icons.arrow_drop_down,
             color: AppTheme.textSecondary,
           ),
@@ -151,8 +154,8 @@ class _SelectorState extends State<Selector> {
         value: widget.controller.text.isEmpty ? null : widget.controller.text,
         items: widget.allItems.map((item) {
           return DropdownMenuItem<String>(
-            value: item[widget.valueKey] as String,
-            child: Text(item[widget.displayKey] as String, style: AppTheme.bodyStyle),
+            value: item[widget.valueKey].toString(),
+            child: Text(item[widget.displayKey].toString(), style: AppTheme.bodyStyle),
           );
         }).toList(),
         onChanged: widget.enabled
@@ -171,7 +174,7 @@ class _SelectorState extends State<Selector> {
               return null;
             },
         style: AppTheme.bodyStyle,
-        icon: Icon(Icons.arrow_drop_down, color: AppTheme.textSecondary),
+        icon: const Icon(Icons.arrow_drop_down, color: AppTheme.textSecondary),
         dropdownColor: AppTheme.cardBackground,
         isExpanded: true,
       ),

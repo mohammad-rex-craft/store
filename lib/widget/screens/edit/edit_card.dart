@@ -11,7 +11,7 @@ class EditCard extends StatefulWidget {
   final Map<String, dynamic> item;
   final String table;
 
-  EditCard({required this.item, required this.table});
+  const EditCard({super.key, required this.item, required this.table});
 
   @override
   State<EditCard> createState() => _EditCardState();
@@ -24,13 +24,14 @@ class _EditCardState extends State<EditCard> {
   final DatabaseService db = DatabaseService();
   List<Map<String, dynamic>> data = [];
   final TextEditingController senderController = TextEditingController();
-  final TextEditingController clientController = TextEditingController();
+  List<Map<String, dynamic>> allClients = [];
 
   @override
   void initState() {
     super.initState();
     getItems();
   }
+
 
   Future<void> getItems() async {
     try {
@@ -39,21 +40,26 @@ class _EditCardState extends State<EditCard> {
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        // Sort data by ID in ascending order
-        List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(response);
-        sortedData.sort((a, b) {
-          int idA = a['id'] ?? 0;
-          int idB = b['id'] ?? 0;
-          return idA.compareTo(idB);
-        });
-        
-        setState(() {
-          data = sortedData;
-        });
-      }
-    } catch (e) {
-      
+      // Sort data by ID in ascending order
+      List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
+        response,
+      );
+      sortedData.sort((a, b) {
+        int idA = a['id'] ?? 0;
+        int idB = b['id'] ?? 0;
+        return idA.compareTo(idB);
+      });
+      final responseClients = await db.readAll(
+        table: 'client',
+        context: context,
+        errorMessage: "Network error occurred while fetching items",
+      );
+      setState(() {
+        data = sortedData;
+        allClients = responseClients ?? [];
+      });
+        } catch (e) {
+      print(e);
     }
   }
 
@@ -64,8 +70,7 @@ class _EditCardState extends State<EditCard> {
   ) async {
     if ((type == 'date' && dateController.text.isEmpty) ||
         (type == 'noa' && noaController.text.isEmpty) ||
-        (type == 'sender' && senderController.text.isEmpty) ||
-        (type == 'client' && clientController.text.isEmpty)) {
+        (type == 'sender' && senderController.text.isEmpty)) {
       return;
     }
 
@@ -76,10 +81,8 @@ class _EditCardState extends State<EditCard> {
         type: type == 'date'
             ? dateController.text
             : type == 'sender'
-            ? senderController.text
-            : type == 'client'
-            ? clientController.text
-            : noaController.text,
+                ? senderController.text
+                : noaController.text,
       },
       context: context,
     );
@@ -88,21 +91,65 @@ class _EditCardState extends State<EditCard> {
       widget.item[type] = type == 'date'
           ? dateController.text
           : type == 'sender'
-          ? senderController.text
-          : type == 'client'
-          ? clientController.text
-          : noaController.text;
+              ? senderController.text
+              : noaController.text;
     });
 
     dateController.clear();
     noaController.clear();
     senderController.clear();
-    clientController.clear();
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$type updated successfully'),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Text('$type updated successfully'),
+          ],
+        ),
         backgroundColor: AppTheme.colorSuccess,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  Future<void> updateClient(BuildContext context, String? newClientIdStr) async {
+    if (newClientIdStr == null || newClientIdStr.isEmpty) return;
+
+    final newClientId = int.parse(newClientIdStr);
+    final newClientName =
+        allClients.firstWhere((c) => c['id'] == newClientId)['name'];
+
+    await db.update(
+      table: widget.table,
+      id: widget.item['id'],
+      data: {
+        'client_id': newClientId,
+        'client': newClientName,
+      },
+      context: context,
+    );
+
+    setState(() {
+      widget.item['client_id'] = newClientId;
+      widget.item['client'] = newClientName;
+    });
+
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white, size: 20),
+            SizedBox(width: 8),
+            Text('Client updated successfully'),
+          ],
+        ),
+        backgroundColor: AppTheme.colorSuccess,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
@@ -162,15 +209,31 @@ class _EditCardState extends State<EditCard> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Item updated successfully'),
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text('Item updated successfully'),
+            ],
+          ),
           backgroundColor: AppTheme.colorSuccess,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update item: ${e.toString()}'),
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text('Failed to update item: ${e.toString()}'),
+            ],
+          ),
           backgroundColor: AppTheme.colorError,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     }
@@ -222,15 +285,31 @@ class _EditCardState extends State<EditCard> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Quantity updated successfully'),
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text('Quantity updated successfully'),
+            ],
+          ),
           backgroundColor: AppTheme.colorSuccess,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update quantity: ${e.toString()}'),
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text('Failed to update quantity: ${e.toString()}'),
+            ],
+          ),
           backgroundColor: AppTheme.colorError,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     }
@@ -241,9 +320,14 @@ class _EditCardState extends State<EditCard> {
     String oldValue,
   ) {
     final filteredData = List<Map<String, dynamic>>.from(data);
-    widget.item['items'].forEach((e) {
-      filteredData.removeWhere((item) => item['item'] == e['item']);
-    });
+    // Get a set of all item names currently in the list
+    final currentItemNames =
+        widget.item['items'].map((e) => e['item'] as String).toSet();
+    // Remove the item we are currently editing from the set, so it won't be filtered out
+    currentItemNames.remove(oldValue);
+
+    // Filter the data, removing items that are in the list (but keeping the one we're editing)
+    filteredData.removeWhere((item) => currentItemNames.contains(item['item']));
     return filteredData;
   }
 
@@ -332,7 +416,7 @@ class _EditCardState extends State<EditCard> {
             ),
             
             
-            if (widget.table == 'orders') ...[
+            if (widget.table == 'orders' || widget.table == 'inputs' && widget.item['type'] == 'Return') ...[
               const SizedBox(height: 16),
               Text(
                 'Order Information',
@@ -341,6 +425,7 @@ class _EditCardState extends State<EditCard> {
               const SizedBox(height: 12),
               Row(
                 children: [
+                  if (widget.item['sender'] != null)
                   Expanded(
                     child: _buildEditableField(
                       label: 'Sender',
@@ -350,8 +435,11 @@ class _EditCardState extends State<EditCard> {
                         showCustomDialog(
                           context,
                           'Update Sender',
-                          Input(controller: senderController, labelText: 'Sender'),
-                          (value) => updateDateNoaClientSender(context, 'sender', widget.table),
+                          Input(
+                              controller: senderController,
+                              labelText: 'Sender'),
+                          (value) => updateDateNoaClientSender(
+                              context, 'sender', widget.table),
                         );
                       },
                     ),
@@ -364,11 +452,21 @@ class _EditCardState extends State<EditCard> {
                         value: widget.item['client'] ?? 'Not set',
                         icon: Icons.business,
                         onTap: () {
+                          String? selectedClientId;
                           showCustomDialog(
                             context,
                             'Update Client',
-                            Input(controller: clientController, labelText: 'Client'),
-                            (value) => updateDateNoaClientSender(context, 'client', widget.table),
+                            Selector(
+                              controller: TextEditingController(),
+                              allItems: allClients,
+                              labelText: 'Client',
+                              onItemChanged: (newValue) =>
+                                  selectedClientId = newValue,
+                              valueKey: 'id',
+                              displayKey: 'name',
+                              defaultValue: widget.item['client_id']?.toString(),
+                            ),
+                            (value) => updateClient(context, selectedClientId),
                           );
                         },
                       ),
@@ -504,7 +602,7 @@ class _EditCardState extends State<EditCard> {
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),

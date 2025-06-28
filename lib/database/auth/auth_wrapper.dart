@@ -5,7 +5,7 @@ class AuthWrapper extends StatelessWidget {
   final Widget child;
   final DatabaseService _db = DatabaseService();
 
-  AuthWrapper({Key? key, required this.child}) : super(key: key);
+  AuthWrapper({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

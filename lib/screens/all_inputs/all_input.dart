@@ -40,12 +40,10 @@ class AllInputState extends State<AllInput> {
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        setState(() {
-          store = List<Map<String, dynamic>>.from(response);
-        });
-      }
-    } catch (e) {
+      setState(() {
+        store = List<Map<String, dynamic>>.from(response);
+      });
+        } catch (e) {
       
     }
   }
@@ -68,15 +66,13 @@ class AllInputState extends State<AllInput> {
         errorMessage: "Network error occurred while fetching inputs",
       );
 
-      if (response != null) {
-        setState(() {
-          allInputs = List<Map<String, dynamic>>.from(response);
-          filteredInputs = List.from(allInputs);
-          hasMoreData = response.length == pageSize;
-          isLoading = false;
-        });
-      }
-    } catch (e) {
+      setState(() {
+        allInputs = List<Map<String, dynamic>>.from(response);
+        filteredInputs = List.from(allInputs);
+        hasMoreData = response.length == pageSize;
+        isLoading = false;
+      });
+        } catch (e) {
       setState(() {
         isLoading = false;
       });
@@ -147,7 +143,7 @@ class AllInputState extends State<AllInput> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: Bar(title: 'All Input', color: AppTheme.colorMain),
+      appBar: const Bar(title: 'All Input', color: AppTheme.colorMain),
       body: Column(
         children: [
           
@@ -172,7 +168,7 @@ class AllInputState extends State<AllInput> {
                     color: AppTheme.colorMain,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.input,
                     color: Colors.white,
                     size: 20,
@@ -246,7 +242,7 @@ class AllInputState extends State<AllInput> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
+          const CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorMain),
           ),
           const SizedBox(height: 16),
@@ -272,7 +268,7 @@ class AllInputState extends State<AllInput> {
               color: AppTheme.colorMain.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.inbox_outlined,
               size: 64,
               color: AppTheme.colorMain,
@@ -286,7 +282,7 @@ class AllInputState extends State<AllInput> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Try adjusting your search criteria',
             style: AppTheme.captionStyle,
             textAlign: TextAlign.center,

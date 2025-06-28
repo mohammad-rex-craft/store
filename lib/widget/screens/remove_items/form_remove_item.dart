@@ -8,7 +8,9 @@ class FormRemoveItem extends StatelessWidget {
   final TextEditingController dateController;
   final TextEditingController qtnController;
   final TextEditingController invoiceController;
-  final TextEditingController clientController;
+  final int? selectedClientId;
+  final Function(dynamic) onClientChanged;
+  final List<Map<String, dynamic>> allClients;
   final TextEditingController senderController;
   final List<String> selectedItems;
   final List<Map<String, dynamic>> allItems;
@@ -20,7 +22,9 @@ class FormRemoveItem extends StatelessWidget {
     required this.dateController,
     required this.qtnController,
     required this.invoiceController,
-    required this.clientController,
+    required this.selectedClientId,
+    required this.onClientChanged,
+    required this.allClients,
     required this.senderController,
     required this.selectedItems,
     required this.allItems,
@@ -33,28 +37,37 @@ class FormRemoveItem extends StatelessWidget {
     return Card(
       elevation: 8,
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 16,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            const Text(
               "Remove Items",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 16),
             Input(
               controller: invoiceController,
               labelText: 'Noa *',
             ),
-            Input(
-              controller: clientController,
+            const SizedBox(height: 16),
+            Selector(
+              controller: TextEditingController(),
               labelText: 'Client *',
+              allItems: allClients,
+              onItemChanged: onClientChanged,
+              valueKey: 'id',
+              displayKey: 'name',
+              defaultValue: selectedClientId?.toString(),
             ),
+            const SizedBox(height: 16),
             Input(
               controller: senderController,
               labelText: 'Sender *',
             ),
+            const SizedBox(height: 16),
             DatePicker(controller: dateController),
+            const SizedBox(height: 16),
             Selector(
               isMultiple: true,
               controller: TextEditingController(),
@@ -63,13 +76,15 @@ class FormRemoveItem extends StatelessWidget {
               labelText: 'Item *',
               onItemChanged: onItemChanged,
             ),
+            const SizedBox(height: 16),
             Input(
               controller: qtnController,
               labelText: 'Qtn *',
             ),
+            const SizedBox(height: 16),
             Btn(
-              title: 'Add', 
-              width: double.infinity, 
+              title: 'Add',
+              width: double.infinity,
               onTap: onAdd,
               btnType: BtnType.warning,
               icon: Icons.remove,

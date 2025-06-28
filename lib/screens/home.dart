@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: hexToColor("#303F9F"),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout, color: Colors.white),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () => _showLogoutDialog(context),
             tooltip: 'Log Out',
           ),
@@ -33,29 +33,28 @@ class _HomeScreenState extends State<HomeScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.shade50,
-              Colors.white,
-            ],
+            colors: [Colors.blue.shade50, Colors.white],
           ),
         ),
-        child: SafeArea(
+        child: const SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                WelcomeCard(),         
-                SizedBox(height: 30),  
-                Expanded(
-                  child: ActionCards(),
-                ), 
-                SizedBox(height: 20), 
-                QuickButtons(),
-              ],
+            padding: EdgeInsets.all(20.0),
+            child:Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      WelcomeCard(),
+                      SizedBox(height: 15),
+                      ActionCards(),
+                    ],
+                  ),
+                  QuickButtons(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -67,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Row(
+          title: const Row(
             children: [
               Icon(Icons.logout, color: Colors.red, size: 28),
               SizedBox(width: 10),
@@ -80,14 +79,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          content: Text(
+          content: const Text(
             'Are you sure you want to log out?',
             style: TextStyle(fontSize: 16),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
+              child: const Text(
                 'Cancel',
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
@@ -96,29 +95,25 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Row(
+                    content: const Row(
                       children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16),
+                        Icon(Icons.info, color: Colors.white, size: 20),
+                        SizedBox(width: 8),
                         Text('Logging out...'),
                       ],
                     ),
-                    duration: Duration(seconds: 2),
+                    backgroundColor: Colors.blue,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    duration: const Duration(seconds: 2),
                   ),
                 );
 
                 LogInOut().signOut(context);
               },
-              child: Text(
+              child: const Text(
                 'Confirm',
                 style: TextStyle(color: Colors.red, fontSize: 16),
               ),
@@ -128,4 +123,4 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-} 
+}

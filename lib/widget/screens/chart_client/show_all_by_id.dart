@@ -1,37 +1,31 @@
 import 'package:flutter/material.dart';
-import '../../database/database.dart';
-import '../../widget/common/bar.dart';
-import '../../widget/common/search_sort_bar.dart';
-import '../../widget/screens/all_input/card_inputs.dart';
-import '../../widget/common/pagination_btn.dart';
-import '../../widget/screens/settlement/card_settlement.dart';
+import '../../common/bar.dart';
+import '../../../database/database.dart';
+import '../../common/search_sort_bar.dart';
+import '../all_input/card_inputs.dart';
+import '../../common/pagination_btn.dart';
+import '../all_output/card_output.dart';
 
-class AllInputById extends StatefulWidget {
-  const AllInputById({super.key});
+class ShowAllById extends StatefulWidget {
+  const ShowAllById({super.key});
 
   @override
-  AllInputByIdState createState() => AllInputByIdState();
+  ShowAllByIdState createState() => ShowAllByIdState();
 }
 
-class AllInputByIdState extends State<AllInputById> {
+class ShowAllByIdState extends State<ShowAllById> {
   late Map<String, dynamic> routeArgs;
-  List<Map<String, dynamic>> allInputs = [];
-  List<Map<String, dynamic>> filteredInputs = [];
+  bool _isInitialized = false;
   final DatabaseService db = DatabaseService();
+  List<Map<String, dynamic>> store = [];
+  List<Map<String, dynamic>> filteredInputs = [];
   final TextEditingController searchController = TextEditingController();
   bool isSortedAscending = true;
-  bool _isInitialized = false;
-  List<Map<String, dynamic>> store = [];
-
   int currentPage = 0;
   final int pageSize = 10;
-  bool isLoading = false;
   bool hasMoreData = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  bool isLoading = false;
+  List<Map<String, dynamic>> allInputs = [];
 
   @override
   void didChangeDependencies() {
@@ -39,8 +33,8 @@ class AllInputByIdState extends State<AllInputById> {
     if (!_isInitialized) {
       routeArgs =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      _fetchAllInputs();
       getStore();
+      _fetchAllInputs();
       _isInitialized = true;
     }
   }
@@ -55,9 +49,7 @@ class AllInputByIdState extends State<AllInputById> {
       setState(() {
         store = List<Map<String, dynamic>>.from(response);
       });
-        } catch (e) {
-      
-    }
+        } catch (e) {}
   }
 
   void _updateDisplayedList() {
@@ -75,11 +67,15 @@ class AllInputByIdState extends State<AllInputById> {
     temp.sort((a, b) {
       final dateA = a['date'] ?? '';
       final dateB = b['date'] ?? '';
-      return isSortedAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
+      return isSortedAscending
+          ? dateA.compareTo(dateB)
+          : dateB.compareTo(dateA);
     });
 
     final startIndex = currentPage * pageSize;
-    final endIndex = (startIndex + pageSize > temp.length) ? temp.length : startIndex + pageSize;
+    final endIndex = (startIndex + pageSize > temp.length)
+        ? temp.length
+        : startIndex + pageSize;
 
     setState(() {
       filteredInputs = temp.sublist(startIndex, endIndex);
@@ -95,15 +91,16 @@ class AllInputByIdState extends State<AllInputById> {
     });
 
     try {
-       List<Map<String, dynamic>> tempInputs = [];
+      List<Map<String, dynamic>> tempInputs = [];
       int page = 0;
       bool hasMore = true;
       while (hasMore) {
         final response = await db.getAllByItemPaginated(
-          table: 'inputs',
+          table: routeArgs['type'],
           id: routeArgs['id'],
           page: page,
-          pageSize: 50, 
+          pageSize: 50,
+          lableSearch: 'client_id',
           orderBy: 'date',
           ascending: isSortedAscending,
           context: context,
@@ -113,8 +110,9 @@ class AllInputByIdState extends State<AllInputById> {
         hasMore = response.length == 50;
         page++;
       }
-      
+
       setState(() {
+        print(tempInputs);
         allInputs = tempInputs;
         isLoading = false;
         _updateDisplayedList();
@@ -163,7 +161,7 @@ class AllInputByIdState extends State<AllInputById> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Bar(title: 'Input ${routeArgs['item']}',color: Colors.teal),
+      appBar: Bar(title: 'Client ${routeArgs['name']}', color: Colors.teal),
       body: Column(
         children: [
           SearchSortBar(
@@ -171,6 +169,7 @@ class AllInputByIdState extends State<AllInputById> {
             filterData: filterData,
             sortDataByDate: sortDataByDate,
           ),
+
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -185,11 +184,21 @@ class AllInputByIdState extends State<AllInputById> {
                     itemCount: filteredInputs.length,
                     itemBuilder: (context, index) {
                       final item = filteredInputs[index];
-                      return CardInputs(item: item, store: store, onRefresh: _fetchAllInputs);
+                      return routeArgs['type'] == 'inputs'
+                          ? CardInputs(
+                              item: item,
+                              store: store,
+                              onRefresh: _fetchAllInputs,
+                            )
+                          : CardOutput(
+                              item: item,
+                              store: store,
+                              onRefresh: _fetchAllInputs,
+                            );
                     },
                   ),
           ),
-          
+
           PaginationBtn(
             currentPage: currentPage,
             hasMoreData: hasMoreData,

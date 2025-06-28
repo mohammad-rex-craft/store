@@ -20,7 +20,7 @@ class QuickButtons extends StatelessWidget {
                 onTap: () => router(context, '/all_input'),
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: _buildQuickButton(
                 context: context,
@@ -32,7 +32,7 @@ class QuickButtons extends StatelessWidget {
             ),
           ],
         ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
         Row(
           children: [
@@ -45,7 +45,7 @@ class QuickButtons extends StatelessWidget {
                 onTap: () => router(context, '/inventory'),
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: _buildQuickButton(
                 context: context,
@@ -53,6 +53,30 @@ class QuickButtons extends StatelessWidget {
                 icon: Icons.receipt_long,
                 color: Colors.brown,
                 onTap: () => router(context, '/all_settlements'),
+              ),
+            ),
+          ],
+        ),
+           const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _buildQuickButton(
+                context: context,
+                title: 'Client',
+                icon: Icons.person,
+                color: Colors.blue,
+                onTap: () => router(context, '/all_client'),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildQuickButton(
+                context: context,
+                title: 'Storage',
+                icon: Icons.storage,
+                color: Colors.purple,
+                onTap: () => router(context, '/storage'),
               ),
             ),
           ],
@@ -69,38 +93,38 @@ class QuickButtons extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      height: 50,
+      height: 40,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [color, color.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.3),
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(12),
           onTap: onTap,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: Colors.white, size: 20),
-              SizedBox(width: 8),
+              Icon(icon, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                  fontSize: 13,
                 ),
               ),
             ],

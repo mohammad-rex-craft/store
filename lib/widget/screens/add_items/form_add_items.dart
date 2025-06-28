@@ -14,6 +14,9 @@ class FormAddItems extends StatelessWidget {
   final Function(String?) onTypeChanged;
   final Function(List<String>?) onItemChanged;
   final VoidCallback onAdd;
+  final List<Map<String, dynamic>> allClients;
+  final Function(dynamic) onClientChanged;
+  final int? selectedClientId;
 
   const FormAddItems({
     super.key,
@@ -26,6 +29,9 @@ class FormAddItems extends StatelessWidget {
     required this.onTypeChanged,
     required this.onItemChanged,
     required this.onAdd,
+    required this.allClients,
+    required this.onClientChanged,
+    required this.selectedClientId,
   });
 
   @override
@@ -44,9 +50,10 @@ class FormAddItems extends StatelessWidget {
             const SizedBox(height: 16),
             Selector(
               controller: TextEditingController(text: selectedType ?? ''),
-              allItems: ['Production', 'Return']
-                  .map((type) => {'type': type})
-                  .toList(),
+              allItems: [
+                'Production',
+                'Return',
+              ].map((type) => {'type': type}).toList(),
               labelText: 'Type *',
               valueKey: 'type',
               displayKey: 'type',
@@ -54,9 +61,16 @@ class FormAddItems extends StatelessWidget {
             ),
             if (selectedType == 'Return') ...[
               const SizedBox(height: 16),
-              Input(
-                controller: invoiceController,
-                labelText: 'Noa *',
+              Input(controller: invoiceController, labelText: 'Noa *'),
+              const SizedBox(height: 16),
+              Selector(
+                controller: TextEditingController(),
+                labelText: 'Client *',
+                allItems: allClients,
+                onItemChanged: onClientChanged,
+                valueKey: 'id',
+                displayKey: 'name',
+                defaultValue: selectedClientId?.toString(),
               ),
             ],
             const SizedBox(height: 16),
@@ -68,14 +82,12 @@ class FormAddItems extends StatelessWidget {
               controller: TextEditingController(),
               allItems: allItems,
               labelText: 'Item *',
-              onItemChanged: (newValue) => onItemChanged(newValue.cast<String>()),
+              onItemChanged: (newValue) =>
+                  onItemChanged(newValue.cast<String>()),
               initialValue: selectedItems,
             ),
             const SizedBox(height: 16),
-            Input(
-              controller: qtnController,
-              labelText: 'Qtn *',
-            ),
+            Input(controller: qtnController, labelText: 'Qtn *'),
             const SizedBox(height: 16),
             Btn(
               title: 'Add',

@@ -26,12 +26,12 @@ class PaginationBtn extends StatelessWidget {
             enabled: currentPage > 0,
             onTap: currentPage > 0 ? previousPage : null,
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Text(
             'Page ${currentPage + 1}',
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Btn(
             title: 'Next',
             btnType: BtnType.secondary,

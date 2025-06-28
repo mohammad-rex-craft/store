@@ -36,17 +36,11 @@ class _InventoryState extends State<Inventory> {
         context: context,
         errorMessage: "Network error occurred while fetching items",
       );
-      if (response != null) {
-        setState(() {
-          data = List<Map<String, dynamic>>.from(response);
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-      }
-      
+      setState(() {
+        data = List<Map<String, dynamic>>.from(response);
+        isLoading = false;
+      });
+          
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -90,7 +84,7 @@ class _InventoryState extends State<Inventory> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: Bar(
+      appBar: const Bar(
         title: 'Inventory',
         color: AppTheme.colorMain,
       ),
@@ -116,7 +110,7 @@ class _InventoryState extends State<Inventory> {
                     ),
                     child: Column(
                       children: [
-                        CircularProgressIndicator(
+                        const CircularProgressIndicator(
                           color: AppTheme.colorMain,
                         ),
                         const SizedBox(height: 16),

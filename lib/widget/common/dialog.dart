@@ -27,14 +27,14 @@ class _InputDialogState extends State<CustomDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
-      content: widget.content ?? Text('no data'),
+      content: widget.content ?? const Text('no data'),
       actions: [
         TextButton(
           onPressed: () {
             if (widget.onNo != null) widget.onNo!();
             Navigator.of(context).pop();
           },
-          child: Text('NO'),
+          child: const Text('NO'),
         ),
         TextButton(
           onPressed: () {
@@ -42,7 +42,7 @@ class _InputDialogState extends State<CustomDialog> {
               widget.onOk!(_controller.text);
             }
           },
-          child: Text('OK'),
+          child: const Text('OK'),
         ),
       ],
     );

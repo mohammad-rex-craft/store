@@ -38,7 +38,7 @@ class Bar extends StatelessWidget implements PreferredSizeWidget {
     
     return AppBar(
         leading: leadingWidget,
-        title: Text(title,style: TextStyle(
+        title: Text(title,style: const TextStyle(
           color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -47,10 +47,10 @@ class Bar extends StatelessWidget implements PreferredSizeWidget {
         actions: actions,
         backgroundColor: color,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(60);
+  Size get preferredSize => const Size.fromHeight(60);
 } 

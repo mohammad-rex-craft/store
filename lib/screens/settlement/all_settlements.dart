@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:storeflow/widget/common/search_sort_bar.dart';
-import '../../widget/common/bar.dart';
-import '../../database/database.dart';
-import '../../widget/common/pagination_btn.dart';
-import '../../utility/theme.dart';
-import '../../widget/screens/settlement/card_settlement.dart';
+import '../../../widget/common/bar.dart';
+import '../../../database/database.dart';
+import '../../../widget/common/pagination_btn.dart';
+import '../../../utility/theme.dart';
+import '../../../widget/screens/settlement/card_settlement.dart';
 
 const Color settlementColor = Colors.brown;
 
@@ -51,15 +51,13 @@ class AllSettlementsState extends State<AllSettlements> {
         errorMessage: "Network error occurred while fetching settlements",
       );
 
-      if (response != null) {
-        setState(() {
-          allSettlements = List<Map<String, dynamic>>.from(response);
-          filteredSettlements = List.from(allSettlements);
-          hasMoreData = response.length == pageSize;
-          isLoading = false;
-        });
-      }
-    } catch (e) {
+      setState(() {
+        allSettlements = List<Map<String, dynamic>>.from(response);
+        filteredSettlements = List.from(allSettlements);
+        hasMoreData = response.length == pageSize;
+        isLoading = false;
+      });
+        } catch (e) {
       setState(() {
         isLoading = false;
       });
@@ -131,7 +129,7 @@ class AllSettlementsState extends State<AllSettlements> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: Bar(title: 'All Settlements', color: settlementColor),
+      appBar: const Bar(title: 'All Settlements', color: settlementColor),
       body: Column(
         children: [
           Container(
@@ -155,7 +153,7 @@ class AllSettlementsState extends State<AllSettlements> {
                     color: settlementColor,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.receipt_long,
                     color: Colors.white,
                     size: 20,
@@ -219,14 +217,14 @@ class AllSettlementsState extends State<AllSettlements> {
   }
 
   Widget _buildLoadingState() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(settlementColor),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text('Loading settlements...', style: AppTheme.bodyStyle),
         ],
       ),
@@ -238,7 +236,7 @@ class AllSettlementsState extends State<AllSettlements> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.hourglass_empty, color: AppTheme.textHint, size: 64),
+          const Icon(Icons.hourglass_empty, color: AppTheme.textHint, size: 64),
           const SizedBox(height: 16),
           Text(
             'No settlements found.',

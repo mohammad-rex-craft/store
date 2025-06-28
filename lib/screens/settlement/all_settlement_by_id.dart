@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../database/database.dart';
-import '../../widget/common/bar.dart';
-import '../../widget/common/search_sort_bar.dart';
-import '../../widget/common/pagination_btn.dart';
-import '../../widget/screens/settlement/card_settlement.dart';
+import '../../../database/database.dart';
+import '../../../widget/common/bar.dart';
+import '../../../widget/common/search_sort_bar.dart';
+import '../../../widget/common/pagination_btn.dart';
+import '../../../widget/screens/settlement/card_settlement.dart';
 
 class AllSettlementById extends StatefulWidget {
   const AllSettlementById({super.key});
@@ -153,9 +153,9 @@ class AllSettlementByIdState extends State<AllSettlementById> {
           ),
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : filteredSettlements.isEmpty
-                    ? Center(
+                    ? const Center(
                         child: Text(
                           'No settlements found for this item.',
                           style: TextStyle(fontSize: 18),

@@ -47,7 +47,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [hexToColor('#303F9F'), hexToColor('#1976D2')],
@@ -59,12 +59,12 @@ class _WelcomeCardState extends State<WelcomeCard> {
           BoxShadow(
             color: hexToColor('#303F9F').withOpacity(0.3),
             blurRadius: 10,
-            offset: Offset(0, 5),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: isLoading
-          ? Center(
+          ? const Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -86,7 +86,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         Icon(
                           Icons.trending_up_rounded,
@@ -105,17 +105,17 @@ class _WelcomeCardState extends State<WelcomeCard> {
                       ],
                     ),
                     IconButton(
-                      icon: Icon(Icons.refresh, color: Colors.white, size: 14),
+                      icon: const Icon(Icons.refresh, color: Colors.white, size: 14),
                       onPressed: loadTopOrderedItems,
                       tooltip: 'Refresh',
                       padding: EdgeInsets.zero,
-                      constraints: BoxConstraints(minWidth: 20, minHeight: 20),
+                      constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
                     ),
                   ],
                 ),
                 if (topItems.isEmpty)
                   Container(
-                    padding: EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(6),
                     child: Text(
                       'No orders found',
                       style: TextStyle(
@@ -128,8 +128,8 @@ class _WelcomeCardState extends State<WelcomeCard> {
                 else
                   GridView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 3,
                       mainAxisSpacing: 3,
@@ -141,7 +141,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
                       bool isLowStock = item['currentQty'] < 10;
 
                       return Container(
-                        padding: EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(4),
@@ -168,7 +168,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
                                   child: Center(
                                     child: Text(
                                       '${index + 1}',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 7,
@@ -176,11 +176,11 @@ class _WelcomeCardState extends State<WelcomeCard> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 2),
+                                const SizedBox(width: 2),
                                 Expanded(
                                   child: Text(
                                     item['name'],
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 10,
                                       fontWeight: FontWeight.w600,
@@ -194,21 +194,21 @@ class _WelcomeCardState extends State<WelcomeCard> {
                                   color: Colors.white.withOpacity(0.7),
                                   size: 9,
                                 ),
-                                SizedBox(width: 1),
+                                const SizedBox(width: 1),
                                 Text(
                                   '${item['frequency']}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 8,
                                   ),
                                 ),
-                                SizedBox(width: 3),
+                                const SizedBox(width: 3),
                                 Icon(
                                   Icons.inventory_2_outlined,
                                   color: Colors.white.withOpacity(0.7),
                                   size: 9,
                                 ),
-                                SizedBox(width: 1),
+                                const SizedBox(width: 1),
                                 Text(
                                   '${item['currentQty']}',
                                   style: TextStyle(
@@ -230,8 +230,8 @@ class _WelcomeCardState extends State<WelcomeCard> {
                   ),
                 if (topItems.isNotEmpty)
                   Container(
-                    margin: EdgeInsets.only(top: 3),
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    margin: const EdgeInsets.only(top: 3),
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(6),
