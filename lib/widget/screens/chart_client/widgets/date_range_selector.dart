@@ -34,7 +34,7 @@ class DateRangeSelector extends StatelessWidget {
       child: Column(
         children: [
           const Text(
-            'الفترة الزمنية',
+            'Date Range',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -46,7 +46,7 @@ class DateRangeSelector extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  const Text('من'),
+                  const Text('From'),
                   TextButton(
                     onPressed: () => onSelectDate(context, true),
                     child: Text(
@@ -60,7 +60,7 @@ class DateRangeSelector extends StatelessWidget {
               ),
               Column(
                 children: [
-                  const Text('إلى'),
+                  const Text('To'),
                   TextButton(
                     onPressed: () => onSelectDate(context, false),
                     child: Text(

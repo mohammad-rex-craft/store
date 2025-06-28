@@ -13,9 +13,6 @@ class ChartWidget extends StatelessWidget {
     required this.maxY,
   }) : super(key: key);
 
-  int get totalOrders {
-    return spots.fold(0, (sum, spot) => sum + spot.y.toInt());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +40,7 @@ class ChartWidget extends StatelessWidget {
       child: Column(
         children: [
           const Text(
-            'إجمالي عدد الطلبات الشهرية',
+            'Total Orders',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -61,7 +58,7 @@ class ChartWidget extends StatelessWidget {
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
                         return touchedSpots.map((spot) {
                           return LineTooltipItem(
-                            '${spot.y.toInt()} طلب',
+                            '${spot.y.toInt()} Order',
                             const TextStyle(color: Colors.white),
                           );
                         }).toList();
@@ -189,34 +186,6 @@ class ChartWidget extends StatelessWidget {
                   clipData: const FlClipData.all(), // منع الرسم خارج الحدود
                 ),
               ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.teal.shade50,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'إجمالي عدد الطلبات: ',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  totalOrders.toString(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal.shade700,
-                  ),
-                ),
-              ],
             ),
           ),
         ],
