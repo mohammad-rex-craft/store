@@ -32,7 +32,6 @@ class _EditCardState extends State<EditCard> {
     getItems();
   }
 
-
   Future<void> getItems() async {
     try {
       final response = await db.readAll(
@@ -58,7 +57,7 @@ class _EditCardState extends State<EditCard> {
         data = sortedData;
         allClients = responseClients ?? [];
       });
-        } catch (e) {
+    } catch (e) {
       print(e);
     }
   }
@@ -81,8 +80,8 @@ class _EditCardState extends State<EditCard> {
         type: type == 'date'
             ? dateController.text
             : type == 'sender'
-                ? senderController.text
-                : noaController.text,
+            ? senderController.text
+            : noaController.text,
       },
       context: context,
     );
@@ -91,8 +90,8 @@ class _EditCardState extends State<EditCard> {
       widget.item[type] = type == 'date'
           ? dateController.text
           : type == 'sender'
-              ? senderController.text
-              : noaController.text;
+          ? senderController.text
+          : noaController.text;
     });
 
     dateController.clear();
@@ -115,20 +114,21 @@ class _EditCardState extends State<EditCard> {
     );
   }
 
-  Future<void> updateClient(BuildContext context, String? newClientIdStr) async {
+  Future<void> updateClient(
+    BuildContext context,
+    String? newClientIdStr,
+  ) async {
     if (newClientIdStr == null || newClientIdStr.isEmpty) return;
 
     final newClientId = int.parse(newClientIdStr);
-    final newClientName =
-        allClients.firstWhere((c) => c['id'] == newClientId)['name'];
+    final newClientName = allClients.firstWhere(
+      (c) => c['id'] == newClientId,
+    )['name'];
 
     await db.update(
       table: widget.table,
       id: widget.item['id'],
-      data: {
-        'client_id': newClientId,
-        'client': newClientName,
-      },
+      data: {'client_id': newClientId, 'client': newClientName},
       context: context,
     );
 
@@ -186,8 +186,9 @@ class _EditCardState extends State<EditCard> {
         };
       }
 
-      final functionName =
-          widget.table == 'inputs' ? 'update_input_v1' : 'update_order_v1';
+      final functionName = widget.table == 'inputs'
+          ? 'update_input_v1'
+          : 'update_order_v1';
 
       final result = await db.rpc(
         functionName,
@@ -261,8 +262,9 @@ class _EditCardState extends State<EditCard> {
         };
       }
 
-      final functionName =
-          widget.table == 'inputs' ? 'update_input_v1' : 'update_order_v1';
+      final functionName = widget.table == 'inputs'
+          ? 'update_input_v1'
+          : 'update_order_v1';
 
       final result = await db.rpc(
         functionName,
@@ -321,8 +323,9 @@ class _EditCardState extends State<EditCard> {
   ) {
     final filteredData = List<Map<String, dynamic>>.from(data);
     // Get a set of all item names currently in the list
-    final currentItemNames =
-        widget.item['items'].map((e) => e['item'] as String).toSet();
+    final currentItemNames = widget.item['items']
+        .map((e) => e['item'] as String)
+        .toSet();
     // Remove the item we are currently editing from the set, so it won't be filtered out
     currentItemNames.remove(oldValue);
 
@@ -333,280 +336,307 @@ class _EditCardState extends State<EditCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: AppTheme.cardDecoration,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.colorMain.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.colorMain.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    widget.table == 'orders' ? Icons.shopping_cart : Icons.inventory,
-                    color: AppTheme.colorMain,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Edit ${widget.table == 'orders' ? 'Order' : 'Production'} Details',
-                      style: AppTheme.titleStyle.copyWith(
-                        color: AppTheme.colorMain,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            
-            Text(
-              'Basic Information',
-              style: AppTheme.headingStyle.copyWith(fontSize: 18),
-            ),
-            const SizedBox(height: 12),
-            
-            
-            Row(
-              children: [
-                Expanded(
-                  child: _buildEditableField(
-                    label: 'Date',
-                    value: widget.item['date'] ?? 'Not set',
-                    icon: Icons.calendar_today,
-                    onTap: () {
-                      showCustomDialog(
-                        context,
-                        'Update Date',
-                        DatePicker(controller: dateController),
-                        (value) => updateDateNoaClientSender(context, 'date', widget.table),
-                      );
-                    },
+    return SingleChildScrollView(
+      child: Container(
+        decoration: AppTheme.cardDecoration,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.colorMain.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.colorMain.withOpacity(0.3),
                   ),
                 ),
-                const SizedBox(width: 12),
-                if (widget.item['noa'] != null)
-                  Expanded(
-                    child: _buildEditableField(
-                      label: 'NOA',
-                      value: widget.item['noa'] ?? 'Not set',
-                      icon: Icons.numbers,
-                      onTap: () {
-                        showCustomDialog(
-                          context,
-                          'Update NOA',
-                          Input(controller: noaController, labelText: 'NOA'),
-                          (value) => updateDateNoaClientSender(context, 'noa', widget.table),
-                        );
-                      },
+                child: Row(
+                  children: [
+                    Icon(
+                      widget.table == 'orders'
+                          ? Icons.shopping_cart
+                          : Icons.inventory,
+                      color: AppTheme.colorMain,
+                      size: 24,
                     ),
-                  ),
-              ],
-            ),
-            
-            
-            if (widget.table == 'orders' || widget.table == 'inputs' && widget.item['type'] == 'Return') ...[
-              const SizedBox(height: 16),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Edit ${widget.table == 'orders' ? 'Order' : 'Production'} Details',
+                        style: AppTheme.titleStyle.copyWith(
+                          color: AppTheme.colorMain,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
               Text(
-                'Order Information',
+                'Basic Information',
                 style: AppTheme.headingStyle.copyWith(fontSize: 18),
               ),
               const SizedBox(height: 12),
+
               Row(
                 children: [
-                  if (widget.item['sender'] != null)
                   Expanded(
                     child: _buildEditableField(
-                      label: 'Sender',
-                      value: widget.item['sender'] ?? 'Not set',
-                      icon: Icons.person,
+                      label: 'Date',
+                      value: widget.item['date'] ?? 'Not set',
+                      icon: Icons.calendar_today,
                       onTap: () {
                         showCustomDialog(
                           context,
-                          'Update Sender',
-                          Input(
-                              controller: senderController,
-                              labelText: 'Sender'),
+                          'Update Date',
+                          DatePicker(controller: dateController),
                           (value) => updateDateNoaClientSender(
-                              context, 'sender', widget.table),
+                            context,
+                            'date',
+                            widget.table,
+                          ),
                         );
                       },
                     ),
                   ),
                   const SizedBox(width: 12),
-                  if (widget.item['client'] != null)
+                  if (widget.item['noa'] != null)
                     Expanded(
                       child: _buildEditableField(
-                        label: 'Client',
-                        value: widget.item['client'] ?? 'Not set',
-                        icon: Icons.business,
+                        label: 'NOA',
+                        value: widget.item['noa'] ?? 'Not set',
+                        icon: Icons.numbers,
                         onTap: () {
-                          String? selectedClientId;
                           showCustomDialog(
                             context,
-                            'Update Client',
-                            Selector(
-                              controller: TextEditingController(),
-                              allItems: allClients,
-                              labelText: 'Client',
-                              onItemChanged: (newValue) =>
-                                  selectedClientId = newValue,
-                              valueKey: 'id',
-                              displayKey: 'name',
-                              defaultValue: widget.item['client_id']?.toString(),
+                            'Update NOA',
+                            Input(controller: noaController, labelText: 'NOA'),
+                            (value) => updateDateNoaClientSender(
+                              context,
+                              'noa',
+                              widget.table,
                             ),
-                            (value) => updateClient(context, selectedClientId),
                           );
                         },
                       ),
                     ),
                 ],
               ),
-            ],
-            
-            const SizedBox(height: 20),
-            
-            
-            Text(
-              'Items',
-              style: AppTheme.headingStyle.copyWith(fontSize: 18),
-            ),
-            const SizedBox(height: 12),
-            
-            
-            Container(
-              decoration: BoxDecoration(
-                color: AppTheme.backgroundColor,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.borderColor),
-              ),
-              child: Column(
-                children: [
-                  
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: AppTheme.colorMain.withOpacity(0.1),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+
+              if (widget.table == 'orders' ||
+                  widget.table == 'inputs' &&
+                      widget.item['type'] == 'Return') ...[
+                const SizedBox(height: 16),
+                Text(
+                  'Order Information',
+                  style: AppTheme.headingStyle.copyWith(fontSize: 18),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    if (widget.item['sender'] != null)
+                      Expanded(
+                        child: _buildEditableField(
+                          label: 'Sender',
+                          value: widget.item['sender'] ?? 'Not set',
+                          icon: Icons.person,
+                          onTap: () {
+                            showCustomDialog(
+                              context,
+                              'Update Sender',
+                              Input(
+                                controller: senderController,
+                                labelText: 'Sender',
+                              ),
+                              (value) => updateDateNoaClientSender(
+                                context,
+                                'sender',
+                                widget.table,
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Item Name',
-                            style: AppTheme.bodyStyle.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.colorMain,
-                            ),
-                          ),
+                    const SizedBox(width: 12),
+                    if (widget.item['client'] != null)
+                      Expanded(
+                        child: _buildEditableField(
+                          label: 'Client',
+                          value: widget.item['client'] ?? 'Not set',
+                          icon: Icons.business,
+                          onTap: () {
+                            String? selectedClientId;
+                            showCustomDialog(
+                              context,
+                              'Update Client',
+                              Selector(
+                                controller: TextEditingController(),
+                                allItems: allClients,
+                                labelText: 'Client',
+                                onItemChanged: (newValue) =>
+                                    selectedClientId = newValue,
+                                valueKey: 'id',
+                                displayKey: 'name',
+                                defaultValue: widget.item['client_id']
+                                    ?.toString(),
+                              ),
+                              (value) =>
+                                  updateClient(context, selectedClientId),
+                            );
+                          },
                         ),
-                        Expanded(
-                          child: Text(
-                            'Quantity',
-                            style: AppTheme.bodyStyle.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.colorMain,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  
-                  ...List.generate(widget.item['items'].length, (index) {
-                    final subItem = widget.item['items'][index];
-                    return Container(
+                      ),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: 20),
+
+              Text(
+                'Items',
+                style: AppTheme.headingStyle.copyWith(fontSize: 18),
+              ),
+              const SizedBox(height: 12),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: AppTheme.backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.borderColor),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: AppTheme.borderColor.withOpacity(0.5),
+                        color: AppTheme.colorMain.withOpacity(0.1),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              'Item Name',
+                              style: AppTheme.bodyStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.colorMain,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Quantity',
+                              style: AppTheme.bodyStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.colorMain,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    ...List.generate(widget.item['items'].length, (index) {
+                      final subItem = widget.item['items'][index];
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppTheme.borderColor.withOpacity(0.5),
+                            ),
                           ),
                         ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: _buildEditableField(
-                                label: '',
-                                value: subItem['item']?.toString() ?? '',
-                                icon: Icons.edit,
-                                onTap: () {
-                                  String select = '';
-                                  showCustomDialog(
-                                    context,
-                                    'Update Item',
-                                    Selector(
-                                      controller: TextEditingController(text: subItem['item']),
-                                      allItems: filterItem(data, subItem['item']),
-                                      labelText: 'Item',
-                                      onItemChanged: (newValue) => select = newValue,
-                                    ),
-                                    (value) => updateItem(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: _buildEditableField(
+                                  label: '',
+                                  value: subItem['item']?.toString() ?? '',
+                                  icon: Icons.edit,
+                                  onTap: () {
+                                    String select = '';
+                                    showCustomDialog(
                                       context,
-                                      subItem['id'],
-                                      subItem['qtn'],
-                                      subItem['item'],
-                                      select,
-                                    ),
-                                  );
-                                },
-                                compact: true,
+                                      'Update Item',
+                                      Selector(
+                                        controller: TextEditingController(
+                                          text: subItem['item'],
+                                        ),
+                                        allItems: filterItem(
+                                          data,
+                                          subItem['item'],
+                                        ),
+                                        labelText: 'Item',
+                                        onItemChanged: (newValue) =>
+                                            select = newValue,
+                                      ),
+                                      (value) => updateItem(
+                                        context,
+                                        subItem['id'],
+                                        subItem['qtn'],
+                                        subItem['item'],
+                                        select,
+                                      ),
+                                    );
+                                  },
+                                  compact: true,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildEditableField(
-                                label: '',
-                                value: subItem['qtn']?.toString() ?? '',
-                                icon: Icons.edit,
-                                onTap: () {
-                                  qtnController.text = subItem['qtn']?.toString() ?? '';
-                                  showCustomDialog(
-                                    context,
-                                    'Update Quantity',
-                                    Input(
-                                      controller: qtnController,
-                                      labelText: 'New Quantity',
-                                      keyboardType: TextInputType.number,
-                                    ),
-                                    (value) => updateQtn(
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildEditableField(
+                                  label: '',
+                                  value: subItem['qtn']?.toString() ?? '',
+                                  icon: Icons.edit,
+                                  onTap: () {
+                                    qtnController.text =
+                                        subItem['qtn']?.toString() ?? '';
+                                    showCustomDialog(
                                       context,
-                                      subItem['id'],
-                                      subItem['item'],
-                                    ),
-                                  );
-                                },
-                                compact: true,
+                                      'Update Quantity',
+                                      Input(
+                                        controller: qtnController,
+                                        labelText: 'New Quantity',
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                      (value) => updateQtn(
+                                        context,
+                                        subItem['id'],
+                                        subItem['item'],
+                                      ),
+                                    );
+                                  },
+                                  compact: true,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  }),
-                ],
+                      );
+                    }),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -631,12 +661,11 @@ class _EditCardState extends State<EditCard> {
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
           child: Padding(
-            padding: compact 
-              ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
-              : const EdgeInsets.all(12),
+            padding: compact
+                ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
+                : const EdgeInsets.all(12),
             child: Row(
               children: [
-              
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -653,15 +682,14 @@ class _EditCardState extends State<EditCard> {
                       ],
                       Text(
                         value,
-                        style: compact 
-                          ? AppTheme.bodyStyle.copyWith(fontSize: 14)
-                          : AppTheme.bodyStyle,
+                        style: compact
+                            ? AppTheme.bodyStyle.copyWith(fontSize: 14)
+                            : AppTheme.bodyStyle,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-             
               ],
             ),
           ),
