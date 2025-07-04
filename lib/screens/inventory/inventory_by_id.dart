@@ -3,6 +3,7 @@ import '../../database/database.dart';
 import '../../widget/common/bar.dart';
 import '../../widget/common/table_storage.dart';
 import 'dart:convert';
+import '../../l10n/app_localizations.dart';
 
 class InventoryById extends StatefulWidget {
   const InventoryById({super.key});
@@ -89,7 +90,7 @@ class InventoryByIdState extends State<InventoryById> {
         }
         _isLoading = false;
       });
-        } catch (e) {
+    } catch (e) {
       setState(() {
         _isLoading = false;
       });
@@ -98,29 +99,31 @@ class InventoryByIdState extends State<InventoryById> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: Bar(title: 'Inventory ${routeArgs['id']}'),
-      body: _isLoading 
-        ? const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading...'),
-              ],
+      appBar: Bar(title: '${l10n?.inventory?? "Inventory"} ${routeArgs['id']}'),
+      body: _isLoading
+          ?  Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(l10n?.loading??'Loading...'),
+                ],
+              ),
+            )
+          : Center(
+              child: TableStorage(
+                data: data,
+                sortAscending: sortAscending,
+                sortColumnIndex: sortColumnIndex,
+                onSort: onSort,
+                onRefresh: () => null,
+                type: 'inventory',
+              ),
             ),
-          )
-        : Center(
-            child: TableStorage(
-              data: data,
-              sortAscending: sortAscending,
-              sortColumnIndex: sortColumnIndex,
-              onSort: onSort,
-              onRefresh: () => null,
-              type: 'inventory',
-            ),
-          ),
     );
   }
 }

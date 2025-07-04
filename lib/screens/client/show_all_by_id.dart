@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../common/bar.dart';
-import '../../../database/database.dart';
-import '../../common/search_sort_bar.dart';
-import '../all_input/card_inputs.dart';
-import '../../common/pagination_btn.dart';
-import '../all_output/card_output.dart';
+import '../../widget/common/bar.dart';
+import '../../database/database.dart';
+import '../../widget/common/search_sort_bar.dart';
+import '../../widget/screens/all_input/card_inputs.dart';
+import '../../widget/common/pagination_btn.dart';
+import '../../widget/screens/all_output/card_output.dart';
 
 class ShowAllById extends StatefulWidget {
   const ShowAllById({super.key});

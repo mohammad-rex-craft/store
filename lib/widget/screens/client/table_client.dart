@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:storeflow/utility/theme.dart';
 import 'package:storeflow/database/database.dart';
 import 'package:storeflow/utility/hooks.dart';
+import 'package:storeflow/l10n/app_localizations.dart';
 
 class TableClient extends StatelessWidget {
   final List<Map<String, dynamic>> clients;
@@ -21,6 +22,7 @@ class TableClient extends StatelessWidget {
   });
 
   Future<void> deleteClient(int id, BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -33,19 +35,19 @@ class TableClient extends StatelessWidget {
               const Icon(Icons.warning, color: AppTheme.colorWarning, size: 24),
               const SizedBox(width: 8),
               Text(
-                'Delete Client',
+                l10n?.deleteClient ?? 'Delete Client',
                 style: AppTheme.titleStyle.copyWith(color: AppTheme.colorError),
               ),
             ],
           ),
-          content: const Text(
-            'Are you sure you want to delete this client?',
+          content: Text(
+            l10n?.areYouSureYouWantToDeleteThisClient ?? 'Are you sure you want to delete this client?',
             style: AppTheme.bodyStyle,
           ),
           actions: [
             TextButton(
               child: Text(
-                'Cancel',
+                l10n?.cancel ?? 'Cancel',
                 style: AppTheme.bodyStyle.copyWith(
                   color: AppTheme.textSecondary,
                 ),
@@ -60,7 +62,7 @@ class TableClient extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Delete'),
+              child: Text(l10n?.delete ?? 'Delete'),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
@@ -80,6 +82,7 @@ class TableClient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: AppTheme.cardDecoration,
       child: Column(
@@ -99,7 +102,7 @@ class TableClient extends StatelessWidget {
                 const Icon(Icons.people, color: AppTheme.colorInfo, size: 24),
                 const SizedBox(width: 12),
                 Text(
-                  'Client Records',
+                  l10n?.clientRecords ?? 'Client Records',
                   style: AppTheme.titleStyle.copyWith(
                     color: AppTheme.colorInfo,
                   ),
@@ -115,7 +118,7 @@ class TableClient extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '${clients.length} records',
+                    '${clients.length} ${l10n?.records ?? 'records'}',
                     style: AppTheme.captionStyle.copyWith(
                       color: AppTheme.colorInfo,
                       fontWeight: FontWeight.w600,
@@ -141,7 +144,7 @@ class TableClient extends StatelessWidget {
                       DataColumn(
                         label: Expanded(
                           child: Text(
-                            'Name',
+                            l10n?.name ?? 'Name',
                             style: AppTheme.bodyStyle.copyWith(
                               fontWeight: FontWeight.w600,
                               color: AppTheme.colorInfo,
@@ -156,7 +159,7 @@ class TableClient extends StatelessWidget {
                       DataColumn(
                         label: Expanded(
                           child: Text(
-                            'Phone',
+                            l10n?.phone ?? 'Phone',
                             style: AppTheme.bodyStyle.copyWith(
                               fontWeight: FontWeight.w600,
                               color: AppTheme.colorInfo,
@@ -170,7 +173,7 @@ class TableClient extends StatelessWidget {
                       DataColumn(
                         label: Expanded(
                           child: Text(
-                            'Actions',
+                            l10n?.actions ??  'Actions',
                             style: AppTheme.bodyStyle.copyWith(
                               fontWeight: FontWeight.w600,
                               color: AppTheme.colorInfo,

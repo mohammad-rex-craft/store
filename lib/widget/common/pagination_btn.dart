@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'btn.dart';
+import '../../l10n/app_localizations.dart';
 
 class PaginationBtn extends StatelessWidget {
   final int currentPage;
@@ -15,25 +16,26 @@ class PaginationBtn extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Btn(
-            title: 'Prev',
+            title: l10n?.prev ?? 'Prev',
             btnType: BtnType.secondary,
             enabled: currentPage > 0,
             onTap: currentPage > 0 ? previousPage : null,
           ),
           const SizedBox(width: 20),
           Text(
-            'Page ${currentPage + 1}',
+            '${l10n?.page ?? 'Page'} ${currentPage + 1}',
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(width: 20),
           Btn(
-            title: 'Next',
+            title: l10n?.next ?? 'Next',
             btnType: BtnType.secondary,
             enabled: hasMoreData,
             onTap: hasMoreData ? nextPage : null,

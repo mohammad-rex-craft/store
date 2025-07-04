@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../utility/theme.dart';
 import '../widget/common/bar.dart';
 import '../widget/screens/edit/edit_card.dart';
+import '../l10n/app_localizations.dart';
 
 class Edit extends StatefulWidget {
   const Edit({super.key});
@@ -21,8 +22,10 @@ class EditState extends State<Edit> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
-      routeArgs = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      title = routeArgs['type'] == 'orders' ? 'Order' : 'Production';
+      routeArgs =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      final l10n = AppLocalizations.of(context);
+      title = routeArgs['type'] == 'orders' ? (l10n?.order ?? 'Order') : (l10n?.production ??'Production');
       type = routeArgs['type'];
       _isInitialized = true;
     }
@@ -30,10 +33,12 @@ class EditState extends State<Edit> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: Bar(
-        title: 'Edit $title',
+        title:'${l10n?.edit ?? "Edit"} $title',
         color: type == 'orders' ? AppTheme.colorError : AppTheme.colorInfo,
       ),
       body: Container(
@@ -43,7 +48,3 @@ class EditState extends State<Edit> {
     );
   }
 }
-
-
-
-

@@ -4,6 +4,7 @@ import '../widget/common/bar.dart';
 import '../widget/screens/add_items/form_add_items.dart';
 import '../widget/screens/add_items/table_add_items.dart';
 import '../database/database.dart';
+import '../l10n/app_localizations.dart';
 
 class AddItems extends StatefulWidget {
   const AddItems({super.key});
@@ -25,23 +26,50 @@ class _AddItemsState extends State<AddItems> {
   List<String>? selectedItems;
   List<Map<String, dynamic>> items = [];
   List<Map<String, dynamic>> allItems = [];
-  bool isLoading = false;
+  bool isLoading = true; 
   List<Map<String, dynamic>> allClients = [];
 
   @override
   void initState() {
     super.initState();
-    getStoreAndClients();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData(); // تم التعديل هنا لتحميل البيانات بعد تهيئة الـ context
+    });
   }
 
-  Future<void> getStoreAndClients() async {
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([getStore(), getClients()]);
+    setState(() => isLoading = false);
+  }
+
+  Future<void> getClients() async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final response = await db.readAll(
+        table: 'client',
+        context: context,
+        errorMessage:
+            l10n?.networkError ??
+            "Network error occurred while fetching clients",
+      );
+      setState(() {
+        allClients = List<Map<String, dynamic>>.from(response);
+      });
+    } catch (e) {
+      // Error is handled by showAlert in DatabaseService
+    }
+  }
+
+  Future<void> getStore() async {
+    final l10n = AppLocalizations.of(context);
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
-        errorMessage: "Network error occurred while fetching items",
+        errorMessage:
+            l10n?.networkError ?? "Network error occurred while fetching items",
       );
-      // Sort data by ID in ascending order
       List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
         response,
       );
@@ -50,28 +78,31 @@ class _AddItemsState extends State<AddItems> {
         int idB = b['id'] ?? 0;
         return idA.compareTo(idB);
       });
-      final responseClients = await db.readAll(
-        table: 'client',
-        context: context,
-        errorMessage: "Network error occurred while fetching items",
-      );
+
       setState(() {
         allItems = sortedData;
-        allClients = responseClients ?? [];
       });
-        } catch (e) {
-      print(e);
+    } catch (e) {
+      // Error is handled by showAlert in DatabaseService
     }
   }
 
+  Future<void> refreshStoreData() async {
+    setState(() => isLoading = true);
+    await getStore();
+    setState(() => isLoading = false);
+  }
+
   void addItem() {
+    final l10n = AppLocalizations.of(context);
+
     if (selectedItems == null ||
         selectedItems!.isEmpty ||
         qtnController.text.isEmpty) {
       db.showAlert(
         context,
-        title: "Warning",
-        message: "Please fill in all fields",
+        title: l10n?.warning ?? "Warning",
+        message: l10n?.pleaseFillAllFields ?? "Please fill in all fields",
         type: AlertType.warning,
       );
       return;
@@ -88,8 +119,10 @@ class _AddItemsState extends State<AddItems> {
     if (itemExists) {
       db.showAlert(
         context,
-        title: "Warning",
-        message: "One or more items already exist in the list",
+        title: l10n?.warning ?? "Warning",
+        message:
+            l10n?.oneormoreitem ??
+            "One or more items already exist in the list",
         type: AlertType.warning,
       );
       return;
@@ -113,13 +146,17 @@ class _AddItemsState extends State<AddItems> {
   }
 
   Future<void> submitData() async {
+    final l10n = AppLocalizations.of(context);
+
     if (selectedType == null ||
         dateController.text == '' ||
-        (selectedType == 'Return' && invoiceController.text == '' && clientController.text == '')) {
+        (selectedType == 'Return' &&
+            invoiceController.text == '' &&
+            clientController.text == '')) {
       db.showAlert(
         context,
-        title: "Warning",
-        message: "Please fill in all fields",
+        title: l10n?.warning ?? "Warning",
+        message: l10n?.pleaseFillAllFields ?? "Please fill in all fields",
         type: AlertType.warning,
       );
       return;
@@ -136,17 +173,15 @@ class _AddItemsState extends State<AddItems> {
           'items': items,
           'items_ids': items.map((item) => item['id']).toList(),
           'client_id': selectedType == 'Return' ? selectedClientId : null,
-          'client': selectedType == 'Return'
-              ? clientController.text
-              : null,
+          'client': selectedType == 'Return' ? clientController.text : null,
         };
 
         await db.create(
           table: 'inputs',
           data: inputData,
           context: context,
-          successMessage: "Items added successfully",
-          errorMessage: "Error while saving data",
+          successMessage: l10n?.success ?? "Items added successfully",
+          errorMessage: l10n?.error ?? "Error while saving data",
         );
 
         for (var item in items) {
@@ -162,7 +197,7 @@ class _AddItemsState extends State<AddItems> {
             },
             context: context,
             successMessage: null,
-            errorMessage: "Error updating item quantity",
+            errorMessage: l10n?.error ?? "Error updating item quantity",
           );
         }
 
@@ -170,14 +205,14 @@ class _AddItemsState extends State<AddItems> {
           items = [];
           selectedType = null;
           invoiceController.clear();
-          isLoading = false;
           selectedClientId = null;
           dateController.clear();
         });
       } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
+        // Error is handled by showAlert in DatabaseService
+      } finally {
+        setState(() => isLoading = false);
+        refreshStoreData();
       }
     }
   }
@@ -190,60 +225,59 @@ class _AddItemsState extends State<AddItems> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Stack(
       children: [
         Scaffold(
-          appBar: const Bar(title: 'Add Items', color: Colors.green),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                FormAddItems(
-                  dateController: dateController,
-                  qtnController: qtnController,
-                  invoiceController: invoiceController,
-                  selectedType: selectedType,
-                  selectedItems: selectedItems,
-                  allItems: allItems,
-                  onTypeChanged: (value) {
-                    setState(() {
-                      selectedType = value;
-                    });
-                  },
-                  allClients: allClients,
-                  onClientChanged: (value) {
-                     setState(() {
-                      selectedClientId = int.parse(value);
-                      selectedClient = allClients
-                          .firstWhere((c) => c['id'] == selectedClientId)['name'];
-                      clientController.text = selectedClient!;
-                    });
-                  },
-                  selectedClientId: selectedClientId,
-                  onItemChanged: (value) {
-                    setState(() {
-                      selectedItems = value;
-                    });
-                  },
-                  onAdd: addItem,
+          appBar: Bar(title: l10n?.additem ?? 'Add Items', color: Colors.green),
+          body: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      FormAddItems(
+                        dateController: dateController,
+                        qtnController: qtnController,
+                        invoiceController: invoiceController,
+                        selectedType: selectedType,
+                        selectedItems: selectedItems,
+                        allItems: allItems,
+                        onTypeChanged: (value) {
+                          setState(() {
+                            selectedType = value;
+                          });
+                        },
+                        allClients: allClients,
+                        onClientChanged: (value) {
+                          setState(() {
+                            selectedClientId = int.parse(value);
+                            selectedClient = allClients.firstWhere(
+                              (c) => c['id'] == selectedClientId,
+                            )['name'];
+                            clientController.text = selectedClient!;
+                          });
+                        },
+                        selectedClientId: selectedClientId,
+                        onItemChanged: (value) {
+                          setState(() {
+                            selectedItems = value;
+                          });
+                        },
+                        onAdd: addItem,
+                      ),
+                      const SizedBox(height: 16),
+                      TableAddItems(
+                        items: items,
+                        onSubmit: submitData,
+                        onDelete: deleteItem,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                TableAddItems(
-                  items: items,
-                  onSubmit: submitData,
-                  onDelete: deleteItem,
-                ),
-              ],
-            ),
-          ),
         ),
-        if (isLoading)
-          Container(
-            color: Colors.black.withOpacity(0.5),
-            child: const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
-          ),
+     
       ],
     );
   }

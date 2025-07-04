@@ -4,9 +4,9 @@ class TableItemGet extends StatelessWidget {
   final List<Map<String, dynamic>> orders;
 
   const TableItemGet({
-    Key? key,
+    super.key,
     required this.orders,
-  }) : super(key: key);
+  });
 
   List<Map<String, dynamic>> analyzeItemsData(
     List<Map<String, dynamic>> orders,

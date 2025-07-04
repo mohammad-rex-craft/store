@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../utility/hooks.dart';
 import '../../../utility/theme.dart';
 import '../../../database/database.dart';
+import '../../../l10n/app_localizations.dart';
 
 class TableInv extends StatelessWidget {
   final List<Map<String, dynamic>> data;
@@ -21,6 +22,7 @@ class TableInv extends StatelessWidget {
   });
 
   Future<void> deleteItem(int id, BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -30,28 +32,23 @@ class TableInv extends StatelessWidget {
           ),
           title: Row(
             children: [
-              const Icon(
-                Icons.warning,
-                color: AppTheme.colorWarning,
-                size: 24,
-              ),
+              const Icon(Icons.warning, color: AppTheme.colorWarning, size: 24),
               const SizedBox(width: 8),
               Text(
-                'Delete Inventory',
-                style: AppTheme.titleStyle.copyWith(
-                  color: AppTheme.colorError,
-                ),
+                l10n?.delete ?? 'Delete Inventory',
+                style: AppTheme.titleStyle.copyWith(color: AppTheme.colorError),
               ),
             ],
           ),
-          content: const Text(
-            'Are you sure you want to delete this inventory record?',
+          content: Text(
+            l10n?.areYouSureYouWantToDeleteThisItem ??
+                'Are you sure you want to delete this inventory record?',
             style: AppTheme.bodyStyle,
           ),
           actions: [
             TextButton(
               child: Text(
-                'Cancel',
+                l10n?.cancel ?? "cancel",
                 style: AppTheme.bodyStyle.copyWith(
                   color: AppTheme.textSecondary,
                 ),
@@ -66,37 +63,33 @@ class TableInv extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Delete'),
+              child: Text(l10n?.delete ?? 'Delete'),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
         );
       },
     );
-    
+
     if (confirm == true) {
       try {
-        await db.delete(
-          table: 'inventory',
-          id: id,
-          context: context,
-
-        );
+        await db.delete(table: 'inventory', id: id, context: context);
         onRefresh();
       } catch (e) {
-        
+        //
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       decoration: AppTheme.cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -115,20 +108,23 @@ class TableInv extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Inventory Records',
+                   '${l10n?.inventory?? 'Inventory '} ${l10n?.records?? 'Records '}' ,
                   style: AppTheme.titleStyle.copyWith(
                     color: AppTheme.colorMain,
                   ),
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.colorMain.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '${data.length} records',
+                    '${data.length} ${l10n?.records ?? 'Records'}',
                     style: AppTheme.captionStyle.copyWith(
                       color: AppTheme.colorMain,
                       fontWeight: FontWeight.w600,
@@ -138,162 +134,169 @@ class TableInv extends StatelessWidget {
               ],
             ),
           ),
-          
-          
+
           Expanded(
-            child: LayoutBuilder(builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: SizedBox(
-                  width: constraints.maxWidth,
-                  child: DataTable(
-                    columnSpacing: 0,
-                    horizontalMargin: 0,
-                    columns: [
-                      DataColumn(
-                        label: Expanded(
-                          child: Text(
-                            'ID',
-                            style: AppTheme.bodyStyle.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.colorMain,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: SizedBox(
+                    width: constraints.maxWidth,
+                    child: DataTable(
+                      columnSpacing: 0,
+                      horizontalMargin: 0,
+                      columns: [
+                        DataColumn(
+                          label: Expanded(
+                            child: Text(
+                              'ID',
+                              style: AppTheme.bodyStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.colorMain,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
+                          ),
+                          onSort: onSort,
+                        ),
+                        DataColumn(
+                          label: Expanded(
+                            child: Text(
+                              l10n?.date?? 'Date',
+                              style: AppTheme.bodyStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.colorMain,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          onSort: onSort,
+                        ),
+                        DataColumn(
+                          label: Expanded(
+                            child: Text(
+                              l10n?.action ?? 'Actions',
+                              style: AppTheme.bodyStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.colorMain,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
-                        onSort: onSort,
-                      ),
-                      DataColumn(
-                        label: Expanded(
-                          child: Text(
-                            'Date',
-                            style: AppTheme.bodyStyle.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.colorMain,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        onSort: onSort,
-                      ),
-                      DataColumn(
-                        label: Expanded(
-                          child: Text(
-                            'Actions',
-                            style: AppTheme.bodyStyle.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.colorMain,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                    rows: data.map((item) {
-                      return DataRow(
-                        cells: [
-                          DataCell(
-                            Align(
-                              alignment: Alignment.center,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.colorMain.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(6),
+                      ],
+                      rows: data.map((item) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                              Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.colorMain.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    item['id'].toString(),
+                                    style: AppTheme.bodyStyle.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.colorMain,
+                                    ),
+                                  ),
                                 ),
+                              ),
+                            ),
+                            DataCell(
+                              Align(
+                                alignment: Alignment.center,
                                 child: Text(
-                                  item['id'].toString(),
-                                  style: AppTheme.bodyStyle.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.colorMain,
-                                  ),
+                                  item['date'].toString().split(' ')[0],
+                                  style: AppTheme.bodyStyle,
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                             ),
-                          ),
-                          DataCell(
-                            Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                item['date'].toString().split(' ')[0],
-                                style: AppTheme.bodyStyle,
-                                textAlign: TextAlign.center,
+                            DataCell(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.colorInfo.withOpacity(
+                                        0.1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.visibility,
+                                        color: AppTheme.colorInfo,
+                                        size: 20,
+                                      ),
+                                      onPressed: () => dynamicRouter(
+                                        context,
+                                        '/inventory_by_id',
+                                        {'id': item['id']},
+                                      ),
+                                      tooltip: 'View Details',
+                                      padding: const EdgeInsets.all(8),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 36,
+                                        minHeight: 36,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.colorError.withOpacity(
+                                        0.1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: AppTheme.colorError,
+                                        size: 20,
+                                      ),
+                                      onPressed: () =>
+                                          deleteItem(item['id'], context),
+                                      tooltip: 'Delete Record',
+                                      padding: const EdgeInsets.all(8),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 36,
+                                        minHeight: 36,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                          DataCell(
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.colorInfo.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.visibility,
-                                      color: AppTheme.colorInfo,
-                                      size: 20,
-                                    ),
-                                    onPressed: () => dynamicRouter(
-                                      context,
-                                      '/inventory_by_id',
-                                      {'id': item['id']},
-                                    ),
-                                    tooltip: 'View Details',
-                                    padding: const EdgeInsets.all(8),
-                                    constraints: const BoxConstraints(
-                                      minWidth: 36,
-                                      minHeight: 36,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.colorError.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      color: AppTheme.colorError,
-                                      size: 20,
-                                    ),
-                                    onPressed: () =>
-                                        deleteItem(item['id'], context),
-                                    tooltip: 'Delete Record',
-                                    padding: const EdgeInsets.all(8),
-                                    constraints: const BoxConstraints(
-                                      minWidth: 36,
-                                      minHeight: 36,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                    sortColumnIndex: sortColumnIndex,
-                    sortAscending: sortAscending,
-                    headingRowColor: WidgetStateProperty.all(
-                      AppTheme.backgroundColor,
-                    ),
-                    dataRowColor: WidgetStateProperty.resolveWith<Color?>(
-                      (Set<WidgetState> states) {
+                          ],
+                        );
+                      }).toList(),
+                      sortColumnIndex: sortColumnIndex,
+                      sortAscending: sortAscending,
+                      headingRowColor: WidgetStateProperty.all(
+                        AppTheme.backgroundColor,
+                      ),
+                      dataRowColor: WidgetStateProperty.resolveWith<Color?>((
+                        Set<WidgetState> states,
+                      ) {
                         if (states.contains(WidgetState.selected)) {
                           return AppTheme.colorMain.withOpacity(0.1);
                         }
                         return null;
-                      },
+                      }),
                     ),
                   ),
-                ),
-              );
-            }),
+                );
+              },
+            ),
           ),
         ],
       ),

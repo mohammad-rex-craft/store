@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../database/database.dart';
 import '../../common/input.dart';
+import '../../../l10n/app_localizations.dart';
 
 class FormCreateItems extends StatefulWidget {
   final VoidCallback onItemCreated;
 
-  const FormCreateItems({
-    super.key,
-    required this.onItemCreated,
-  });
+  const FormCreateItems({super.key, required this.onItemCreated});
 
   @override
   State<FormCreateItems> createState() => _FormCreateItemsState();
@@ -21,11 +19,12 @@ class _FormCreateItemsState extends State<FormCreateItems> {
   final DatabaseService db = DatabaseService();
 
   Future<void> createItem() async {
+    final l10n = AppLocalizations.of(context);
     if (nameController.text.isEmpty || qtnController.text.isEmpty) {
       db.showAlert(
         context,
-        title: "Warning",
-        message: "Please fill in all fields",
+        title: l10n?.warning ?? "Warning",
+        message: l10n?.pleaseFillAllFields ?? "Please fill in all fields",
         type: AlertType.warning,
       );
       return;
@@ -37,29 +36,27 @@ class _FormCreateItemsState extends State<FormCreateItems> {
         data: {
           'item': nameController.text,
           'qtn': 0,
-          'box': int.parse(qtnController.text), 
+          'box': int.parse(qtnController.text),
         },
         context: context,
-        successMessage: "Item created successfully",
-        errorMessage: "Error creating item",
+        successMessage: l10n?.itemCreatedSuccess ?? "Item created successfully",
+        errorMessage: l10n?.itemCreateError ?? "Error creating item",
       );
-      
+
       nameController.clear();
       qtnController.clear();
       widget.onItemCreated();
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
           Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
@@ -70,17 +67,13 @@ class _FormCreateItemsState extends State<FormCreateItems> {
               ),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(
-                  Icons.add_circle_outline,
-                  color: Colors.white,
-                  size: 24,
-                ),
-                SizedBox(width: 10),
+                const Icon(Icons.add_circle_outline, color: Colors.white, size: 24),
+                const SizedBox(width: 10),
                 Text(
-                  "Add new item",
-                  style: TextStyle(
+                  l10n?.addNewItem ?? "Add new item",
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -90,8 +83,7 @@ class _FormCreateItemsState extends State<FormCreateItems> {
             ),
           ),
           const SizedBox(height: 20),
-          
-          
+
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -103,13 +95,13 @@ class _FormCreateItemsState extends State<FormCreateItems> {
               children: [
                 Input(
                   controller: nameController,
-                  labelText: 'Item Name',
+                  labelText: l10n?.itemName ?? 'Item Names',
                   prefixIcon: Icons.inventory_2,
                 ),
                 const SizedBox(height: 20),
                 Input(
                   controller: qtnController,
-                  labelText: 'Quantity in the box',
+                  labelText: l10n?.boxQuantity ?? 'Quantity in the box',
                   prefixIcon: Icons.shopping_cart,
                   keyboardType: TextInputType.number,
                 ),
@@ -137,21 +129,21 @@ class _FormCreateItemsState extends State<FormCreateItems> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(25),
                       onTap: createItem,
-                      child: const Center(
+                      child: Center(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.add,
                               color: Colors.white,
                               size: 20,
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Flexible(
                               child: Text(
-                                'Add item',
-                                style: TextStyle(
+                                l10n?.addItems ?? 'Add item',
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -173,5 +165,3 @@ class _FormCreateItemsState extends State<FormCreateItems> {
     );
   }
 }
-
-

@@ -3,6 +3,7 @@ import "../../../database/database.dart";
 import '../../../utility/hooks.dart';
 import '../../../utility/theme.dart';
 import '../../common/btn.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CardInputs extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -17,6 +18,7 @@ class CardInputs extends StatelessWidget {
   });
 
   Future<void> onDelete(int id, BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
@@ -33,23 +35,23 @@ class CardInputs extends StatelessWidget {
                 const Icon(Icons.delete_forever, color: AppTheme.colorError, size: 24),
                 const SizedBox(width: 8),
                 Text(
-                  'Delete Input',
+                  l10n?.deleteInput ?? 'Delete Input',
                   style: AppTheme.titleStyle.copyWith(color: AppTheme.colorError),
                 ),
               ],
             ),
-            content: const Text(
-              'Are you sure you want to delete this input record? This action cannot be undone.',
+            content: Text(
+              l10n?.areYouSureYouWantToDeleteThisInputRecord ?? 'Are you sure you want to delete this input record? This action cannot be undone.',
               style: AppTheme.bodyStyle,
             ),
             actions: [
               Btn(
-                title: 'Cancel',
+                title: l10n?.cancel ?? 'Cancel',
                 btnType: BtnType.secondary,
                 onTap: () => navigator.pop(false),
               ),
               Btn(
-                title: 'Delete',
+                title: l10n?.delete ?? 'Delete',
                 btnType: BtnType.error,
                 onTap: () => navigator.pop(true),
               ),
@@ -72,11 +74,11 @@ class CardInputs extends StatelessWidget {
 
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Text('Input deleted successfully'),
+              const Icon(Icons.check_circle, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n?.inputDeletedSuccessfully ?? 'Input deleted successfully'),
             ],
           ),
           backgroundColor: AppTheme.colorSuccess,
@@ -93,7 +95,7 @@ class CardInputs extends StatelessWidget {
             children: [
               const Icon(Icons.error, color: Colors.white, size: 20),
               const SizedBox(width: 8),
-              Text('Error: ${e.toString()}'),
+              Text(l10n?.error ?? 'Error: ${e.toString()}'),
             ],
           ),
           backgroundColor: AppTheme.colorError,
@@ -106,6 +108,7 @@ class CardInputs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final bool isReturn = item['noa'] != null;
     
     return Container(
@@ -153,7 +156,7 @@ class CardInputs extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            isReturn ? 'Return' : 'Production',
+                            isReturn ? l10n?.returnitem ?? 'Return' : l10n?.production ?? 'Production',
                             style: AppTheme.captionStyle.copyWith(
                               color: isReturn ? AppTheme.colorError : AppTheme.colorMain,
                               fontWeight: FontWeight.w600,
@@ -186,7 +189,7 @@ class CardInputs extends StatelessWidget {
                       border: Border.all(color: AppTheme.colorError.withOpacity(0.3)),
                     ),
                     child: Text(
-                      'NOA: ${item['noa'] ?? ''}',
+                      '${l10n?.noa ?? 'NOA'}: ${item['noa'] ?? ''}',
                       style: AppTheme.captionStyle.copyWith(
                         color: AppTheme.colorError,
                         fontWeight: FontWeight.w600,
@@ -203,7 +206,7 @@ class CardInputs extends StatelessWidget {
                       border: Border.all(color: AppTheme.colorMain.withOpacity(0.3)),
                     ),
                     child: Text(
-                      'Client: ${item['client'] ?? ''}',
+                      '${l10n?.client ?? 'Client'}: ${item['client'] ?? ''}',
                       style: AppTheme.captionStyle.copyWith(
                         color: AppTheme.colorText,
                         fontWeight: FontWeight.w600,
@@ -226,14 +229,14 @@ class CardInputs extends StatelessWidget {
                         '/edit', 
                         {'items': item, 'type': 'inputs'}
                       ),
-                      tooltip: 'Edit',
+                      tooltip: l10n?.edit ?? 'Edit',
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: AppTheme.colorError, size: 18),
                       onPressed: () => onDelete(item['id'], context),
-                      tooltip: 'Delete',
+                      tooltip: l10n?.delete ?? 'Delete',
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                     ),
@@ -259,7 +262,7 @@ class CardInputs extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Items (${(item['items'] as List).length})',
+                      '${l10n?.items ?? 'Items'} (${(item['items'] as List).length})',
                       style: AppTheme.captionStyle.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.textPrimary,
@@ -297,7 +300,7 @@ class CardInputs extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Qty: ${subItem['qtn']?.toString() ?? '0'}',
+                            '${l10n?.quantity ?? 'Qty'}: ${subItem['qtn']?.toString() ?? '0'}',
                             style: AppTheme.captionStyle.copyWith(
                               color: AppTheme.colorMain,
                               fontWeight: FontWeight.w600,
@@ -309,6 +312,56 @@ class CardInputs extends StatelessWidget {
                     ),
                   );
                 }),
+                
+                // عرض مجموع القطع
+                if ((item['items'] as List).isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.colorMain.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: AppTheme.colorMain.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.calculate,
+                              color: AppTheme.colorMain,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              l10n?.totalItems ?? 'المجموع',
+                              style: AppTheme.captionStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.colorMain,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          (item['items'] as List).fold<int>(0, (sum, subItem) => 
+                            sum + (subItem['qtn'] as int? ?? 0)
+                          ).toString(),
+                          style: AppTheme.captionStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.colorMain,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

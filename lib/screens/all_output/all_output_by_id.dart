@@ -4,7 +4,7 @@ import '../../widget/common/bar.dart';
 import '../../widget/common/search_sort_bar.dart';
 import '../../widget/screens/all_output/card_output.dart';
 import '../../widget/common/pagination_btn.dart';
-import '../../widget/screens/settlement/card_settlement.dart';
+import '../../l10n/app_localizations.dart';
 
 class AllOutputById extends StatefulWidget {
   const AllOutputById({super.key});
@@ -22,10 +22,10 @@ class AllOutputByIdState extends State<AllOutputById> {
   bool isSortedAscending = true;
   bool _isInitialized = false;
   List<Map<String, dynamic>> store = [];
-  
+
   int currentPage = 0;
   final int pageSize = 10;
-  bool isLoading = false;
+  bool isLoading = true;
   bool hasMoreData = true;
 
   @override
@@ -34,24 +34,33 @@ class AllOutputByIdState extends State<AllOutputById> {
     if (!_isInitialized) {
       routeArgs =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      _fetchAllOutputs();
-      getStore();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loadInitialData();
+      });
       _isInitialized = true;
     }
   }
-    Future<void> getStore() async {
+
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([_fetchAllOutputs(), getStore()]);
+    setState(() => isLoading = false);
+  }
+
+  Future<void> getStore() async {
+    final l10n = AppLocalizations.of(context);
+
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
-        errorMessage: "Network error occurred while fetching items",
+        errorMessage:
+            l10n?.networkError ?? "Network error occurred while fetching items",
       );
       setState(() {
         store = List<Map<String, dynamic>>.from(response);
       });
-        } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   void _updateDisplayedList() {
@@ -74,11 +83,15 @@ class AllOutputByIdState extends State<AllOutputById> {
     temp.sort((a, b) {
       final dateA = a['date'] ?? '';
       final dateB = b['date'] ?? '';
-      return isSortedAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
+      return isSortedAscending
+          ? dateA.compareTo(dateB)
+          : dateB.compareTo(dateA);
     });
 
     final startIndex = currentPage * pageSize;
-    final endIndex = (startIndex + pageSize > temp.length) ? temp.length : startIndex + pageSize;
+    final endIndex = (startIndex + pageSize > temp.length)
+        ? temp.length
+        : startIndex + pageSize;
 
     setState(() {
       filteredOutputs = temp.sublist(startIndex, endIndex);
@@ -87,11 +100,7 @@ class AllOutputByIdState extends State<AllOutputById> {
   }
 
   Future<void> _fetchAllOutputs() async {
-    if (isLoading) return;
-    setState(() {
-      isLoading = true;
-    });
-
+    final l10n = AppLocalizations.of(context);
     try {
       // Fetch all data using looped pagination
       List<Map<String, dynamic>> tempOutputs = [];
@@ -106,24 +115,21 @@ class AllOutputByIdState extends State<AllOutputById> {
           orderBy: 'date',
           ascending: isSortedAscending,
           context: context,
-          errorMessage: "Network error occurred while fetching transactions",
+          errorMessage:
+              l10n?.networkError ??
+              "Network error occurred while fetching transactions",
         );
         tempOutputs.addAll(response);
         hasMore = response.length == 50;
         page++;
       }
-      
+
       setState(() {
         allOutputs = tempOutputs;
-        isLoading = false;
         _updateDisplayedList(); // Initial display
       });
-
     } catch (e, s) {
-      print('Error in getOutputs: $e\n$s');
-      setState(() {
-        isLoading = false;
-      });
+      //
     }
   }
 
@@ -148,7 +154,7 @@ class AllOutputByIdState extends State<AllOutputById> {
   void sortDataByDate() {
     setState(() {
       isSortedAscending = !isSortedAscending;
-      currentPage = 0; 
+      currentPage = 0;
     });
     _updateDisplayedList();
   }
@@ -162,8 +168,10 @@ class AllOutputByIdState extends State<AllOutputById> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: Bar(title: 'Output ${routeArgs['item']}',color: Colors.orange),
+      appBar: Bar(title: '${l10n?.outputs ?? "Output"} {${routeArgs['item']}}', color: Colors.orange),
       body: Column(
         children: [
           SearchSortBar(
@@ -175,21 +183,25 @@ class AllOutputByIdState extends State<AllOutputById> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredOutputs.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No data available',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: filteredOutputs.length,
-                        itemBuilder: (context, index) {
-                          final item = filteredOutputs[index];
-                          return CardOutput(item: item,store: store,onRefresh:_fetchAllOutputs);
-                        },
-                      ),
+                ?  Center(
+                    child: Text(
+                      l10n?.noOutputsFound ?? 'No data available',
+                      style:const TextStyle(fontSize: 18),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredOutputs.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredOutputs[index];
+                      return CardOutput(
+                        item: item,
+                        store: store,
+                        onRefresh: _fetchAllOutputs,
+                      );
+                    },
+                  ),
           ),
-          
+
           PaginationBtn(
             currentPage: currentPage,
             hasMoreData: hasMoreData,

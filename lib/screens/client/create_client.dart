@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:storeflow/database/database.dart';
 import 'package:storeflow/widget/common/bar.dart';
-import '../../common/btn.dart';
-import '../../common/input.dart';
+import '../../widget/common/btn.dart';
+import '../../widget/common/input.dart';
+import '../../l10n/app_localizations.dart';
 
 class CreateClient extends StatefulWidget {
   const CreateClient({super.key});
@@ -37,6 +38,7 @@ class _CreateClientState extends State<CreateClient> {
   }
 
   Future<void> _saveClient() async {
+    final l10n = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -58,7 +60,7 @@ class _CreateClientState extends State<CreateClient> {
                 : _clientAddressController.text,
           },
           context: context,
-          successMessage: 'Client created successfully!',
+          successMessage: l10n?.success ?? 'Client created successfully!',
         );
         if (mounted) {
           _clearFields();
@@ -77,9 +79,11 @@ class _CreateClientState extends State<CreateClient> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: const Bar(
-        title: 'Create New Client',
+      appBar: Bar(
+        title: l10n?.createNewClient ?? 'Create New Client',
         color: Colors.pinkAccent,
       ),
       body: SingleChildScrollView(
@@ -92,10 +96,10 @@ class _CreateClientState extends State<CreateClient> {
               children: [
                 Input(
                   controller: _clientNameController,
-                  labelText: 'Client Name',
+                  labelText: l10n?.clientName ?? 'Client Name',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter the client name';
+                      return l10n?.pleaseEnterClientName ?? 'Please enter the client name';
                     }
                     return null;
                   },
@@ -103,27 +107,27 @@ class _CreateClientState extends State<CreateClient> {
                 const SizedBox(height: 16),
                 Input(
                   controller: _clientAddressController,
-                  labelText: 'Address',
-                  hintText: 'Enter the client address',
+                  labelText: l10n?.address ?? 'Address',
+                  hintText: l10n?.enterClientAddress ?? 'Enter the client address',
                   keyboardType: TextInputType.streetAddress,
                 ),
                 const SizedBox(height: 16),
                 Input(
                   controller: _clientPhoneController,
-                  labelText: 'Phone',
-                  hintText: 'Enter the client phone (optional)',
+                  labelText: l10n?.phone ?? 'Phone',
+                  hintText: l10n?.enterClientPhone ?? 'Enter the client phone (optional)',
                   keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 16),
                 Input(
                   controller: _clientUrlController,
-                  labelText: 'Client URL (optional)',
-                  hintText: 'Enter the client URL',
+                  labelText: l10n?.clientUrl ?? 'Client URL (optional)',
+                  hintText: l10n?.enterClientUrl ?? 'Enter the client URL',
                   keyboardType: TextInputType.url,
                 ),
                 const SizedBox(height: 32),
                 Btn(
-                  title: 'Save Client',
+                  title: l10n?.saveClient ?? 'Save Client',
                   onTap: _saveClient,
                   isLoading: _isLoading,
                 ),

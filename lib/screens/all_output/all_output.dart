@@ -5,6 +5,7 @@ import '../../widget/screens/all_output/card_output.dart';
 import '../../widget/common/pagination_btn.dart';
 import '../../widget/common/search_sort_bar.dart';
 import '../../utility/theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class AllOutput extends StatefulWidget {
   const AllOutput({super.key});
@@ -23,37 +24,41 @@ class AllOutputState extends State<AllOutput> {
   
   int currentPage = 0;
   final int pageSize = 10;
-  bool isLoading = false;
+  bool isLoading = true;
   bool hasMoreData = true;
 
   @override
   void initState() {
     super.initState();
-    getOutputs();
-    getStore();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData();
+    });
+  }
+
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([getOutputs(), getStore()]);
+    setState(() => isLoading = false);
   }
 
   Future<void> getStore() async {
+    final l10n = AppLocalizations.of(context);
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
-        errorMessage: "Network error occurred while fetching items",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching items",
       );
       setState(() {
         store = List<Map<String, dynamic>>.from(response);
       });
         } catch (e) {
-      
+      // Error is handled by showAlert in DatabaseService
     }
   }
 
   Future<void> getOutputs() async {
-    if (isLoading) return;
-
-    setState(() {
-      isLoading = true;
-    });
+    final l10n = AppLocalizations.of(context);
 
     try {
       final response = await db.getPaginated(
@@ -63,19 +68,16 @@ class AllOutputState extends State<AllOutput> {
         orderBy: 'date',
         ascending: isSortedAscending,
         context: context,
-        errorMessage: "Network error occurred while fetching outputs",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching outputs",
       );
 
       setState(() {
         allOutputs = List<Map<String, dynamic>>.from(response);
         filteredOutputs = List.from(allOutputs);
         hasMoreData = response.length == pageSize;
-        isLoading = false;
       });
         } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      // Error is handled by showAlert in DatabaseService
       
     }
   }
@@ -107,6 +109,7 @@ class AllOutputState extends State<AllOutput> {
   }
 
   void filterData(String query) async {
+    final l10n = AppLocalizations.of(context);
     if (query.isEmpty) {
       setState(() {
         filteredOutputs = List.from(allOutputs);
@@ -120,7 +123,7 @@ class AllOutputState extends State<AllOutput> {
         column: 'date',
         query: query,
         context: context,
-        errorMessage: "Error searching by date",
+        errorMessage: l10n?.networkError ?? "Error searching by date",
       );
 
       final noaResults = await db.search(
@@ -128,7 +131,7 @@ class AllOutputState extends State<AllOutput> {
         column: 'noa',
         query: query,
         context: context,
-        errorMessage: "Error searching by invoice number",
+        errorMessage: l10n?.networkError ?? "Error searching by invoice number",
       );
 
       final clientResults = await db.search(
@@ -136,7 +139,7 @@ class AllOutputState extends State<AllOutput> {
         column: 'client',
         query: query,
         context: context,
-        errorMessage: "Error searching by client",
+        errorMessage: l10n?.networkError ?? "Error searching by client",
       );
 
       final senderResults = await db.search(
@@ -144,7 +147,7 @@ class AllOutputState extends State<AllOutput> {
         column: 'sender',
         query: query,
         context: context,
-        errorMessage: "Error searching by sender",
+        errorMessage: l10n?.networkError ?? "Error searching by sender",
       );
 
       final combinedResults = [
@@ -165,9 +168,10 @@ class AllOutputState extends State<AllOutput> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final l10n = AppLocalizations.of(context);
+        return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: const Bar(title: 'All Output', color: AppTheme.colorWarning),
+      appBar: Bar(title: l10n?.allOutput ?? 'All Output', color: AppTheme.colorWarning),
       body: Column(
         children: [
           
@@ -204,7 +208,7 @@ class AllOutputState extends State<AllOutput> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'All Outputs',
+                        l10n?.allOutputs ?? 'All Outputs',
                         style: AppTheme.titleStyle.copyWith(
                           color: AppTheme.colorWarning,
                         ),
@@ -225,7 +229,7 @@ class AllOutputState extends State<AllOutput> {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             padding: const EdgeInsets.all(12),
             decoration: AppTheme.cardDecoration,
-            child: SearchSortBar(
+            child:  SearchSortBar(
               searchController: searchController,
               filterData: filterData,
               sortDataByDate: sortDataByDate,
@@ -262,6 +266,7 @@ class AllOutputState extends State<AllOutput> {
   }
 
   Widget _buildLoadingState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -271,7 +276,7 @@ class AllOutputState extends State<AllOutput> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Loading outputs...',
+            l10n?.loadingOutputs ?? 'Loading outputs...',
             style: AppTheme.bodyStyle.copyWith(
               color: AppTheme.textSecondary,
             ),
@@ -282,6 +287,7 @@ class AllOutputState extends State<AllOutput> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -300,14 +306,14 @@ class AllOutputState extends State<AllOutput> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No outputs found',
+            l10n?.noOutputsFound ?? 'No outputs found',
             style: AppTheme.titleStyle.copyWith(
               color: AppTheme.textSecondary,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Try adjusting your search criteria',
+          Text(
+            l10n?.tryAdjustingYourSearchCriteria ?? 'Try adjusting your search criteria',
             style: AppTheme.captionStyle,
             textAlign: TextAlign.center,
           ),
@@ -317,7 +323,7 @@ class AllOutputState extends State<AllOutput> {
   }
 
   Widget _buildContentList() {
-    return ListView.builder(
+    return isLoading ? const Center(child: CircularProgressIndicator()) : ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: filteredOutputs.length,
       itemBuilder: (context, index) {

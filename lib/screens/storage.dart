@@ -5,6 +5,7 @@ import '../widget/screens/storage/form_create_items.dart';
 import '../widget/screens/storage/form_update_items.dart';
 import '../widget/common/bar.dart';
 import '../database/database.dart';
+import '../l10n/app_localizations.dart';
 
 var primeColor = hexToColor('#03A9F4');
 
@@ -21,23 +22,31 @@ class _StorageState extends State<Storage> {
   List<Map<String, dynamic>> data = [];
   List<Map<String, dynamic>> indata = [];
   final DatabaseService db = DatabaseService();
-
+  bool isLoading = true;
   bool sortAscending = true;
   int? sortColumnIndex;
 
   @override
   void initState() {
     super.initState();
-    getItems();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData();
+    });
+  }
+
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([getItems(), getItems2()]);
+    setState(() => isLoading = false);
   }
 
   Future<void> getItems() async {
-    getItems2();
+    final l10n = AppLocalizations.of(context);
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
-        errorMessage: "Network error occurred while fetching items",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching items",
       );
       // Sort data by ID in ascending order
       List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
@@ -56,11 +65,12 @@ class _StorageState extends State<Storage> {
   }
 
   Future<void> getItems2() async {
+    final l10n = AppLocalizations.of(context);
     try {
       final response = await db.readAll(
         table: 'inputs',
         context: context,
-        errorMessage: "Network error occurred while fetching inputs",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching inputs",
       );
       // Sort data by ID in ascending order
       List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
@@ -111,21 +121,23 @@ class _StorageState extends State<Storage> {
   }
 
   void sendToInventory(context) async {
+    final l10n = AppLocalizations.of(context);
     await db.create(
       table: 'inventory',
       data: {'data': data, 'date': DateTime.now().toString()},
       context: context,
-      successMessage: "Inventory created successfully",
-      errorMessage: "Error creating inventory",
+      successMessage: l10n?.inventoryCreatedSuccessfully ?? "Inventory created successfully",
+      errorMessage: l10n?.errorCreatingInventory ?? "Error creating inventory",
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: const Bar(title: 'Store', color: Colors.purple),
+      appBar: Bar(title: l10n?.store ?? 'Store', color: Colors.purple),
       backgroundColor: const Color(0xFFF5F5F5),
-      body: Container(
+      body: isLoading ? const Center(child: CircularProgressIndicator()) : Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -167,7 +179,7 @@ class _StorageState extends State<Storage> {
                           Icon(Icons.table_chart, color: primeColor, size: 24),
                           const SizedBox(width: 10),
                           Text(
-                            'Store',
+                            l10n?.store ?? 'Store',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -185,7 +197,7 @@ class _StorageState extends State<Storage> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              '${data.length} item',
+                              '${data.length} ${l10n?.item ?? 'item'}',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -224,7 +236,7 @@ class _StorageState extends State<Storage> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          'Edit Items',
+                          l10n?.editItems ?? 'Edit Items',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -305,19 +317,19 @@ class _StorageState extends State<Storage> {
                       onTap: () => sendToInventory(context),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.inventory,
                               color: Colors.white,
                               size: 24,
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             Flexible(
                               child: Text(
-                                'Create Inventory',
-                                style: TextStyle(
+                                l10n?.createInventory ?? 'Create Inventory',
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,

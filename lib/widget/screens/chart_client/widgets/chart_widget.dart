@@ -7,11 +7,11 @@ class ChartWidget extends StatelessWidget {
   final double maxY;
 
   const ChartWidget({
-    Key? key,
+    super.key,
     required this.spots,
     required this.monthLabels,
     required this.maxY,
-  }) : super(key: key);
+  });
 
 
   @override

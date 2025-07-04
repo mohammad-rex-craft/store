@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../common/btn.dart';
 import '../../common/input.dart';
 import '../../common/selector.dart';
+import '../../../l10n/app_localizations.dart';
 
 class FormRemoveItem extends StatelessWidget {
   final TextEditingController dateController;
@@ -34,6 +35,8 @@ class FormRemoveItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       elevation: 8,
       child: Padding(
@@ -41,19 +44,19 @@ class FormRemoveItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              "Remove Items",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              l10n?.removeitem ?? "Remove Items",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Input(
               controller: invoiceController,
-              labelText: 'Noa *',
+              labelText: l10n?.noa ?? 'Noa *',
             ),
             const SizedBox(height: 16),
             Selector(
               controller: TextEditingController(),
-              labelText: 'Client *',
+              labelText: l10n?.client ?? 'Client *',
               allItems: allClients,
               onItemChanged: onClientChanged,
               valueKey: 'id',
@@ -63,7 +66,7 @@ class FormRemoveItem extends StatelessWidget {
             const SizedBox(height: 16),
             Input(
               controller: senderController,
-              labelText: 'Sender *',
+              labelText: l10n?.sender ?? 'Sender *',
             ),
             const SizedBox(height: 16),
             DatePicker(controller: dateController),
@@ -73,17 +76,17 @@ class FormRemoveItem extends StatelessWidget {
               controller: TextEditingController(),
               initialValue: selectedItems,
               allItems: allItems,
-              labelText: 'Item *',
+              labelText: l10n?.item ?? 'Item *',
               onItemChanged: onItemChanged,
             ),
             const SizedBox(height: 16),
             Input(
               controller: qtnController,
-              labelText: 'Qtn *',
+              labelText: l10n?.quantity ?? 'Qtn *',
             ),
             const SizedBox(height: 16),
             Btn(
-              title: 'Add',
+              title: l10n?.add ?? 'Add',
               width: double.infinity,
               onTap: onAdd,
               btnType: BtnType.warning,

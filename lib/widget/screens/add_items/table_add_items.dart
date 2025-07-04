@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../common/btn.dart';
+import '../../../l10n/app_localizations.dart';
 
 class TableAddItems extends StatelessWidget {
   final List<Map<String, dynamic>> items;
@@ -14,7 +15,12 @@ class TableAddItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     if (items.isEmpty) return const SizedBox.shrink();
+
+    // حساب مجموع الكميات
+    final totalQuantity = items.fold<int>(0, (sum, item) => sum + (item['qtn'] as int));
 
     return Card(
       child: Padding(
@@ -22,32 +28,35 @@ class TableAddItems extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'العناصر المضافة',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              l10n?.addedItems ?? 'العناصر المضافة',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Table(
-              border: TableBorder.all(color: Colors.grey,borderRadius: BorderRadius.circular(10)),
+              border: TableBorder.all(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10),
+              ),
               children: [
-                const TableRow(
+                TableRow(
                   children: [
                     TableCell(
                       child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text('Items'),
+                        padding: const EdgeInsets.all(8),
+                        child: Center(child: Text(l10n?.items ?? 'Items')),
                       ),
                     ),
                     TableCell(
                       child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text('Qty'),
+                        padding: const EdgeInsets.all(8),
+                        child: Center(child: Text(l10n?.quantity ?? 'Qty')),
                       ),
                     ),
                     TableCell(
                       child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text('Delete'),
+                        padding: const EdgeInsets.all(8),
+                        child: Center(child: Text(l10n?.delete ?? 'Delete')),
                       ),
                     ),
                   ],
@@ -82,7 +91,41 @@ class TableAddItems extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            Btn(title: 'Send', width: double.infinity, onTap: onSubmit),
+            // عرض مجموع القطع تحت الجدول
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n?.totalItems ?? 'المجموع',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    totalQuantity.toString(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Btn(
+              title: l10n?.send ?? 'Send',
+              width: double.infinity,
+              onTap: onSubmit,
+            ),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utility/hooks.dart';
 import '../../database/database.dart';
+import '../../l10n/app_localizations.dart';
 
 class TableStorage extends StatelessWidget {
   final List<Map<String, dynamic>> data;
@@ -22,6 +23,7 @@ class TableStorage extends StatelessWidget {
   });
   
   Future<void> deleteItem(int id, BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -29,17 +31,17 @@ class TableStorage extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.warning, color: Colors.orange),
-              SizedBox(width: 10),
-              Text('Confirm Delete'),
+              const Icon(Icons.warning, color: Colors.orange),
+              const SizedBox(width: 10),
+              Text(l10n?.confirmDelete ?? 'Confirm Delete'),
             ],
           ),
-          content: const Text('Are you sure you want to delete this item?'),
+          content: Text(l10n?.areYouSureYouWantToDeleteThisItem ?? 'Are you sure you want to delete this item?'),
           actions: [
             TextButton(
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(l10n?.cancel ?? 'Cancel', style: const TextStyle(color: Colors.grey)),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             Container(
@@ -48,7 +50,7 @@ class TableStorage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: TextButton(
-                child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                child: Text(l10n?.delete ?? 'Delete', style: const TextStyle(color: Colors.white)),
                 onPressed: () => Navigator.of(context).pop(true),
               ),
             ),
@@ -62,8 +64,8 @@ class TableStorage extends StatelessWidget {
           table: 'store',
           id: id,
           context: context,
-          successMessage: "Item deleted successfully",
-          errorMessage: "Error deleting item",
+          successMessage: l10n?.itemDeletedSuccessfully ?? "Item deleted successfully",
+          errorMessage: l10n?.errorDeletingItem ?? "Error deleting item",
         );
         onRefresh();
       } catch (e) {
@@ -74,6 +76,8 @@ class TableStorage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return data.isEmpty 
       ? Container(
           padding: const EdgeInsets.all(40),
@@ -86,7 +90,7 @@ class TableStorage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'No items in the store',
+                l10n?.noItemsInTheStore ?? 'No items in the store',
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.grey.shade600,
@@ -95,7 +99,7 @@ class TableStorage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Add new items to start',
+                l10n?.addNewItemsToStart ?? 'Add new items to start',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade500,
@@ -128,7 +132,7 @@ class TableStorage extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            'Name',
+                            l10n?.name ??   'Name',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade800,
@@ -150,7 +154,7 @@ class TableStorage extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            'Qty',
+                            l10n?.qty ?? 'Qty',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade800,
@@ -172,7 +176,7 @@ class TableStorage extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            'Box',
+                            l10n?.box ?? 'Box',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade800,
@@ -193,7 +197,7 @@ class TableStorage extends StatelessWidget {
                       label: Container(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Text(
-                          'Delete',
+                          l10n?.delete ??   'Delete',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.grey.shade800,

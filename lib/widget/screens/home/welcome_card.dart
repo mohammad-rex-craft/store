@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../utility/hooks.dart';
 import '../../../database/database.dart';
+import '../../../l10n/app_localizations.dart';
 
 class WelcomeCard extends StatefulWidget {
   const WelcomeCard({super.key});
@@ -45,6 +46,8 @@ class _WelcomeCardState extends State<WelcomeCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(10),
@@ -64,21 +67,19 @@ class _WelcomeCardState extends State<WelcomeCard> {
         ],
       ),
       child: isLoading
-          ? const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Loading...',
-                    style: TextStyle(color: Colors.white, fontSize: 11),
-                  ),
-                ],
-              ),
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n?.loading ??'Loading...',
+                  style: const TextStyle(color: Colors.white, fontSize: 11),
+                ),
+              ],
             )
           : Column(
               mainAxisSize: MainAxisSize.min,
@@ -86,17 +87,17 @@ class _WelcomeCardState extends State<WelcomeCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.trending_up_rounded,
                           color: Colors.white,
                           size: 16,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
-                          'Top Ordered Items',
-                          style: TextStyle(
+                          l10n?.topordered ?? 'Top Ordered Items',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -105,11 +106,18 @@ class _WelcomeCardState extends State<WelcomeCard> {
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.refresh, color: Colors.white, size: 14),
+                      icon: const Icon(
+                        Icons.refresh,
+                        color: Colors.white,
+                        size: 14,
+                      ),
                       onPressed: loadTopOrderedItems,
                       tooltip: 'Refresh',
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+                      constraints: const BoxConstraints(
+                        minWidth: 20,
+                        minHeight: 20,
+                      ),
                     ),
                   ],
                 ),
@@ -117,7 +125,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
                   Container(
                     padding: const EdgeInsets.all(6),
                     child: Text(
-                      'No orders found',
+                      l10n?.noData ??'No orders found',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
                         fontSize: 11,
@@ -129,12 +137,13 @@ class _WelcomeCardState extends State<WelcomeCard> {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 3,
-                      mainAxisSpacing: 3,
-                      childAspectRatio: 5.0,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 3,
+                          mainAxisSpacing: 3,
+                          childAspectRatio: 5.0,
+                        ),
                     itemCount: topItems.length,
                     itemBuilder: (context, index) {
                       Map<String, dynamic> item = topItems[index];
@@ -227,23 +236,6 @@ class _WelcomeCardState extends State<WelcomeCard> {
                         ),
                       );
                     },
-                  ),
-                if (topItems.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.only(top: 3),
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'Top ${topItems.length} items',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 10,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
                   ),
               ],
             ),

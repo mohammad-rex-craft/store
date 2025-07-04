@@ -4,6 +4,7 @@ import '../../../widget/common/bar.dart';
 import '../../../widget/common/search_sort_bar.dart';
 import '../../../widget/common/pagination_btn.dart';
 import '../../../widget/screens/settlement/card_settlement.dart';
+import '../../../l10n/app_localizations.dart';
 
 class AllSettlementById extends StatefulWidget {
   const AllSettlementById({super.key});
@@ -20,7 +21,7 @@ class AllSettlementByIdState extends State<AllSettlementById> {
   final TextEditingController searchController = TextEditingController();
   bool isSortedAscending = true;
   bool _isInitialized = false;
-  
+
   int currentPage = 0;
   final int pageSize = 10;
   bool isLoading = false;
@@ -32,9 +33,17 @@ class AllSettlementByIdState extends State<AllSettlementById> {
     if (!_isInitialized) {
       routeArgs =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      _fetchAllSettlements();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loadInitialData();
+      });
       _isInitialized = true;
     }
+  }
+
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([_fetchAllSettlements()]);
+    setState(() => isLoading = false);
   }
 
   void _updateDisplayedList() {
@@ -55,11 +64,15 @@ class AllSettlementByIdState extends State<AllSettlementById> {
     temp.sort((a, b) {
       final dateA = a['date'] ?? '';
       final dateB = b['date'] ?? '';
-      return isSortedAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
+      return isSortedAscending
+          ? dateA.compareTo(dateB)
+          : dateB.compareTo(dateA);
     });
 
     final startIndex = currentPage * pageSize;
-    final endIndex = (startIndex + pageSize > temp.length) ? temp.length : startIndex + pageSize;
+    final endIndex = (startIndex + pageSize > temp.length)
+        ? temp.length
+        : startIndex + pageSize;
 
     setState(() {
       filteredSettlements = temp.sublist(startIndex, endIndex);
@@ -68,10 +81,7 @@ class AllSettlementByIdState extends State<AllSettlementById> {
   }
 
   Future<void> _fetchAllSettlements() async {
-    if (isLoading) return;
-    setState(() {
-      isLoading = true;
-    });
+    final l10n = AppLocalizations.of(context);
 
     try {
       List<Map<String, dynamic>> tempSettlements = [];
@@ -86,24 +96,21 @@ class AllSettlementByIdState extends State<AllSettlementById> {
           orderBy: 'date',
           ascending: isSortedAscending,
           context: context,
-          errorMessage: "Network error occurred while fetching settlements",
+          errorMessage:
+              l10n?.networkError ??
+              "Network error occurred while fetching settlements",
         );
         tempSettlements.addAll(response);
         hasMore = response.length == 50;
         page++;
       }
-      
+
       setState(() {
         allSettlements = tempSettlements;
-        isLoading = false;
         _updateDisplayedList();
       });
-
     } catch (e, s) {
-      print('Error in getSettlements: $e\n$s');
-      setState(() {
-        isLoading = false;
-      });
+      //
     }
   }
 
@@ -128,7 +135,7 @@ class AllSettlementByIdState extends State<AllSettlementById> {
   void sortDataByDate() {
     setState(() {
       isSortedAscending = !isSortedAscending;
-      currentPage = 0; 
+      currentPage = 0;
     });
     _updateDisplayedList();
   }
@@ -142,8 +149,13 @@ class AllSettlementByIdState extends State<AllSettlementById> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: Bar(title: 'Settlements: ${routeArgs['item']}', color: Colors.purple),
+      appBar: Bar(
+        title: '${l10n?.settlement ?? 'Settlements'} {${routeArgs['item']}}',
+        color: Colors.purple,
+      ),
       body: Column(
         children: [
           SearchSortBar(
@@ -155,24 +167,24 @@ class AllSettlementByIdState extends State<AllSettlementById> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredSettlements.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No settlements found for this item.',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: filteredSettlements.length,
-                        itemBuilder: (context, index) {
-                          final item = filteredSettlements[index];
-                          return CardSettlement(
-                            item: item,
-                            onRefresh: _fetchAllSettlements,
-                          );
-                        },
-                      ),
+                ?  Center(
+                    child: Text(
+                      l10n?.noSettlementsFound ?? 'No settlements found for this item.',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredSettlements.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredSettlements[index];
+                      return CardSettlement(
+                        item: item,
+                        onRefresh: _fetchAllSettlements,
+                      );
+                    },
+                  ),
           ),
-          
+
           PaginationBtn(
             currentPage: currentPage,
             hasMoreData: hasMoreData,
@@ -183,4 +195,4 @@ class AllSettlementByIdState extends State<AllSettlementById> {
       ),
     );
   }
-} 
+}

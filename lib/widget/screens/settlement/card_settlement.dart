@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../database/database.dart';
 import '../../../utility/theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CardSettlement extends StatefulWidget {
   final Map<String, dynamic> item;
@@ -18,40 +19,14 @@ class CardSettlement extends StatefulWidget {
 
 class _CardSettlementState extends State<CardSettlement> {
   final DatabaseService db = DatabaseService();
-  Map<String, dynamic>? _fullSettlementData;
-  bool _isLoading = true;
-  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _fetchFullSettlement();
-  }
-
-  Future<void> _fetchFullSettlement() async {
-    try {
-      final data = await db.read(
-        table: 'inventory_settlements',
-        id: widget.item['id'].toString(),
-        context: context,
-      );
-      if (mounted) {
-        setState(() {
-          _fullSettlementData = data;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = 'Failed to load details.';
-          _isLoading = false;
-        });
-      }
-    }
   }
 
   Future<void> _deleteSettlement() async {
+    final l10n = AppLocalizations.of(context);
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -59,18 +34,23 @@ class _CardSettlementState extends State<CardSettlement> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.orange),
-              SizedBox(width: 10),
-              Text('Confirm Deletion'),
+              const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+              const SizedBox(width: 10),
+              Text(l10n?.confirmDeletion ?? 'Confirm Deletion'),
             ],
           ),
-          content: const Text(
-              'This will permanently delete the settlement and revert the item quantities in your inventory. Are you sure?'),
+          content: Text(
+            l10n?.thisWillPermanentlyDeleteTheSettlementAndRevertTheItemQuantitiesInYourInventoryAreYouSure ??
+                'This will permanently delete the settlement and revert the item quantities in your inventory. Are you sure?',
+          ),
           actions: [
             TextButton(
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                l10n?.cancel ?? 'Cancel',
+                style: const TextStyle(color: Colors.grey),
+              ),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             Container(
@@ -79,7 +59,10 @@ class _CardSettlementState extends State<CardSettlement> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: TextButton(
-                child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  l10n?.delete ?? 'Delete',
+                  style: const TextStyle(color: Colors.white),
+                ),
                 onPressed: () => Navigator.of(context).pop(true),
               ),
             ),
@@ -93,7 +76,6 @@ class _CardSettlementState extends State<CardSettlement> {
         await db.deleteSettlement(
           settlementId: widget.item['id'],
           context: context,
-
         );
         widget.onRefresh();
       } catch (e) {
@@ -104,27 +86,10 @@ class _CardSettlementState extends State<CardSettlement> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
+    final l10n = AppLocalizations.of(context);
 
-    if (_error != null || _fullSettlementData == null) {
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.colorError.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(_error ?? 'Could not load settlement details.'),
-      );
-    }
-    
-    final List<dynamic> adjustedItems = _fullSettlementData!['items'] ?? [];
-    final String reason = _fullSettlementData!['reason'] ?? 'No reason provided';
+    final List<dynamic> adjustedItems = widget.item['items'] ?? [];
+    final String reason = widget.item['reason'] ?? 'No reason provided';
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
@@ -152,33 +117,37 @@ class _CardSettlementState extends State<CardSettlement> {
                 topRight: Radius.circular(12),
               ),
               border: Border(
-                bottom: BorderSide(color: AppTheme.colorInfo.withOpacity(0.2))
-              )
+                bottom: BorderSide(color: AppTheme.colorInfo.withOpacity(0.2)),
+              ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.compare_arrows_rounded, color: AppTheme.colorInfo, size: 18),
+                const Icon(
+                  Icons.compare_arrows_rounded,
+                  color: AppTheme.colorInfo,
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
                 Text(
-                  'Settlement',
+                  l10n?.settlement ?? 'Settlement',
                   style: AppTheme.captionStyle.copyWith(
                     color: AppTheme.colorInfo,
                     fontWeight: FontWeight.w600,
-                    fontSize: 12
-                  ),
-                ),
-                const Spacer(),
-                  Text(
-                  'Noa: ${_fullSettlementData!['noa']}',
-                  style: AppTheme.captionStyle.copyWith(
-                    color: const Color.fromARGB(255, 131, 40, 40),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12
+                    fontSize: 12,
                   ),
                 ),
                 const Spacer(),
                 Text(
-                  _fullSettlementData!['date'] ?? '',
+                  '${l10n?.noa ?? 'Noa'}: ${widget.item['noa']}',
+                  style: AppTheme.captionStyle.copyWith(
+                    color: const Color.fromARGB(255, 131, 40, 40),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  widget.item['date'] ?? '',
                   style: AppTheme.bodyStyle.copyWith(
                     color: AppTheme.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -189,11 +158,14 @@ class _CardSettlementState extends State<CardSettlement> {
                   height: 30,
                   child: IconButton(
                     padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.delete_outline_rounded,
-                        color: AppTheme.colorError, size: 20),
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: AppTheme.colorError,
+                      size: 20,
+                    ),
                     onPressed: _deleteSettlement,
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -217,7 +189,7 @@ class _CardSettlementState extends State<CardSettlement> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Adjusted Items (${adjustedItems.length})',
+                      '${l10n?.adjustedItems ?? 'Adjusted Items'} (${adjustedItems.length})',
                       style: AppTheme.captionStyle.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.textPrimary,
@@ -237,13 +209,16 @@ class _CardSettlementState extends State<CardSettlement> {
                     final bool isPositive = qtn > 0;
                     return Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 8),
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
                       margin: const EdgeInsets.only(bottom: 6),
                       decoration: BoxDecoration(
                         color: AppTheme.inputBackground,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                            color: AppTheme.borderColor.withOpacity(0.5)),
+                          color: AppTheme.borderColor.withOpacity(0.5),
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -257,12 +232,15 @@ class _CardSettlementState extends State<CardSettlement> {
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
                             decoration: BoxDecoration(
-                              color: (isPositive
-                                      ? AppTheme.colorSuccess
-                                      : AppTheme.colorError)
-                                  .withOpacity(0.1),
+                              color:
+                                  (isPositive
+                                          ? AppTheme.colorSuccess
+                                          : AppTheme.colorError)
+                                      .withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -275,7 +253,7 @@ class _CardSettlementState extends State<CardSettlement> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     );
@@ -289,7 +267,8 @@ class _CardSettlementState extends State<CardSettlement> {
     );
   }
 
-   Widget _buildReasonBanner(String reason) {
+  Widget _buildReasonBanner(String reason) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -301,16 +280,13 @@ class _CardSettlementState extends State<CardSettlement> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Reason / Notes:',
+            l10n?.reasonNotes ?? 'Reason / Notes:',
             style: AppTheme.captionStyle.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          Text(
-            reason,
-            style: AppTheme.bodyStyle,
-          ),
+          Text(reason, style: AppTheme.bodyStyle),
         ],
       ),
     );
   }
-} 
+}

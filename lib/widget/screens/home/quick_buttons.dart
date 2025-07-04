@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../../utility/hooks.dart';
-import '../../../database/auth/log_in_out.dart';
+import '../../../l10n/app_localizations.dart';
+
 
 class QuickButtons extends StatelessWidget {
   const QuickButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Column(
       children: [
         Row(
@@ -14,7 +17,7 @@ class QuickButtons extends StatelessWidget {
             Expanded(
               child: _buildQuickButton(
                 context: context,
-                title: 'All Inputs',
+                title: l10n?.additem ??'All Inputs',
                 icon: Icons.input,
                 color: Colors.teal,
                 onTap: () => router(context, '/all_input'),
@@ -32,7 +35,7 @@ class QuickButtons extends StatelessWidget {
             ),
           ],
         ),
-                    const SizedBox(height: 10),
+        const SizedBox(height: 10),
 
         Row(
           children: [
@@ -57,7 +60,7 @@ class QuickButtons extends StatelessWidget {
             ),
           ],
         ),
-           const SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(

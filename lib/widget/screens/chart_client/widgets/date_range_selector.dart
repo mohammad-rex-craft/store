@@ -8,12 +8,12 @@ class DateRangeSelector extends StatelessWidget {
   final DateFormat displayFormat;
 
   const DateRangeSelector({
-    Key? key,
+    super.key,
     required this.startDate,
     required this.endDate,
     required this.onSelectDate,
     required this.displayFormat,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../common/btn.dart';
 import '../../common/input.dart';
 import '../../common/selector.dart';
+import '../../../l10n/app_localizations.dart';
 
 class FormAddItems extends StatelessWidget {
   final TextEditingController dateController;
@@ -36,6 +37,8 @@ class FormAddItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       elevation: 8,
       child: Padding(
@@ -43,9 +46,9 @@ class FormAddItems extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Add Items",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              l10n?.additem ?? "Add Items",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Selector(
@@ -54,18 +57,21 @@ class FormAddItems extends StatelessWidget {
                 'Production',
                 'Return',
               ].map((type) => {'type': type}).toList(),
-              labelText: 'Type *',
+              labelText: l10n?.type ?? 'Type *',
               valueKey: 'type',
               displayKey: 'type',
               onItemChanged: (newValue) => onTypeChanged(newValue),
             ),
             if (selectedType == 'Return') ...[
               const SizedBox(height: 16),
-              Input(controller: invoiceController, labelText: 'Noa *'),
+              Input(
+                controller: invoiceController,
+                labelText: l10n?.noa ?? 'Noa *',
+              ),
               const SizedBox(height: 16),
               Selector(
                 controller: TextEditingController(),
-                labelText: 'Client *',
+                labelText: l10n?.client ?? 'Client *',
                 allItems: allClients,
                 onItemChanged: onClientChanged,
                 valueKey: 'id',
@@ -81,16 +87,19 @@ class FormAddItems extends StatelessWidget {
               isMultiple: true,
               controller: TextEditingController(),
               allItems: allItems,
-              labelText: 'Item *',
+              labelText: l10n?.item ?? 'Item *',
               onItemChanged: (newValue) =>
                   onItemChanged(newValue.cast<String>()),
               initialValue: selectedItems,
             ),
             const SizedBox(height: 16),
-            Input(controller: qtnController, labelText: 'Qtn *'),
+            Input(
+              controller: qtnController,
+              labelText: l10n?.quantity ?? 'Qtn *',
+            ),
             const SizedBox(height: 16),
             Btn(
-              title: 'Add',
+              title: l10n?.add ?? 'Add',
               width: double.infinity,
               onTap: onAdd,
               btnType: BtnType.success,

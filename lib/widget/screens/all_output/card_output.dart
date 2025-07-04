@@ -3,6 +3,7 @@ import '../../../database/database.dart';
 import '../../../utility/hooks.dart';
 import '../../../utility/theme.dart';
 import '../../common/btn.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CardOutput extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -18,6 +19,7 @@ class CardOutput extends StatelessWidget {
   });
 
   Future<void> onDelete(int id, BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
@@ -38,25 +40,25 @@ class CardOutput extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Delete Order',
+                  l10n?.deleteOrder ?? 'Delete Order',
                   style: AppTheme.titleStyle.copyWith(
                     color: AppTheme.colorError,
                   ),
                 ),
               ],
             ),
-            content: const Text(
-              'Are you sure you want to delete this order record? This action cannot be undone.',
+            content: Text(
+              l10n?.areYouSureYouWantToDeleteThisOrderRecord ?? 'Are you sure you want to delete this order record? This action cannot be undone.',
               style: AppTheme.bodyStyle,
             ),
             actions: [
               Btn(
-                title: 'Cancel',
+                title: l10n?.cancel ?? 'Cancel',
                 btnType: BtnType.secondary,
                 onTap: () => navigator.pop(false),
               ),
               Btn(
-                title: 'Delete',
+                title: l10n?.delete ?? 'Delete',
                 btnType: BtnType.error,
                 onTap: () => navigator.pop(true),
               ),
@@ -74,16 +76,16 @@ class CardOutput extends StatelessWidget {
       );
 
       if (result.containsKey('error')) {
-        throw result['error'] ?? 'Failed to delete order';
+        throw result['error'] ?? l10n?.failedToDeleteOrder ?? 'Failed to delete order';
       }
 
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Text('Order deleted successfully'),
+              const Icon(Icons.check_circle, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n?.orderDeletedSuccessfully ?? 'Order deleted successfully'),
             ],
           ),
           backgroundColor: AppTheme.colorSuccess,
@@ -100,7 +102,7 @@ class CardOutput extends StatelessWidget {
             children: [
               const Icon(Icons.error, color: Colors.white, size: 20),
               const SizedBox(width: 8),
-              Text('Error: ${e.toString()}'),
+              Text(l10n?.error ?? 'Error: ${e.toString()}'),
             ],
           ),
           backgroundColor: AppTheme.colorError,
@@ -113,6 +115,7 @@ class CardOutput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
       decoration: BoxDecoration(
@@ -155,7 +158,7 @@ class CardOutput extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Order',
+                            l10n?.order ?? 'Order',
                             style: AppTheme.captionStyle.copyWith(
                               color: AppTheme.colorWarning,
                               fontWeight: FontWeight.w600,
@@ -190,7 +193,7 @@ class CardOutput extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'NOA: ${item['noa'] ?? ''}',
+                      l10n?.noa ??  'NOA: ${item['noa'] ?? ''}',
                       style: AppTheme.captionStyle.copyWith(
                         color: AppTheme.colorWarning,
                         fontWeight: FontWeight.w600,
@@ -284,7 +287,7 @@ class CardOutput extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Items (${(item['items'] as List).length})',
+                     '${l10n?.items ?? "Items"} (${(item['items'] as List).length})',
                       style: AppTheme.captionStyle.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.textPrimary,
@@ -342,6 +345,56 @@ class CardOutput extends StatelessWidget {
                     ),
                   );
                 }),
+                
+                // عرض مجموع القطع
+                if ((item['items'] as List).isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.colorWarning.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: AppTheme.colorWarning.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.calculate,
+                              color: AppTheme.colorWarning,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              l10n?.totalItems ?? 'المجموع',
+                              style: AppTheme.captionStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.colorWarning,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          (item['items'] as List).fold<int>(0, (sum, subItem) => 
+                            sum + (subItem['qtn'] as int? ?? 0)
+                          ).toString(),
+                          style: AppTheme.captionStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.colorWarning,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

@@ -6,6 +6,7 @@ import "../../../widget/common/date_picker.dart";
 import "../../../widget/common/selector.dart";
 import "../../../utility/theme.dart";
 import 'dart:convert';
+import '../../../l10n/app_localizations.dart';
 
 class EditCard extends StatefulWidget {
   final Map<String, dynamic> item;
@@ -21,25 +22,38 @@ class _EditCardState extends State<EditCard> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController noaController = TextEditingController();
   final TextEditingController qtnController = TextEditingController();
+  final TextEditingController newItemQtnController = TextEditingController();
   final DatabaseService db = DatabaseService();
   List<Map<String, dynamic>> data = [];
   final TextEditingController senderController = TextEditingController();
   List<Map<String, dynamic>> allClients = [];
+  String? selectedNewItemId;
+  String? selectedNewItemName;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    getItems();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData();
+    });
   }
 
-  Future<void> getItems() async {
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([getItems()]);
+    setState(() => isLoading = false);
+  }
+
+  Future<void> getItems({bool includeClients = true}) async {
+    final l10n = AppLocalizations.of(context);
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
-        errorMessage: "Network error occurred while fetching items",
+        errorMessage:
+            l10n?.networkError ?? "Network error occurred while fetching items",
       );
-      // Sort data by ID in ascending order
       List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(
         response,
       );
@@ -48,18 +62,31 @@ class _EditCardState extends State<EditCard> {
         int idB = b['id'] ?? 0;
         return idA.compareTo(idB);
       });
-      final responseClients = await db.readAll(
-        table: 'client',
-        context: context,
-        errorMessage: "Network error occurred while fetching items",
-      );
-      setState(() {
-        data = sortedData;
-        allClients = responseClients ?? [];
-      });
+
+      if (includeClients) {
+        final responseClients = await db.readAll(
+          table: 'client',
+          context: context,
+          errorMessage:
+              l10n?.networkError ??
+              "Network error occurred while fetching items",
+        );
+        setState(() {
+          data = sortedData;
+          allClients = responseClients ?? [];
+        });
+      } else {
+        setState(() {
+          data = sortedData;
+        });
+      }
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<void> refreshStoreData() async {
+    await getItems(includeClients: false);
   }
 
   Future<void> updateDateNoaClientSender(
@@ -322,33 +349,199 @@ class _EditCardState extends State<EditCard> {
     String oldValue,
   ) {
     final filteredData = List<Map<String, dynamic>>.from(data);
-    // Get a set of all item names currently in the list
     final currentItemNames = widget.item['items']
         .map((e) => e['item'] as String)
         .toSet();
-    // Remove the item we are currently editing from the set, so it won't be filtered out
     currentItemNames.remove(oldValue);
-
-    // Filter the data, removing items that are in the list (but keeping the one we're editing)
     filteredData.removeWhere((item) => currentItemNames.contains(item['item']));
     return filteredData;
   }
 
+  Future<void> deleteItem(BuildContext context, int itemId) async {
+    try {
+      final updatedItems = List<Map<String, dynamic>>.from(
+        widget.item['items'],
+      );
+      updatedItems.removeWhere((item) => item['id'] == itemId);
+
+      final functionName = widget.table == 'inputs'
+          ? 'update_input_v1'
+          : 'update_order_v1';
+
+      final result = await db.rpc(
+        functionName,
+        params: {
+          'p_id': widget.item['id'],
+          'p_new_items': jsonEncode(updatedItems),
+        },
+        context: context,
+      );
+
+      if (result.containsKey('error')) {
+        throw result['error'] ?? 'Unknown error occurred';
+      }
+
+      setState(() {
+        widget.item['items'] = updatedItems;
+      });
+
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text('Item deleted successfully'),
+            ],
+          ),
+          backgroundColor: AppTheme.colorSuccess,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text('Failed to delete item: ${e.toString()}'),
+            ],
+          ),
+          backgroundColor: AppTheme.colorError,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    }
+  }
+
+  Future<void> addNewItem(BuildContext context) async {
+    if (selectedNewItemId == null ||
+        selectedNewItemName == null ||
+        newItemQtnController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.error, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text('Please select an item and enter quantity'),
+            ],
+          ),
+          backgroundColor: AppTheme.colorError,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final qtn = int.tryParse(newItemQtnController.text) ?? 0;
+      if (qtn <= 0) {
+        throw 'Quantity must be greater than 0';
+      }
+
+      final newItem = {
+        'id': int.parse(selectedNewItemId!),
+        'item': selectedNewItemName!,
+        'qtn': qtn,
+      };
+
+      final updatedItems = List<Map<String, dynamic>>.from(
+        widget.item['items'],
+      );
+      updatedItems.add(newItem);
+
+      final functionName = widget.table == 'inputs'
+          ? 'update_input_v1'
+          : 'update_order_v1';
+
+      final result = await db.rpc(
+        functionName,
+        params: {
+          'p_id': widget.item['id'],
+          'p_new_items': jsonEncode(updatedItems),
+        },
+        context: context,
+      );
+
+      if (result.containsKey('error')) {
+        throw result['error'] ?? 'Unknown error occurred';
+      }
+
+      setState(() {
+        widget.item['items'] = updatedItems;
+      });
+
+      // Reset form
+      selectedNewItemId = null;
+      selectedNewItemName = null;
+      newItemQtnController.clear();
+
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text('Item added successfully'),
+            ],
+          ),
+          backgroundColor: AppTheme.colorSuccess,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text('Failed to add item: ${e.toString()}'),
+            ],
+          ),
+          backgroundColor: AppTheme.colorError,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    }
+  }
+
+  List<Map<String, dynamic>> getAvailableItemsForAdd() {
+    final currentItemNames = widget.item['items']
+        .map((e) => e['item'] as String)
+        .toSet();
+
+    return data
+        .where((item) => !currentItemNames.contains(item['item']))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return SingleChildScrollView(
       child: Container(
         decoration: AppTheme.cardDecoration,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: AppTheme.colorMain.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: AppTheme.colorMain.withOpacity(0.3),
                   ),
@@ -360,14 +553,15 @@ class _EditCardState extends State<EditCard> {
                           ? Icons.shopping_cart
                           : Icons.inventory,
                       color: AppTheme.colorMain,
-                      size: 24,
+                      size: 18,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Edit ${widget.table == 'orders' ? 'Order' : 'Production'} Details',
+                        '${l10n?.edit ?? "Edit"} ${widget.table == 'orders' ? (l10n?.order ?? 'Order') : (l10n?.production ??'Production')} ${l10n?.details ?? "details"}',
                         style: AppTheme.titleStyle.copyWith(
                           color: AppTheme.colorMain,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -375,14 +569,7 @@ class _EditCardState extends State<EditCard> {
                 ),
               ),
 
-              const SizedBox(height: 20),
-
-              Text(
-                'Basic Information',
-                style: AppTheme.headingStyle.copyWith(fontSize: 18),
-              ),
               const SizedBox(height: 12),
-
               Row(
                 children: [
                   Expanded(
@@ -404,7 +591,7 @@ class _EditCardState extends State<EditCard> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   if (widget.item['noa'] != null)
                     Expanded(
                       child: _buildEditableField(
@@ -431,12 +618,7 @@ class _EditCardState extends State<EditCard> {
               if (widget.table == 'orders' ||
                   widget.table == 'inputs' &&
                       widget.item['type'] == 'Return') ...[
-                const SizedBox(height: 16),
-                Text(
-                  'Order Information',
-                  style: AppTheme.headingStyle.copyWith(fontSize: 18),
-                ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     if (widget.item['sender'] != null)
@@ -462,7 +644,7 @@ class _EditCardState extends State<EditCard> {
                           },
                         ),
                       ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     if (widget.item['client'] != null)
                       Expanded(
                         child: _buildEditableField(
@@ -495,52 +677,65 @@ class _EditCardState extends State<EditCard> {
                 ),
               ],
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
 
               Text(
-                'Items',
-                style: AppTheme.headingStyle.copyWith(fontSize: 18),
+                l10n?.items??'Items',
+                style: AppTheme.headingStyle.copyWith(fontSize: 14),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
 
               Container(
                 decoration: BoxDecoration(
                   color: AppTheme.backgroundColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppTheme.borderColor),
                 ),
                 child: Column(
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                        horizontal: 12,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
                         color: AppTheme.colorMain.withOpacity(0.1),
                         borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
                         ),
                       ),
                       child: Row(
                         children: [
                           Expanded(
-                            flex: 3,
+                            flex: 2,
                             child: Text(
-                              'Item Name',
+                              l10n?.name ?? 'Item Name',
                               style: AppTheme.bodyStyle.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppTheme.colorMain,
+                                fontSize: 12,
                               ),
                             ),
                           ),
                           Expanded(
                             child: Text(
-                              'Quantity',
+                               l10n?.qty ??'Quantity',
                               style: AppTheme.bodyStyle.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppTheme.colorMain,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 40,
+                            child: Text(
+                               l10n?.delete ??'Delete',
+                              style: AppTheme.bodyStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.colorMain,
+                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -560,8 +755,8 @@ class _EditCardState extends State<EditCard> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                            horizontal: 12,
+                            vertical: 8,
                           ),
                           child: Row(
                             children: [
@@ -571,7 +766,8 @@ class _EditCardState extends State<EditCard> {
                                   label: '',
                                   value: subItem['item']?.toString() ?? '',
                                   icon: Icons.edit,
-                                  onTap: () {
+                                  onTap: () async {
+                                    await refreshStoreData();
                                     String select = '';
                                     showCustomDialog(
                                       context,
@@ -600,13 +796,14 @@ class _EditCardState extends State<EditCard> {
                                   compact: true,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: _buildEditableField(
                                   label: '',
                                   value: subItem['qtn']?.toString() ?? '',
                                   icon: Icons.edit,
-                                  onTap: () {
+                                  onTap: () async {
+                                    await refreshStoreData();
                                     qtnController.text =
                                         subItem['qtn']?.toString() ?? '';
                                     showCustomDialog(
@@ -627,11 +824,103 @@ class _EditCardState extends State<EditCard> {
                                   compact: true,
                                 ),
                               ),
+                              const SizedBox(width: 8),
+                              SizedBox(
+                                width: 40,
+                                child: IconButton(
+                                  onPressed: () async {
+                                    await refreshStoreData();
+                                    showCustomDialog(
+                                      context,
+                                      'Delete Item',
+                                      Text(
+                                        'Are you sure you want to delete "${subItem['item']}"?',
+                                      ),
+                                      (value) =>
+                                          deleteItem(context, subItem['id']),
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                    size: 18,
+                                  ),
+                                  tooltip: 'Delete item',
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(
+                                    minWidth: 32,
+                                    minHeight: 32,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       );
                     }),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await refreshStoreData();
+                          selectedNewItemId = null;
+                          selectedNewItemName = null;
+                          newItemQtnController.clear();
+                          showCustomDialog(
+                            context,
+                            l10n?.addItems ?? 'Add New Item',
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Selector(
+                                  controller: TextEditingController(),
+                                  allItems: getAvailableItemsForAdd(),
+                                  labelText: 'Select Item',
+                                  onItemChanged: (newValue) {
+                                    if (newValue.isNotEmpty) {
+                                      final selectedItem =
+                                          getAvailableItemsForAdd().firstWhere(
+                                            (item) =>
+                                                item['id'].toString() ==
+                                                newValue,
+                                          );
+                                      selectedNewItemId = newValue;
+                                      selectedNewItemName =
+                                          selectedItem['item'];
+                                    }
+                                  },
+                                  valueKey: 'id',
+                                  displayKey: 'item',
+                                ),
+                                const SizedBox(height: 12),
+                                Input(
+                                  controller: newItemQtnController,
+                                  labelText: 'Quantity',
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ],
+                            ),
+                            (value) => addNewItem(context),
+                          );
+                        },
+                        icon: const Icon(Icons.add, size: 16),
+                        label: Text(
+                          l10n?.addItems ??'Add New Item',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.colorMain,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -652,18 +941,18 @@ class _EditCardState extends State<EditCard> {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.inputBackground,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppTheme.borderColor),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           child: Padding(
             padding: compact
-                ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
-                : const EdgeInsets.all(12),
+                ? const EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                : const EdgeInsets.all(8),
             child: Row(
               children: [
                 Expanded(
@@ -676,15 +965,16 @@ class _EditCardState extends State<EditCard> {
                           style: AppTheme.captionStyle.copyWith(
                             color: AppTheme.textSecondary,
                             fontWeight: FontWeight.w500,
+                            fontSize: 10,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 1),
                       ],
                       Text(
                         value,
                         style: compact
-                            ? AppTheme.bodyStyle.copyWith(fontSize: 14)
-                            : AppTheme.bodyStyle,
+                            ? AppTheme.bodyStyle.copyWith(fontSize: 12)
+                            : AppTheme.bodyStyle.copyWith(fontSize: 13),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],

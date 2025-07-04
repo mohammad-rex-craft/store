@@ -5,6 +5,7 @@ import '../../../database/database.dart';
 import '../../../widget/common/pagination_btn.dart';
 import '../../../utility/theme.dart';
 import '../../../widget/screens/settlement/card_settlement.dart';
+import '../../../l10n/app_localizations.dart';
 
 const Color settlementColor = Colors.brown;
 
@@ -24,22 +25,25 @@ class AllSettlementsState extends State<AllSettlements> {
 
   int currentPage = 0;
   final int pageSize = 10;
-  bool isLoading = false;
+  bool isLoading = true;
   bool hasMoreData = true;
 
   @override
   void initState() {
     super.initState();
-    getSettlements();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData();
+    });
+  }
+
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([getSettlements()]);
+    setState(() => isLoading = false);
   }
 
   Future<void> getSettlements() async {
-    if (isLoading) return;
-
-    setState(() {
-      isLoading = true;
-    });
-
+    final l10n = AppLocalizations.of(context);
     try {
       final response = await db.getPaginated(
         table: 'inventory_settlements',
@@ -48,19 +52,16 @@ class AllSettlementsState extends State<AllSettlements> {
         orderBy: 'date',
         ascending: isSortedAscending,
         context: context,
-        errorMessage: "Network error occurred while fetching settlements",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching settlements",
       );
 
       setState(() {
         allSettlements = List<Map<String, dynamic>>.from(response);
         filteredSettlements = List.from(allSettlements);
         hasMoreData = response.length == pageSize;
-        isLoading = false;
       });
         } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      // Error is handled by showAlert in DatabaseService
     }
   }
 
@@ -91,6 +92,7 @@ class AllSettlementsState extends State<AllSettlements> {
   }
 
   void filterData(String query) async {
+    final l10n = AppLocalizations.of(context);
     if (query.isEmpty) {
       setState(() {
         filteredSettlements = List.from(allSettlements);
@@ -104,14 +106,14 @@ class AllSettlementsState extends State<AllSettlements> {
         column: 'date',
         query: query,
         context: context,
-        errorMessage: "Error searching by date",
+        errorMessage: l10n?.errorSearchingByDate ?? "Error searching by date",
       );
       final noaResults = await db.search(
         table: 'inventory_settlements',
         column: 'noa',
         query: query,
         context: context,
-        errorMessage: "Error searching by invoice number",
+        errorMessage: l10n?.errorSearchingByInvoiceNumber ?? "Error searching by invoice number",
       );
       
       final combinedResults = [
@@ -127,9 +129,10 @@ class AllSettlementsState extends State<AllSettlements> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: const Bar(title: 'All Settlements', color: settlementColor),
+      appBar: Bar(title: l10n?.allSettlements ?? 'All Settlements', color: settlementColor),
       body: Column(
         children: [
           Container(
@@ -165,13 +168,13 @@ class AllSettlementsState extends State<AllSettlements> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'All Settlements',
+                        l10n?.allSettlements ?? 'All Settlements',
                         style: AppTheme.titleStyle.copyWith(
                           color: settlementColor,
                         ),
                       ),
                       Text(
-                        '${filteredSettlements.length} records • Page ${currentPage + 1}',
+                        '${filteredSettlements.length} ${l10n?.records ?? 'records'} • ${l10n?.page ?? 'Page'} ${currentPage + 1}',
                         style: AppTheme.captionStyle,
                       ),
                     ],
@@ -217,21 +220,23 @@ class AllSettlementsState extends State<AllSettlements> {
   }
 
   Widget _buildLoadingState() {
-    return const Center(
+    final l10n = AppLocalizations.of(context);
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
+          const CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(settlementColor),
           ),
-          SizedBox(height: 16),
-          Text('Loading settlements...', style: AppTheme.bodyStyle),
+          const SizedBox(height: 16),
+          Text(l10n?.loadingSettlements ?? 'Loading settlements...', style: AppTheme.bodyStyle),
         ],
       ),
     );
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -239,12 +244,12 @@ class AllSettlementsState extends State<AllSettlements> {
           const Icon(Icons.hourglass_empty, color: AppTheme.textHint, size: 64),
           const SizedBox(height: 16),
           Text(
-            'No settlements found.',
+            l10n?.noSettlementsFound ?? 'No settlements found.',
             style: AppTheme.headingStyle.copyWith(color: AppTheme.textHint),
           ),
           const SizedBox(height: 8),
           Text(
-            'Create a new settlement to see it here.',
+            l10n?.createNewSettlementToSeeItHere ??   'Create a new settlement to see it here.',
             textAlign: TextAlign.center,
             style: AppTheme.bodyStyle.copyWith(color: AppTheme.textSecondary),
           ),

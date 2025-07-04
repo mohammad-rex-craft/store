@@ -5,6 +5,7 @@ import '../../widget/screens/all_input/card_inputs.dart';
 import '../../widget/common/pagination_btn.dart';
 import '../../widget/common/search_sort_bar.dart';
 import '../../utility/theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class AllInput extends StatefulWidget {
   const AllInput({super.key});
@@ -23,22 +24,30 @@ class AllInputState extends State<AllInput> {
 
   int currentPage = 0;
   final int pageSize = 10;
-  bool isLoading = false;
+  bool isLoading = true;
   bool hasMoreData = true;
 
   @override
   void initState() {
     super.initState();
-    getStore();
-    getInputs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData();
+    });
+  }
+
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([getStore(), getInputs()]);
+    setState(() => isLoading = false);
   }
 
   Future<void> getStore() async {
+    final l10n = AppLocalizations.of(context);
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
-        errorMessage: "Network error occurred while fetching items",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching items",
       );
       setState(() {
         store = List<Map<String, dynamic>>.from(response);
@@ -49,11 +58,8 @@ class AllInputState extends State<AllInput> {
   }
 
   Future<void> getInputs() async {
-    if (isLoading) return;
+    final l10n = AppLocalizations.of(context);
 
-    setState(() {
-      isLoading = true;
-    });
 
     try {
       final response = await db.getPaginated(
@@ -63,19 +69,16 @@ class AllInputState extends State<AllInput> {
         orderBy: 'date',
         ascending: isSortedAscending,
         context: context,
-        errorMessage: "Network error occurred while fetching inputs",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching inputs",
       );
 
       setState(() {
         allInputs = List<Map<String, dynamic>>.from(response);
         filteredInputs = List.from(allInputs);
         hasMoreData = response.length == pageSize;
-        isLoading = false;
       });
         } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      // Error is handled by showAlert in DatabaseService
     }
   }
 
@@ -106,6 +109,7 @@ class AllInputState extends State<AllInput> {
   }
 
   void filterData(String query) async {
+    final l10n = AppLocalizations.of(context);
     if (query.isEmpty) {
       setState(() {
         filteredInputs = List.from(allInputs);
@@ -119,7 +123,7 @@ class AllInputState extends State<AllInput> {
         column: 'date',
         query: query,
         context: context,
-        errorMessage: "Error searching by date",
+        errorMessage: l10n?.networkError ?? "Error searching by date",
       );
 
       final noaResults = await db.search(
@@ -127,7 +131,7 @@ class AllInputState extends State<AllInput> {
         column: 'noa',
         query: query,
         context: context,
-        errorMessage: "Error searching by invoice number",
+        errorMessage: l10n?.networkError ?? "Error searching by invoice number",
       );
       final combinedResults = [...results, ...noaResults];
       final uniqueResults = combinedResults.toSet().toList();
@@ -141,9 +145,10 @@ class AllInputState extends State<AllInput> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: const Bar(title: 'All Input', color: AppTheme.colorMain),
+      appBar: Bar(title: l10n?.allInput ?? 'All Input', color: AppTheme.colorMain),
       body: Column(
         children: [
           
@@ -180,7 +185,7 @@ class AllInputState extends State<AllInput> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'All Inputs',
+                        l10n?.allInputs ?? 'All Inputs',
                         style: AppTheme.titleStyle.copyWith(
                           color: AppTheme.colorMain,
                         ),
@@ -238,7 +243,8 @@ class AllInputState extends State<AllInput> {
   }
 
   Widget _buildLoadingState() {
-    return Center(
+    final l10n = AppLocalizations.of(context);
+      return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -247,7 +253,7 @@ class AllInputState extends State<AllInput> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Loading inputs...',
+            l10n?.loadingInputs ?? 'Loading inputs...',
             style: AppTheme.bodyStyle.copyWith(
               color: AppTheme.textSecondary,
             ),
@@ -258,6 +264,7 @@ class AllInputState extends State<AllInput> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -276,14 +283,14 @@ class AllInputState extends State<AllInput> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No inputs found',
+            l10n?.noInputsFound ?? 'No inputs found',
             style: AppTheme.titleStyle.copyWith(
               color: AppTheme.textSecondary,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Try adjusting your search criteria',
+            Text(
+            l10n?.tryAdjustingYourSearchCriteria ?? 'Try adjusting your search criteria',
             style: AppTheme.captionStyle,
             textAlign: TextAlign.center,
           ),

@@ -3,6 +3,7 @@ import 'package:storeflow/database/database.dart';
 import 'package:storeflow/widget/common/bar.dart';
 import 'package:storeflow/widget/screens/client/table_client.dart'; // We will create this next
 import 'package:storeflow/utility/theme.dart';
+import 'package:storeflow/l10n/app_localizations.dart';
 
 class AllClients extends StatefulWidget {
   const AllClients({super.key});
@@ -21,18 +22,25 @@ class _AllClientsState extends State<AllClients> {
   @override
   void initState() {
     super.initState();
-    _fetchClients();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData();
+    });
+  }
+
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([_fetchClients()]);
+    setState(() => isLoading = false);
   }
 
   Future<void> _fetchClients() async {
-    setState(() {
-      isLoading = true;
-    });
+    final l10n = AppLocalizations.of(context);
+
     try {
       final data = await db.readAll(
         table: 'client',
         context: context,
-        errorMessage: "Failed to fetch clients",
+        errorMessage: l10n?.networkError ?? "Failed to fetch clients",
       );
       if (mounted) {
         setState(() {
@@ -41,11 +49,7 @@ class _AllClientsState extends State<AllClients> {
         });
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+      // Error is handled by showAlert in DatabaseService
     }
   }
 
@@ -83,10 +87,11 @@ class _AllClientsState extends State<AllClients> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: const Bar(
-        title: 'All Clients',
+      appBar: Bar(
+        title: l10n?.allClients ?? 'All Clients',
         color: AppTheme.colorInfo,
       ),
       body: Padding(
@@ -111,7 +116,7 @@ class _AllClientsState extends State<AllClients> {
                     children: [
                       const CircularProgressIndicator(color: AppTheme.colorInfo),
                       const SizedBox(height: 16),
-                      Text('Loading Clients...',
+                      Text(l10n?.loadingClients ?? 'Loading Clients...',
                           style: AppTheme.bodyStyle
                               .copyWith(color: AppTheme.textSecondary)),
                     ],

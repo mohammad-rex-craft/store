@@ -4,6 +4,7 @@ import '../widget/common/bar.dart';
 import '../widget/screens/remove_items/form_remove_item.dart';
 import '../widget/screens/remove_items/table_remove_items.dart';
 import '../database/database.dart';
+import '../l10n/app_localizations.dart';
 
 class RemoveItems extends StatefulWidget {
   const RemoveItems({super.key});
@@ -26,20 +27,31 @@ class _RemoveItemsState extends State<RemoveItems> {
   List<Map<String, dynamic>> items = [];
   List<Map<String, dynamic>> allItems = [];
   bool isLoading = false;
+  
 
   @override
   void initState() {
     super.initState();
-    getStore();
-    getClients();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData(); // تم التعديل هنا لتحميل البيانات بعد تهيئة الـ context
+    });
   }
 
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([getStore(), getClients()]);
+    setState(() => isLoading = false);
+  }
+
+
   Future<void> getClients() async {
+    final l10n = AppLocalizations.of(context);
+
     try {
       final response = await db.readAll(
         table: 'client',
         context: context,
-        errorMessage: "Network error occurred while fetching clients",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching clients",
       );
       setState(() {
         allClients = List<Map<String, dynamic>>.from(response);
@@ -50,13 +62,14 @@ class _RemoveItemsState extends State<RemoveItems> {
   }
 
   Future<void> getStore() async {
+    final l10n = AppLocalizations.of(context);
+
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
-        errorMessage: "Network error occurred while fetching items",
+        errorMessage: l10n?.networkError ?? "Network error occurred while fetching items",
       );
-      // Sort data by ID in ascending order
       List<Map<String, dynamic>> sortedData = List<Map<String, dynamic>>.from(response);
       sortedData.sort((a, b) {
         int idA = a['id'] ?? 0;
@@ -67,17 +80,23 @@ class _RemoveItemsState extends State<RemoveItems> {
       setState(() {
         allItems = sortedData;
       });
-        } catch (e) {
-      
+    } catch (e) {
+      // Error is handled by showAlert in DatabaseService
     }
   }
 
+  Future<void> refreshStoreData() async {
+    await getStore();
+  }
+
   void addItem() {
+    final l10n = AppLocalizations.of(context);
+
     if (selectedItems.isEmpty || qtnController.text.isEmpty) {
       db.showAlert(
         context,
-        title: "Warning",
-        message: "Please select at least one item and fill in the quantity",
+        title: l10n?.warning ?? "Warning",
+        message: l10n?.pleaseSelectAtLeastOne ?? "Please select at least one item and fill in the quantity",
         type: AlertType.warning,
       );
       return;
@@ -88,8 +107,8 @@ class _RemoveItemsState extends State<RemoveItems> {
     if (hasDuplicates) {
       db.showAlert(
         context,
-        title: "Warning",
-        message: "One or more selected items are already in the list.",
+        title: l10n?.warning ?? "Warning",
+        message: l10n?.oneormoreitem ?? "One or more selected items are already in the list.",
         type: AlertType.warning,
       );
       return;
@@ -111,14 +130,16 @@ class _RemoveItemsState extends State<RemoveItems> {
   }
 
   Future<void> submitData() async {
+    final l10n = AppLocalizations.of(context);
+
     if (dateController.text ==''||
         clientController.text ==''||
         senderController.text ==''||
         invoiceController.text =='') {
       db.showAlert(
         context,
-        title: "Warning",
-        message: "Please fill in all fields",
+        title: l10n?.warning ?? "Warning",
+        message: l10n?.pleaseFillAllFields ?? "Please fill in all fields",
         type: AlertType.warning,
       );
       return;
@@ -143,8 +164,8 @@ class _RemoveItemsState extends State<RemoveItems> {
         table: 'orders',
         data: inputData,
         context: context,
-        successMessage: "Items removed successfully",
-        errorMessage: "Error while saving data",
+        successMessage: l10n?.success ?? "Items removed successfully",
+        errorMessage: l10n?.error ?? "Error while saving data",
       );
 
       for (var item in items) {
@@ -160,7 +181,7 @@ class _RemoveItemsState extends State<RemoveItems> {
           },
           context: context,
           successMessage: null,
-          errorMessage: "Error updating item quantity",
+          errorMessage: l10n?.error ?? "Error updating item quantity",
         );
       }
 
@@ -176,6 +197,8 @@ class _RemoveItemsState extends State<RemoveItems> {
       setState(() {
         isLoading = false;
       });
+    } finally {
+      refreshStoreData();
     }
   }
 
@@ -187,11 +210,13 @@ class _RemoveItemsState extends State<RemoveItems> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Stack(
       children: [
         Scaffold(
-          appBar: const Bar(title: 'Remove Items',color: Colors.red),
-          body: SingleChildScrollView(
+          appBar: Bar(title: l10n?.removeitem ?? 'Remove Items',color: Colors.red),
+          body: isLoading ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
@@ -229,13 +254,7 @@ class _RemoveItemsState extends State<RemoveItems> {
             ),
           ),
         ),
-        if (isLoading)
-          Container(
-            color: Colors.black.withOpacity(0.5),
-            child: const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
-          ),
+
       ],
     );
   }

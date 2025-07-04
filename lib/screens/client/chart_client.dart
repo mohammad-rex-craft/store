@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:storeflow/database/database.dart';
 import 'package:intl/intl.dart';
-import 'widgets/date_range_selector.dart';
-import 'widgets/loading_widget.dart';
-import 'widgets/no_data_widget.dart';
-import 'widgets/chart_widget.dart';
-import 'widgets/table_item_get.dart';
+import '../../widget/screens/chart_client/widgets/date_range_selector.dart';
+import '../../widget/screens/chart_client/widgets/loading_widget.dart';
+import '../../widget/screens/chart_client/widgets/no_data_widget.dart';
+import '../../widget/screens/chart_client/widgets/chart_widget.dart';
+import '../../widget/screens/chart_client/widgets/table_item_get.dart';
 
 class ChartClient extends StatefulWidget {
-  const ChartClient({Key? key}) : super(key: key);
+  const ChartClient({super.key});
 
   @override
   State<ChartClient> createState() => _ChartClientState();
@@ -179,11 +179,7 @@ class _ChartClientState extends State<ChartClient> {
         isLoading = false;
         allOrdersByClientId = List<Map<String, dynamic>>.from(orders);
       });
-
-      // تحليل البيانات وإنشاء جدول العناصر
-      final itemsSummary = analyzeItemsData(allOrdersByClientId);
-      print('Items Summary:');
-      print(itemsSummary);
+      analyzeItemsData(allOrdersByClientId);
     } catch (e) {
       debugPrint('Error loading table data: $e');
     } finally {
@@ -193,7 +189,6 @@ class _ChartClientState extends State<ChartClient> {
     }
   }
 
-  /// دالة لتحليل بيانات الطلبات وإنشاء ملخص العناصر
   List<Map<String, dynamic>> analyzeItemsData(
     List<Map<String, dynamic>> orders,
   ) {
@@ -222,7 +217,6 @@ class _ChartClientState extends State<ChartClient> {
               'item_id': itemId,
               'item': itemName,
               'qtn': quantity,
-              'box': 1, // قيمة افتراضية
               'order_count': 1,
             };
           }
@@ -252,7 +246,7 @@ class _ChartClientState extends State<ChartClient> {
               onSelectDate: _selectDate,
               displayFormat: displayFormat,
             ),
-            Container(
+            SizedBox(
               height: 350,
               child: isLoading
                   ? const LoadingWidget()

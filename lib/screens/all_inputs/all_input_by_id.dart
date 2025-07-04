@@ -4,7 +4,7 @@ import '../../widget/common/bar.dart';
 import '../../widget/common/search_sort_bar.dart';
 import '../../widget/screens/all_input/card_inputs.dart';
 import '../../widget/common/pagination_btn.dart';
-import '../../widget/screens/settlement/card_settlement.dart';
+import '../../l10n/app_localizations.dart';
 
 class AllInputById extends StatefulWidget {
   const AllInputById({super.key});
@@ -39,25 +39,32 @@ class AllInputByIdState extends State<AllInputById> {
     if (!_isInitialized) {
       routeArgs =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-      _fetchAllInputs();
-      getStore();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loadInitialData();
+      });
       _isInitialized = true;
     }
   }
 
+  Future<void> loadInitialData() async {
+    setState(() => isLoading = true);
+    await Future.wait([getStore(), _fetchAllInputs()]);
+    setState(() => isLoading = false);
+  }
+
   Future<void> getStore() async {
+    final l10n = AppLocalizations.of(context);
+
     try {
       final response = await db.readAll(
         table: 'store',
         context: context,
-        errorMessage: "Network error occurred while fetching items",
+        errorMessage:l10n?.networkError?? "Network error occurred while fetching items",
       );
       setState(() {
         store = List<Map<String, dynamic>>.from(response);
       });
-        } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   void _updateDisplayedList() {
@@ -75,11 +82,15 @@ class AllInputByIdState extends State<AllInputById> {
     temp.sort((a, b) {
       final dateA = a['date'] ?? '';
       final dateB = b['date'] ?? '';
-      return isSortedAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
+      return isSortedAscending
+          ? dateA.compareTo(dateB)
+          : dateB.compareTo(dateA);
     });
 
     final startIndex = currentPage * pageSize;
-    final endIndex = (startIndex + pageSize > temp.length) ? temp.length : startIndex + pageSize;
+    final endIndex = (startIndex + pageSize > temp.length)
+        ? temp.length
+        : startIndex + pageSize;
 
     setState(() {
       filteredInputs = temp.sublist(startIndex, endIndex);
@@ -88,14 +99,10 @@ class AllInputByIdState extends State<AllInputById> {
   }
 
   Future<void> _fetchAllInputs() async {
-    if (isLoading) return;
-
-    setState(() {
-      isLoading = true;
-    });
+    final l10n = AppLocalizations.of(context);
 
     try {
-       List<Map<String, dynamic>> tempInputs = [];
+      List<Map<String, dynamic>> tempInputs = [];
       int page = 0;
       bool hasMore = true;
       while (hasMore) {
@@ -103,27 +110,23 @@ class AllInputByIdState extends State<AllInputById> {
           table: 'inputs',
           id: routeArgs['id'],
           page: page,
-          pageSize: 50, 
+          pageSize: 50,
           orderBy: 'date',
           ascending: isSortedAscending,
           context: context,
-          errorMessage: "Network error occurred while fetching transactions",
+          errorMessage:l10n?.networkError?? "Network error occurred while fetching transactions",
         );
         tempInputs.addAll(response);
         hasMore = response.length == 50;
         page++;
       }
-      
+
       setState(() {
         allInputs = tempInputs;
-        isLoading = false;
         _updateDisplayedList();
       });
     } catch (e, s) {
-      print('Error in getInputs: $e\n$s');
-      setState(() {
-        isLoading = false;
-      });
+      //
     }
   }
 
@@ -162,8 +165,10 @@ class AllInputByIdState extends State<AllInputById> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: Bar(title: 'Input ${routeArgs['item']}',color: Colors.teal),
+      appBar: Bar(title: '${l10n?.inputs ?? "Input"} {${routeArgs['item']}}', color: Colors.teal),
       body: Column(
         children: [
           SearchSortBar(
@@ -175,21 +180,25 @@ class AllInputByIdState extends State<AllInputById> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredInputs.isEmpty
-                ? const Center(
+                ?  Center(
                     child: Text(
-                      'No data available',
-                      style: TextStyle(fontSize: 18),
+                      l10n?.noInputsFound ??'No data available',
+                      style: const TextStyle(fontSize: 18),
                     ),
                   )
                 : ListView.builder(
                     itemCount: filteredInputs.length,
                     itemBuilder: (context, index) {
                       final item = filteredInputs[index];
-                      return CardInputs(item: item, store: store, onRefresh: _fetchAllInputs);
+                      return CardInputs(
+                        item: item,
+                        store: store,
+                        onRefresh: _fetchAllInputs,
+                      );
                     },
                   ),
           ),
-          
+
           PaginationBtn(
             currentPage: currentPage,
             hasMoreData: hasMoreData,
